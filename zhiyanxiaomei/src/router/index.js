@@ -47,158 +47,196 @@ Vue.use(Router)
 export default new Router({
   mode: 'history',
   routes: [{
-      path: '/welcome',
+      path: '/Welcome',
       component: Welcome,
       children: [{
           path: '/skillColumn',
+					name:'技能栏目管理',
           component: SkillColumn
         },
         {
           path: '/skillDetail',
+					name:'技能详情管理',
           component: SkillDetail
         },
         {
           path: '/about',
+					name:'关于我们',
           component: About
         },
         {
           path: '/act',
+					name:'节目管理',
           component: Act
         },
         {
           path: '/actDetail',
+					name:'节目详情管理',
           component: ActDetail
         },
         {
           path: '/advice',
+					name:'化妆建议管理',
           component: Advice
         },
         {
           path: '/aim',
+					name:'化妆目的管理',
           component: Aim
         },
         {
           path: '/branch',
+					name:'步骤子类管理',
           component: Branch
         },
         {
           path: '/brand',
+					name:'品牌管理',
           component: Brand
         },
         {
           path: '/classify',
+					name:'',
           component: Classify
         },
         {
           path: '/color',
+					name:'产品色号管理',
           component: Color
         },
         {
           path: '/constellation',
+					name:'星座管理',
           component: Constellation
         },
         {
           path: '/constellationDetail',
+					name:'',
           component: ConstellationDetail
         },
         {
           path: '/log',
+					name:'系统日志',
           component: Log
         },
         {
           path: '/evaluation',
+					name:'',
           component: Evaluation
         },
         {
           path: '/face',
+					name:'',
           component: Face
         },
         {
           path: '/feedback',
+					name:'用户反馈管理',
           component: Feedback
         },
         {
           path: '/icon',
+					name:'首页icon管理',
           component: Icon
         },
         {
           path: '/ingredient',
+					name:'化妆品成分管理',
           component: Ingredient
         },
         {
           path: '/issue',
+					name:'肌肤问题管理',
           component: Issue
         },
         {
           path: '/keyword',
+					name:'关键词管理',
           component: Keyword
         },
         {
           path: '/main',
+					name:'步骤主类管理',
           component: Main
         },
         {
           path: '/makeup',
+					name:'化妆产品管理',
           component: Makeup
         },
         {
           path: '/marking',
+					name:'',
           component: Marking
         },
         {
           path: '/markingDetail',
+					name:'',
           component: MarkingDetail
         },
         {
           path: '/member',
+					name:'',
           component: Member
         },
         {
           path: '/menu',
+					name:'菜单管理',
           component: Menu
         },
         {
           path: '/module',
+					name:'',
           component: Module
         },
         {
           path: '/part',
+					name:'角色管理',
           component: Part
         },
         {
           path: '/product',
+					name:'产品分类管理',
           component: Product
         },
         {
           path: '/rotation',
+					name:'',
           component: Rotation
         },
         {
           path: '/search',
+					name:'',
           component: Search
         },
         {
           path: '/strategy',
+					name:'',
           component: Strategy
         },
         {
           path: '/tag',
+					name:'标签管理',
           component: Tag
         },
         {
           path: '/teach',
+					name:'妆容教程管理',
           component: Teach
         },
         {
           path: '/temperament',
+					name:'',
           component: Temperament
         },
         {
           path: '/user',
+					name:'',
           component: User
         },
         {
           path: '/vipMsg',
+					name:'会员信息管理',
           component: VipMsg
         }
       ]
