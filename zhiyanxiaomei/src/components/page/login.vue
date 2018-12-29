@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import store from "../../vuex/vuex.js";
+// import store from "../../vuex/vuex.js";
 export default {
   data: function() {
     return {
@@ -58,20 +58,32 @@ export default {
             })
             .then(function(res) {
               if (res.status == 200) {
-                localStorage.setItem("ms_username", that.ruleForm.username);
-                localStorage.setItem("menuList", JSON.stringify(res.data.menu))
                 console.log(res)
-                
-                // store.commit("changeItemList", res.data.menu);
-                // console.log(res.data.menu);
-                // const menuList = store.state. itemList.filter(parent => {
-                //   return (
-                //     parent.parentId == 2 ||
-                //     parent.parentId == 3 ||
-                //     parent.parentId == 4 ||
-                //     parent.parentId == 5
-                //   );
-                // });
+                let menuList = [];
+                res.data.menu.forEach(item => {
+                	if (item.parentId == 2 || item.parentId == 3 || item.parentId == 4 || item.parentId == 5) {
+                		menuList.push({
+                			id: item.id,
+                			name: item.name,
+                			enname: item.enname,
+                			children: []
+                		})
+                	}
+                })
+                menuList.forEach(item => {
+                	let pId = item.id
+                	res.data.menu.forEach(item2 => {
+                		if (item2.parentId == pId) {
+                			item.children.push({
+                				id: item2.id,
+                				name: item2.name,
+                				enname: item2.enname
+                			})
+                		}
+                	})
+                })
+                localStorage.setItem("ms_username", that.ruleForm.username);
+                localStorage.setItem("menuList", JSON.stringify(menuList))
                 that.$router.push('/');
               } else {
                 that.$message.error("账号或密码错误!");         
@@ -82,11 +94,7 @@ export default {
           return false;
         }
       });
-    },
-     setCookie() {
-      document.cookie = "JSESSIONID"+ "=" + "1121"
-      console.log(document.cookie)
-     }
+    }
   },
   mounted() {
     // this.setCookie()
