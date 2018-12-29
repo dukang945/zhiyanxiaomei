@@ -34,12 +34,7 @@
         </span>
       </el-dialog>
     </div>
-    <el-table
-      :data="vipList"
-      border
-      style="width: 90%"
-      current-row-key
-    >
+    <el-table :data="vipList" border style="width: 90%" current-row-key>
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column label="名称">
         <template slot-scope="scope">{{ scope.row.nickName }}</template>
@@ -72,18 +67,12 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="currentPage4"
-      :page-sizes="[5, 10, 15, 20]"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="vipList.length"
-    ></el-pagination>
+    <Pagination :totalNum="totalNum" @change_Page="changePage" @change_Size="changeSize"></Pagination>
   </div>
 </template>
 
 <script>
+import Pagination from "../module/pagination.vue";
 export default {
   data() {
     return {
@@ -125,19 +114,31 @@ export default {
         isOnline: true,
         link: "",
         url: ""
-      }
+      },
+      page: 1,
+      row: 10,
+      totalNum: 1
     };
   },
+  components: {
+			Pagination
+		},
   mounted() {
-    this.getVipList();
+    this.getVipList(1,10);
   },
   methods: {
-    getVipList() {
+    getVipList(page,row) {
       this.$axios
-        .post("api/management/admin/beauty-user!list.action")
+        .get("api/management/admin/beauty-user!list.action",{
+					params: {
+						page: page,
+						rows: row
+					}
+				})
         .then(res => {
           if (res.status == 200) {
             console.log(res);
+            this.totalNum = res.data.total
             this.vipList = res.data.rows;
           }
         });
@@ -158,7 +159,7 @@ export default {
           })
           .then(res => {
             if (res.status == 200) {
-              this.$message.success('重置成功')
+              this.$message.success("重置成功");
             }
           });
       });
@@ -181,13 +182,14 @@ export default {
         .catch(_ => {});
     },
     // 分页
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
-
-    },
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
-    }
+   changePage(val) {
+				this.page = val;
+				this.getVipList(val, this.row)
+			},
+			changeSize(val) {
+				this.row = val;
+				this.getVipList(this.page, val)
+			},
   }
 };
 </script>

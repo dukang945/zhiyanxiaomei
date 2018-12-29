@@ -127,11 +127,6 @@ export default {
               this.getProductList();
             }
           });
-      }).catch(() => {
-         this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });     
       });
     },
     // 新增

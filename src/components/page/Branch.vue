@@ -1,4 +1,4 @@
-<template>
+    <template>
   <div>
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane
@@ -75,21 +75,14 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="currentPage4"
-          :page-sizes="[1, 2, 3, 4]"
-          :page-size="10"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="4"
-        ></el-pagination>
+        <Pagination :totalNum='totalNum' @change_Page='changePage' @change_Size='changeSize'></Pagination>
       </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 
 <script>
+import Pagination from '../module/pagination.vue'
 export default {
   data() {
     return {
@@ -110,8 +103,14 @@ export default {
       },
       formLabelAdd: {
         name: ""
-      }
+      },
+      page: 1,
+      row: 10,
+      totalNum: 1
     };
+  },
+  components: {
+    Pagination
   },
   mounted() {
     this.tableData4 = [
@@ -120,15 +119,21 @@ export default {
         name: "q"
       }
     ];
-    this.getMainList();
+    this.getMainList(1,10);
   },
   methods: {
-    getMainList() {
+    getMainList(page,row) {
       this.$axios
-        .post("api/management/admin/beauty-order!list.action")
+        .get("api/management/admin/beauty-order!list.action",{
+					params: {
+						page: page,
+						rows: row
+					}
+				})
         .then(res => {
           console.log(res, "");
           if (res.status == 200) {
+            this.totalNum = res.data.total
             this.mainList = res.data.rows;
           } else {
             this.$message.error("请求数据失败!");
@@ -170,27 +175,20 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      })
-        .then(() => {
-          this.$axios
-            .get(
-              `api/management/admin/beauty-order-details!delete.action?id=${
-                rows[index].id
-              }`
-            )
-            .then(res => {
-              if (res.status == 200) {
-                this.$message.success("删除成功");
-                rows.splice(index, 1);
-              }
-            });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
+      }).then(() => {
+        this.$axios
+          .get(
+            `api/management/admin/beauty-order-details!delete.action?id=${
+              rows[index].id
+            }`
+          )
+          .then(res => {
+            if (res.status == 200) {
+              this.$message.success("删除成功");
+              rows.splice(index, 1);
+            }
           });
-        });
+      });
     },
     //  表单切换
     handleClick(tab, event) {
@@ -216,11 +214,13 @@ export default {
         .catch(_ => {});
     },
     // 分页
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
+    changePage(val) {
+      this.page = val;
+      this.getMainList(val, this.row);
     },
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+    changeSize(val) {
+      this.row = val;
+      this.getMainList(this.page, val);
     }
   }
 };

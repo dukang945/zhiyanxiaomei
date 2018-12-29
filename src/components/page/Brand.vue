@@ -67,18 +67,12 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="currentPage4"
-      :page-size="10"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="0"
-    ></el-pagination>
+    <Pagination :totalNum='totalNum' @change_Page='changePage' @change_Size='changeSize'></Pagination>
   </div>
 </template>
 
 <script>
+import Pagination from '../module/pagination.vue'
 export default {
   data() {
     return {
@@ -95,17 +89,29 @@ export default {
       formLabelAdd: {
         date: "",
         name: ""
-      }
+      },
+      page: 1,
+				row: 10,
+				totalNum: 1
     };
   },
+  components: {
+			Pagination
+		},
   mounted() {
-    this.getBrandList();
+    this.getBrandList(1,10);
   },
   methods: {
-    getBrandList() {
-      this.$axios.post("api/management/admin/brand!list.action").then(res => {
+    getBrandList(page,row) {
+      this.$axios.get("api/management/admin/brand!list.action",{
+					params: {
+						page: page,
+						rows: row
+					}
+				}).then(res => {
         console.log(res, "");
         if (res.status == 200) {
+          this.totalNum = res.data.total
           this.brandList = res.data.rows;
         } else {
           this.$message.error("请求数据失败!");
@@ -146,11 +152,6 @@ export default {
               this.getBrandList();
             }
           });
-      }).catch(() => {
-         this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });     
       });
     },
     // 新增
@@ -196,12 +197,14 @@ export default {
         .catch(_ => {});
     },
     // 分页
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
-    },
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
-    }
+   changePage(val) {
+				this.page = val;
+				this.getBrandList(val, this.row)
+			},
+			changeSize(val) {
+				this.row = val;
+				this.getBrandList(this.page, val)
+			},
   }
 };
 </script>

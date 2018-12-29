@@ -136,11 +136,6 @@ export default {
               this.getIngredientList();
             }
           });
-      }).catch(() => {
-         this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });     
       });
     },
     // 新增

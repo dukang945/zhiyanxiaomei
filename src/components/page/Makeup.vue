@@ -3,29 +3,15 @@
     <div class="handle-box">
       <el-button type="primary" @click="AddVisible = true">新增</el-button>
       <el-input v-model="makeup_Search" placeholder="请输入搜索类容" style="width: 30%">
-        <el-button slot="append" icon="el-icon-search" ></el-button>
+        <el-button slot="append" icon="el-icon-search"></el-button>
       </el-input>
-      <el-select v-model="grid" filterable  clearable placeholder="请选择">
+      <el-select v-model="grid" filterable clearable placeholder="请选择">
         <el-option v-for="item in gridList" :key="item.id" :label="item.name" :value="item.id"></el-option>
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="currentPage4"
-          :page-size="10"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="2"
-        ></el-pagination>
+        <Pagination :totalNum="totalNum1" @change_Page="changePage1" @change_Size="changeSize1"></Pagination>
       </el-select>
       <el-select v-model="category" filterable clearable placeholder="请选择">
         <el-option v-for="item in categoryList" :key="item.id" :label="item.name" :value="item.id"></el-option>
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="currentPage4"
-          :page-size="10"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="2"
-        ></el-pagination>
+        <Pagination :totalNum="totalNum2" @change_Page="changePage2" @change_Size="changeSize2"></Pagination>
       </el-select>
       <el-button type="primary" icon="el-icon-search" @click="makeupSearch">搜索</el-button>
       <el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
@@ -82,10 +68,12 @@
         </template>
       </el-table-column>
     </el-table>
+    <Pagination :totalNum="totalNum3" @change_Page="changePage3" @change_Size="changeSize3"></Pagination>
   </div>
 </template>
 
 <script>
+import Pagination from "../module/pagination.vue";
 export default {
   data() {
     return {
@@ -107,45 +95,75 @@ export default {
       formLabelAdd: {
         date: "",
         name: ""
-      }
+      },
+      page1: 1,
+      row1: 10,
+      totalNum1: 1,
+      page2: 1,
+      page3: 1,
+      row2: 10,
+      totalNum2: 1,
+      row3: 10,
+      totalNum3: 1
     };
   },
+  components: {
+    Pagination
+  },
   mounted() {
-    this.getMakeupList();
-    this.getGridList();
-    this.getCategoryList()
+    this.getMakeupList(1, 10);
+    this.getGridList(1, 10);
+    this.getCategoryList(1, 10);
   },
   methods: {
-    getGridList() {
+    getGridList(page, row) {
       this.$axios
-        .post("api/management/admin/brand!comboGridlist.action")
+        .get("api/management/admin/brand!comboGridlist.action", {
+          params: {
+            page: page,
+            rows: row
+          }
+        })
         .then(res => {
           console.log(res, "");
           if (res.status == 200) {
+            this.totalNum1 = res.data.total;
             this.gridList = res.data.rows;
           } else {
             this.$message.error("请求数据失败!");
           }
         });
     },
-    getCategoryList() {
+    getCategoryList(page, row) {
       this.$axios
-        .post("api/management/admin/beauty-category!comboGridlist.action")
+        .get("api/management/admin/beauty-category!comboGridlist.action", {
+          params: {
+            page: page,
+            rows: row
+          }
+        })
         .then(res => {
           console.log(res, "");
           if (res.status == 200) {
+            this.totalNum2 = res.data.total;
             this.categoryList = res.data.rows;
           } else {
             this.$message.error("请求数据失败!");
           }
         });
     },
-    getMakeupList() {
-        this.$axios
-        .post("api/management/admin/beauty-product!list.action")
+    getMakeupList(page, row) {
+      this.$axios
+        .get("api/management/admin/beauty-product!list.action", {
+          params: {
+            page: page,
+            rows: row
+          }
+        })
         .then(res => {
           console.log(res, "");
           if (res.status == 200) {
+            this.totalNum3 = res.data.total;
             this.makeupList = res.data.rows;
           } else {
             this.$message.error("请求数据失败!");
@@ -201,14 +219,13 @@ export default {
     },
     // 搜索
     makeupSearch() {
-        
       this.$axios
         .get("api/management/admin/beauty-product!list.action", {
           params: {
             filter_EQS_categoryId: this.category,
             filter_EQL_brandId: this.grid,
             page: 1,
-            rows: 15
+            rows: 10
           }
         })
         .then(res => {
@@ -219,11 +236,29 @@ export default {
         });
     },
     // 分页
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
+    changePage1(val) {
+      this.page1 = val;
+      this.getGridList(val, this.row1);
     },
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+    changeSize1(val) {
+      this.row1 = val;
+      this.getGridList(this.page1, val);
+    },
+    changePage2(val) {
+      this.page2 = val;
+      this.getCategoryList(val, this.row2);
+    },
+    changeSize2(val) {
+      this.row2 = val;
+      this.getCategoryList(this.page2, val);
+    },
+    changePage3(val) {
+      this.page3 = val;
+      this.getMakeupList(val, this.row3);
+    },
+    changeSize3(val) {
+      this.row3 = val;
+      this.getMakeupList(this.page3, val);
     }
   }
 };

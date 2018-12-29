@@ -71,10 +71,12 @@
         </template>
       </el-table-column>
     </el-table>
+      <Pagination :totalNum='totalNum' @change_Page='changePage' @change_Size='changeSize'></Pagination>
     </div>
 </template>
 
 <script>
+import Pagination from '../module/pagination.vue'
    export default {
   data() {
     return {
@@ -93,19 +95,31 @@
         question: "",
         suggest: "",
         effect:''
-      }
+      },
+      page: 1,
+				row: 10,
+				totalNum: 1
     };
   },
+  components: {
+			Pagination
+		},
   mounted() {
-    this.getIssueList();
+    this.getIssueList(1,10);
   },
   methods: {
-    getIssueList() {
+    getIssueList(page,row) {
       this.$axios
-        .post("api/management/admin/skin-problems!list.action")
+        .get("api/management/admin/skin-problems!list.action",{
+					params: {
+						page: page,
+						rows: row
+					}
+				})
         .then(res => {
           console.log(res, "");
           if (res.status == 200) {
+            this.totalNum = res.data.total
             this.issueList = res.data.rows;
           } else {
             this.$message.error("请求数据失败!");
@@ -145,11 +159,6 @@
               this.getIssueList();
             }
           });
-      }).catch(() => {
-         this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });     
       });
     },
     // 新增
@@ -185,7 +194,15 @@
                 }
             }
         )
-    }
+    },
+    changePage(val) {
+				this.page = val;
+				this.getIssueList(val, this.row)
+			},
+			changeSize(val) {
+				this.row = val;
+				this.getIssueList(this.page, val)
+			},
   }
 };
 </script>
