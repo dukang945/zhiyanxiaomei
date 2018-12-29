@@ -1,28 +1,20 @@
     <template>
   <div>
-    <el-tabs v-model="activeName" @tab-click="handleClick">
-      <el-tab-pane
-        :label="item.name"
-        :name="item.id.toString()"
-        v-for="(item) in mainList"
-        :key="item.name"
-      >
-        <div class="handle-box">
-          <el-button type="primary" @click="AddVisible = true">新增</el-button>
+    <el-button type="primary" @click="AddVisible = true">新增</el-button>
           <el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
             <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
               <el-form-item label="步骤父类">
                 <el-select v-model="branch" placeholder="请选择">
                   <el-option
-                    v-for="item in branchoptions"
+                    v-for="item in mainList"
                     :key="item.value"
-                    :label="item.label"
+                    :label="item.name"
                     :value="item.value"
                   ></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="产品分类">
-                <el-cascader :options="options" change-on-select></el-cascader>
+                <el-cascader :options="options" change-on-select @active-item-change="handleItemChange" expand-trigger="hover" :props="props"></el-cascader>
               </el-form-item>
               <el-form-item label="步骤数">
                 <el-input v-model="formLabelAdd.name"></el-input>
@@ -33,6 +25,14 @@
               <el-button type="primary" @click="handleAdd">确 定</el-button>
             </span>
           </el-dialog>
+    <el-tabs v-model="activeName" @tab-click="handleClick">
+      <el-tab-pane
+        :label="item.name"
+        :name="item.id.toString()"
+        v-for="(item) in mainList"
+        :key="item.name"
+      >
+        <div class="handle-box">  
         </div>
         <el-table :data="branchList" border style="width: 90%">
           <el-table-column label="id" width="120">
@@ -89,6 +89,11 @@ export default {
       mainList: [],
       branchList: [],
       options: [],
+       props: {
+          label: 'text',
+          value: 'text',
+          children: 'children'
+        },
       branchoptions: [],
       branch: "",
       activeName: "0",
@@ -113,13 +118,8 @@ export default {
     Pagination
   },
   mounted() {
-    this.tableData4 = [
-      {
-        date: "1",
-        name: "q"
-      }
-    ];
     this.getMainList(1,10);
+    this.getCategoryList()
   },
   methods: {
     getMainList(page,row) {
@@ -151,6 +151,25 @@ export default {
           console.log(res);
           this.branchList = res.data.rows;
         });
+    },
+    getCategoryList(){
+      this.$axios.get('api/management/admin/beauty-category!getTreeGrid.action').then(
+        res => {
+          if(res.status == 200) {
+            this.options = res.data.map( item => {
+               this.$axios.get(`api/management/admin/beauty-category!getTreeGrid.action?id=${item.id}`).then(
+                res => {
+                  if(res.status == 200) {
+                    item.children = [res.data]
+                  }
+                }
+              )
+              return item
+            })
+            console.log(this.options)
+          }
+        }
+      )
     },
     // 编辑
     handleEdit(index, row) {
@@ -221,7 +240,11 @@ export default {
     changeSize(val) {
       this.row = val;
       this.getMainList(this.page, val);
-    }
+    },
+    // 多级选择器
+    handleItemChange(val){
+      console.log(val, '')
+    } 
   }
 };
 </script>
