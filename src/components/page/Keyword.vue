@@ -94,18 +94,30 @@
 			deleteRow(index, rows) {
 				this.$confirm("确认删除？")
 					.then(_ => {
-						rows.splice(index, 1);
+						this.$axios.get(`api/management/admin/key-word!delete.action?id=${rows[index].id}`)
+					}).then(res=>{
+						console.log(res);
+						this.tableData.splice(index,1);
+						this.getData(this.page,this.row);
+						this.$message.success(`删除成功`);
 					})
 					.catch(_ => {});
 				// 提交删除请求
 			},
 			// 新增
 			handleAdd() {
-				this.tableData.push(this.formLabelAdd);
 				this.AddVisible = false;
 				// 提交新增请求
-
-				this.$message.success(`添加成功`);
+				this.$axios.post('api/management/admin/key-word!save.action',this.$qs.stringify({
+					keyName:this.formLabelAdd.keyName
+				})).then(res=>{
+					this.getData(this.page,this.row);
+					this.formLabelAdd={
+						id: '',
+						keyName: ''
+					}
+					this.$message.success(`添加成功`);
+				})
 			},
 			handleClose(done) {
 				this.$confirm("确认关闭？")

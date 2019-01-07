@@ -41,9 +41,9 @@
 			</el-table-column>
 			<el-table-column prop="luckyAcc" label="幸运配饰" width="180" align='center'>
 			</el-table-column>
-			<el-table-column label="操作" width="200">
+			<el-table-column label="操作" width="100" align='center'>
 				<template slot-scope="scope">
-					<el-button @click.native.prevent="deleteRow(scope.$index, tableData)" size='small' type="danger" class="el-icon-delete">删除</el-button>
+					<!-- <el-button @click.native.prevent="deleteRow(scope.$index, tableData)" size='small' type="danger" class="el-icon-delete">删除</el-button> -->
 					<el-button type="primary" size='small' @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
 					<el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
 						<el-form :label-position="labelPosition" label-width="100px" :model="formLabelAlign">
@@ -130,26 +130,26 @@
 				};
 				this.editFileList = [{
 					name: '',
-					url: item.image.split('"')[1]
+					url: item.image?item.image.split('"')[1]:''
 				}]
 				this.dialogVisible = true;
 			},
 			//保存编辑
 			saveEdit() {
-				this.$set(this.tableData, this.idx, this.formLabelAlign);
+				// this.$set(this.tableData, this.idx, this.formLabelAlign);
 				this.dialogVisible = false;
 				// 提交编辑请求
-
-				this.$message.success(`修改第 ${this.idx + 1} 行成功`);
-			},
-			//删除
-			deleteRow(index, rows) {
-				this.$confirm("确认删除？")
-					.then(_ => {
-						rows.splice(index, 1);
-					})
-					.catch(_ => {});
-				// 提交删除请求
+				this.$axios.post(`api/management/admin/constellation!save.action?id=${this.formLabelAlign.id}`,this.$qs.stringify({
+					image: '',
+					constellation: this.formLabelAlign.constellation,
+					luckyAcc: this.formLabelAlign.luckyAcc,
+					luckyColor: this.formLabelAlign.luckyColor,
+					personality: this.formLabelAlign.personality
+				})).then(res=>{
+					console.log(res);
+					this.getData(this.page,this.row)
+					this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+				})
 			},
 			// 新增
 			handleAdd() {
