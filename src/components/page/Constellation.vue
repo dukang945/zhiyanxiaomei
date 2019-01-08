@@ -80,7 +80,7 @@
 </template>
 
 <script>
-	import Pagination from '../module/pagination.vue'
+	import Pagination from '@/components/module/Pagination.vue'
 	export default {
 		data() {
 			return {
@@ -184,7 +184,7 @@
 			},
 			// 请求数据
 			getData(page, row) {
-				var url = 'api/management/admin/constellation!list.action'
+				var url = '/management/admin/constellation!list.action'
 				this.$axios.get(url, {
 					params: {
 						page: page,

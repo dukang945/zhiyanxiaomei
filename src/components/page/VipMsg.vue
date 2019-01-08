@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import Pagination from "../module/pagination.vue";
+import Pagination from "@/components/module/Pagination.vue";
 export default {
   data() {
     return {
@@ -129,7 +129,7 @@ export default {
   methods: {
     getVipList(page,row) {
       this.$axios
-        .get("api/management/admin/beauty-user!list.action",{
+        .get("/management/admin/beauty-user!list.action",{
 					params: {
 						page: page,
 						rows: row
@@ -152,7 +152,7 @@ export default {
         type: "warning"
       }).then(() => {
         this.$axios
-          .get("api/management/admin/beauty-user!resetPassword.action", {
+          .get("/management/admin/beauty-user!resetPassword.action", {
             params: {
               id: row.id
             }

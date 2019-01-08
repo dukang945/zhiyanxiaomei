@@ -49,7 +49,7 @@ export default {
         if (valid) {
           let that = this;
           that.$axios
-            .get("api/management/admin/public!doLogin.action", {
+            .get("/management/admin/public!doLogin.action", {
               params: {
                 loginName: that.ruleForm.username,
                 password: that.ruleForm.password,
