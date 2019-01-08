@@ -124,7 +124,7 @@ export default {
   methods: {
     getMainList(page,row) {
       this.$axios
-        .get("api/management/admin/beauty-order!list.action",{
+        .get("/management/admin/beauty-order!list.action",{
 					params: {
 						page: page,
 						rows: row
@@ -143,7 +143,7 @@ export default {
     getBranchList(tab) {
       this.$axios
         .get(
-          `api/management/admin/beauty-order-details!list.action?beautyOrderId=${
+          `/management/admin/beauty-order-details!list.action?beautyOrderId=${
             tab.name
           }`
         )
@@ -178,7 +178,7 @@ export default {
       }).then(() => {
         this.$axios
           .get(
-            `api/management/admin/beauty-order-details!delete.action?id=${
+            `/management/admin/beauty-order-details!delete.action?id=${
               rows[index].id
             }`
           )

@@ -85,7 +85,7 @@ export default {
   methods: {
     getProductList() {
       this.$axios
-        .post("api/management/admin/beauty-category!getTreeGrid.action")
+        .post("/management/admin/beauty-category!getTreeGrid.action")
         .then(res => {
           console.log(res, "");
           if (res.status == 200) {
@@ -120,7 +120,7 @@ export default {
         type: "warning"
       }).then(() => {
         this.$axios
-          .get(`api/management/admin/beauty-category!delete.action?id=${rows[index].id}`)
+          .get(`/management/admin/beauty-category!delete.action?id=${rows[index].id}`)
           .then(res => {
             if (res.status == 200) {
               this.$message.success("删除成功");

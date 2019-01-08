@@ -99,7 +99,7 @@ export default {
   },
   methods: {
     getColumnList(){
-      this.$axios.post('api/management/admin/skills!list.action').then(
+      this.$axios.post('/management/admin/skills!list.action').then(
         res => {
           console.log(res, '')
           if(res.status == 200) {
@@ -135,7 +135,7 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
       }).then( () => {
-        this.$axios.get(`api/management/admin/skills!delete.action?id=${index}`).then(
+        this.$axios.get(`/management/admin/skills!delete.action?id=${index}`).then(
           res => {
             if(res.status == 200) {
               this.$message.success('删除成功');

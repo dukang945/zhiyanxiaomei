@@ -118,7 +118,7 @@ export default {
   methods: {
     getGridList(page, row) {
       this.$axios
-        .get("api/management/admin/brand!comboGridlist.action", {
+        .get("/management/admin/brand!comboGridlist.action", {
           params: {
             page: page,
             rows: row
@@ -136,7 +136,7 @@ export default {
     },
     getCategoryList(page, row) {
       this.$axios
-        .get("api/management/admin/beauty-category!comboGridlist.action", {
+        .get("/management/admin/beauty-category!comboGridlist.action", {
           params: {
             page: page,
             rows: row
@@ -154,7 +154,7 @@ export default {
     },
     getMakeupList(page, row) {
       this.$axios
-        .get("api/management/admin/beauty-product!list.action", {
+        .get("/management/admin/beauty-product!list.action", {
           params: {
             page: page,
             rows: row
@@ -196,7 +196,7 @@ export default {
       }).then(() => {
         this.$axios
           .get(
-            `api/management/admin/beauty-product!delete.action?id=${
+            `/management/admin/beauty-product!delete.action?id=${
               rows[index].id
             }`
           )
@@ -220,7 +220,7 @@ export default {
     // 搜索
     makeupSearch() {
       this.$axios
-        .get("api/management/admin/beauty-product!list.action", {
+        .get("/management/admin/beauty-product!list.action", {
           params: {
             filter_EQS_categoryId: this.category,
             filter_EQL_brandId: this.grid,

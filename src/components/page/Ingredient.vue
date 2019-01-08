@@ -93,7 +93,7 @@ export default {
   methods: {
     getIngredientList() {
       this.$axios
-        .post("api/management/admin/element!list.action")
+        .post("/management/admin/element!list.action")
         .then(res => {
           console.log(res, "");
           if (res.status == 200) {
@@ -105,7 +105,7 @@ export default {
     },
     // 编辑
     handleEdit(index, row) {
-      this.$axios.get(`api/management/admin/element!input.action?id=${row.id}`).then(
+      this.$axios.get(`/management/admin/element!input.action?id=${row.id}`).then(
         res => {
           if(res.status == 200) {
            this.formLabelAlign = res.data
@@ -129,7 +129,7 @@ export default {
         type: "warning"
       }).then(() => {
         this.$axios
-          .get(`api/management/admin/element!delete.action?id=${rows[index].id}`)
+          .get(`/management/admin/element!delete.action?id=${rows[index].id}`)
           .then(res => {
             if (res.status == 200) {
               this.$message.success("删除成功");
@@ -142,7 +142,7 @@ export default {
     handleAdd() {
       const params = {name:this.formLabelAdd.name,effect:this.formLabelAdd.effect}
 
-      this.$axios.post('api/management/admin/element!save.action',this.$qs.stringify({name:this.formLabelAdd.name,effect:this.formLabelAdd.effect})).then(
+      this.$axios.post('/management/admin/element!save.action',this.$qs.stringify({name:this.formLabelAdd.name,effect:this.formLabelAdd.effect})).then(
         res => {
           if(res.status == 200) {
             this.AddVisible = false;
@@ -156,7 +156,7 @@ export default {
       done()
     },
     ingredientSearch(){
-        this.$axios.post('api/management/admin/element!list.action',this.$qs.stringify({
+        this.$axios.post('/management/admin/element!list.action',this.$qs.stringify({
           filter_LIKES_name:this.ingredient_Search,
           page:1,
           rows:15

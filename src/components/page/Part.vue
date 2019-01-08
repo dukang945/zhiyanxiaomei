@@ -89,7 +89,7 @@ export default {
   },
   methods: {
     getPartList() {
-      this.$axios.post("api/management/admin/role!list.action").then(res => {
+      this.$axios.post("/management/admin/role!list.action").then(res => {
         console.log(res, "");
         if (res.status == 200) {
           this.partList = res.data.rows;
@@ -124,7 +124,7 @@ export default {
       }).then(() => {
         this.$axios
           .get(
-            `api/management/admin/skin-problems!delete.action?id=${
+            `/management/admin/skin-problems!delete.action?id=${
               rows[index].id
             }`
           )
@@ -148,7 +148,7 @@ export default {
     // 搜索
     issueSearch() {
       this.$axios
-        .get("api/management/admin/skin-problems!list.action", {
+        .get("/management/admin/skin-problems!list.action", {
           params: {
             filter_LIKES_question: this.issue_Search,
             page: 1,

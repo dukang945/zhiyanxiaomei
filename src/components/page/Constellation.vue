@@ -139,7 +139,7 @@
 				// this.$set(this.tableData, this.idx, this.formLabelAlign);
 				this.dialogVisible = false;
 				// 提交编辑请求
-				this.$axios.post(`api/management/admin/constellation!save.action?id=${this.formLabelAlign.id}`,this.$qs.stringify({
+				this.$axios.post(`/management/admin/constellation!save.action?id=${this.formLabelAlign.id}`,this.$qs.stringify({
 					image: '',
 					constellation: this.formLabelAlign.constellation,
 					luckyAcc: this.formLabelAlign.luckyAcc,
@@ -184,7 +184,7 @@
 			},
 			// 请求数据
 			getData(page, row) {
-				var url = 'api/management/admin/constellation!list.action'
+				var url = '/management/admin/constellation!list.action'
 				this.$axios.get(url, {
 					params: {
 						page: page,

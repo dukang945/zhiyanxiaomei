@@ -77,7 +77,7 @@
 				this.getData(this.page, val)
 			},
 			getData(page, row) {
-				var url = 'api/management/admin/userfeedback!list.action'
+				var url = '/management/admin/userfeedback!list.action'
 				this.$axios.get(url, {
 					params: {
 						page: page,

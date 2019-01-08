@@ -28,7 +28,7 @@
 			</el-dialog>
 		</div>
 		<div class="tableBox">
-			<TableTree ref="recTree" :list.sync="treeData" @actionFunc="actionFunc" @deleteFunc="deleteFunc" @handlerExpand="handlerExpand"
+			<TableTree ref="recTree" :list.sync="treeData" :headList.sync="headList" @actionFunc="actionFunc" @deleteFunc="deleteFunc" @handlerExpand="handlerExpand"
 			 @clickRow='clickRow'></TableTree>
 			<el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
 				<el-form :label-position="labelPosition" label-width="100px" :model="formLabelAlign">
@@ -64,7 +64,6 @@
 	export default {
 		data() {
 			return {
-				tableList: [],
 				tableData: [],
 				dialogVisible: false,
 				AddVisible: false,
@@ -93,6 +92,7 @@
 					status: ''
 				},
 				treeData: [],
+				headList:['id','美妆类型名称','上级目录','操作'],
 				lableId: '',
 				lableName: ''
 			}
@@ -111,7 +111,7 @@
 					.then(_ => {
 						// rows.splice(index, 1);
 						// 调用删除接口
-						this.$axios.get(`api/management/admin/lable!delete.action?id=${m.id}`).then(res => {
+						this.$axios.get(`/management/admin/lable!delete.action?id=${m.id}`).then(res => {
 							console.log(res)
 							this.initData();
 						})
@@ -126,7 +126,7 @@
 			actionFunc(m) {
 				console.log(m)
 				// 调用编辑接口
-				this.$axios.get(`api/management/admin/lable!input.action?id=${m.id}`).then(res => {
+				this.$axios.get(`/management/admin/lable!input.action?id=${m.id}`).then(res => {
 					console.log(res)
 					this.formLabelAlign = {
 						id: res.data.id,
@@ -167,7 +167,7 @@
 				// 					this.formLabelAdd.lableId=this.lableId;
 				// 					this.formLabelAdd.lableName=this.lableName
 				// 				}
-				this.$axios.post('api/management/admin/lable!save.action', this.$qs.stringify({
+				this.$axios.post('/management/admin/lable!save.action', this.$qs.stringify({
 					image: '',
 					lableId: this.formLabelAdd.lableId,
 					lableName: this.formLabelAdd.lableName,
@@ -206,7 +206,7 @@
 			},
 			initData() {
 				// 获取表格数据
-				this.$axios.get('api/management/admin/lable!getTreeGrid.action').then(res => {
+				this.$axios.get('/management/admin/lable!getTreeGrid.action').then(res => {
 					let tempList = res.data.map(item => {
 						return {
 							id: item.id,
@@ -215,10 +215,9 @@
 							children: []
 						}
 					})
-					this.tableList = tempList;
 					for (let i = 0; i < tempList.length; i++) {
-						this.$axios.get(`api/management/admin/lable!getTreeGrid.action?id=${tempList[i].id}`).then(res2 => {
-							tempList[i].children = res2.data
+						this.$axios.get(`/management/admin/lable!getTreeGrid.action?id=${tempList[i].id}`).then(res2 => {
+							tempList[i].children = res2.data;
 						})
 					}
 					this.treeData = tempList;

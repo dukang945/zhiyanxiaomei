@@ -94,7 +94,7 @@
 			deleteRow(index, rows) {
 				this.$confirm("确认删除？")
 					.then(_ => {
-						this.$axios.get(`api/management/admin/key-word!delete.action?id=${rows[index].id}`)
+						this.$axios.get(`/management/admin/key-word!delete.action?id=${rows[index].id}`)
 					}).then(res=>{
 						console.log(res);
 						this.tableData.splice(index,1);
@@ -108,7 +108,7 @@
 			handleAdd() {
 				this.AddVisible = false;
 				// 提交新增请求
-				this.$axios.post('api/management/admin/key-word!save.action',this.$qs.stringify({
+				this.$axios.post('/management/admin/key-word!save.action',this.$qs.stringify({
 					keyName:this.formLabelAdd.keyName
 				})).then(res=>{
 					this.getData(this.page,this.row);
@@ -137,7 +137,7 @@
 			},
 			// 请求数据
 			getData(page, row) {
-				var url = 'api/management/admin/key-word!list.action'
+				var url = '/management/admin/key-word!list.action'
 				this.$axios.get(url, {
 					params: {
 						page: page,

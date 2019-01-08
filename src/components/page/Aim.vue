@@ -46,7 +46,7 @@
 								<el-input v-model="formLabelAlign.sort"></el-input>
 							</el-form-item>
 							<el-form-item label="图片">
-								<el-upload class="" action="" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="editFileList"
+								<el-upload class="" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="editFileList"
 								 list-type="picture">
 									<el-button size="small" type="primary">点击上传</el-button>
 									<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
@@ -85,7 +85,6 @@
 					status: ''
 				},
 				formLabelAdd: {
-					id: '',
 					image: '',
 					name: '',
 					sort: '',
@@ -113,34 +112,56 @@
 				};
 				this.editFileList = [{
 					name: '',
-					url: item.image.split('"')[1]
+					url: item.image?item.image.split('"')[1]:''
 				}]
 				this.dialogVisible = true;
 			},
 			//保存编辑
 			saveEdit() {
-				this.$set(this.tableData, this.idx, this.formLabelAlign);
+				// this.$set(this.tableData, this.idx, this.formLabelAlign);
 				this.dialogVisible = false;
 				// 提交编辑请求
-
-				this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+				this.$axios.post(`/management/admin/purpose!save.action?id=${this.formLabelAlign.id}`, this.$qs.stringify({
+					name: this.formLabelAlign.name,
+					sort: this.formLabelAlign.sort,
+					status: this.formLabelAlign.status
+				})).then(res => {
+					this.getData(this.page, this.row)
+					this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+				})
 			},
 			//删除
 			deleteRow(index, rows) {
 				this.$confirm("确认删除？")
 					.then(_ => {
-						rows.splice(index, 1);
+						// rows.splice(index, 1);
+						this.$axios.post(`/management/admin/purpose!delete.action?id=${rows[index].id}`).then(res => {
+							this.getData(this.page, this.row)
+							this.$message.success(`删除成功`);
+						})
 					})
 					.catch(_ => {});
 				// 提交删除请求
 			},
 			// 新增
 			handleAdd() {
-				this.tableData.push(this.formLabelAdd);
+				// this.tableData.push(this.formLabelAdd);
 				this.AddVisible = false;
 				// 提交新增请求
-
-				this.$message.success(`添加成功`);
+				this.$axios.post('/management/admin/purpose!save.action', this.$qs.stringify({
+					name: this.formLabelAdd.name,
+					sort: this.formLabelAdd.sort,
+					status: this.formLabelAdd.status
+				})).then(res => {
+					this.getData(this.page, this.row)
+					this.formLabelAdd = {
+						image: '',
+						name: '',
+						sort: '',
+						status: ''
+					}
+					this.$message.success(`添加成功`);
+				})
 			},
 			handleClose(done) {
 				this.$confirm("确认关闭？")
@@ -167,7 +188,7 @@
 			},
 			// 请求数据
 			getData(page, row) {
-				var url = 'api/management/admin/purpose!list.action'
+				var url = '/management/admin/purpose!list.action'
 				this.$axios.get(url, {
 					params: {
 						page: page,

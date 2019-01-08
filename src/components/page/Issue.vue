@@ -110,7 +110,7 @@ import Pagination from '../module/pagination.vue'
   methods: {
     getIssueList(page,row) {
       this.$axios
-        .get("api/management/admin/skin-problems!list.action",{
+        .get("/management/admin/skin-problems!list.action",{
 					params: {
 						page: page,
 						rows: row
@@ -128,7 +128,7 @@ import Pagination from '../module/pagination.vue'
     },
     // 编辑
     handleEdit(index, row) {
-      this.$axios.get(`api/management/admin/skin-problems!input.action?id=${row.id}`).then(
+      this.$axios.get(`/management/admin/skin-problems!input.action?id=${row.id}`).then(
         res => {
           if(res.status == 200) {
            this.formLabelAlign = res.data
@@ -152,7 +152,7 @@ import Pagination from '../module/pagination.vue'
         type: "warning"
       }).then(() => {
         this.$axios
-          .get(`api/management/admin/skin-problems!delete.action?id=${rows[index].id}`)
+          .get(`/management/admin/skin-problems!delete.action?id=${rows[index].id}`)
           .then(res => {
             if (res.status == 200) {
               this.$message.success("删除成功");
@@ -163,7 +163,7 @@ import Pagination from '../module/pagination.vue'
     },
     // 新增
     handleAdd() {
-      this.$axios.post('api/management/admin/skin-problems!save.action',this.$qs.stringify({
+      this.$axios.post('/management/admin/skin-problems!save.action',this.$qs.stringify({
         question:this.formLabelAdd.question,
         effect:this.formLabelAdd.effect,
         suggest:this.formLabelAdd.suggest
@@ -182,7 +182,7 @@ import Pagination from '../module/pagination.vue'
     },
     // 搜索
     issueSearch(){
-        this.$axios.post('api/management/admin/skin-problems!list.action',this.$qs.stringify({
+        this.$axios.post('/management/admin/skin-problems!list.action',this.$qs.stringify({
             filter_LIKES_question:this.issue_Search,
             page:1,
             rows:15

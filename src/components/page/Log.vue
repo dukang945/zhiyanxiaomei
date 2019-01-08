@@ -83,7 +83,7 @@
 				this.getData(this.page, val)
 			},
 			getData(page, row) {
-				var url = 'api/management/admin/logs!manageLogs.action'
+				var url = '/management/admin/logs!manageLogs.action'
 				this.$axios.get(url, {
 					params: {
 						page: page,

@@ -136,7 +136,7 @@
 				}else if(this.formLabelAlign.temperature=='高'){
 					this.formLabelAlign.temperature=2
 				}
-				this.$axios.post(`api/management/admin/skincare!save.action?id=${this.tableData[this.idx].id}`, this.$qs.stringify({
+				this.$axios.post(`/management/admin/skincare!save.action?id=${this.tableData[this.idx].id}`, this.$qs.stringify({
 					text: this.formLabelAlign.text,
 					humidity: this.formLabelAlign.humidity,
 					temperature:this.formLabelAlign.temperature
@@ -152,7 +152,7 @@
 					.then(_ => {
 						// rows.splice(index, 1);
 						console.log(rows)
-						this.$axios.post(`api/management/admin/skincare!delete.action?id=${rows[index].id}`).then(res => {
+						this.$axios.post(`/management/admin/skincare!delete.action?id=${rows[index].id}`).then(res => {
 							this.getData(this.page, this.row);
 							this.$message.success('删除成功');
 						})
@@ -165,7 +165,7 @@
 				this.tableData.push(this.formLabelAdd);
 				this.AddVisible = false;
 				// 提交新增请求
-				this.$axios.post('api/management/admin/skincare!save.action', this.$qs.stringify({
+				this.$axios.post('/management/admin/skincare!save.action', this.$qs.stringify({
 					text: this.formLabelAdd.text,
 					humidity: this.formLabelAdd.humidity,
 					temperature:this.formLabelAdd.temperature
@@ -192,7 +192,7 @@
 			},
 			// 请求数据
 			getData(page, row) {
-				var url = 'api/management/admin/skincare!list.action'
+				var url = '/management/admin/skincare!list.action'
 				this.$axios.get(url, {
 					params: {
 						page: page,

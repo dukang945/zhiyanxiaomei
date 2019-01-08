@@ -65,7 +65,6 @@ Vue.filter("formatTime", function (value, type) {
     dataTime = hour + ":" + minute + ":" + second;
   } else if (type == "YM") {
     dataTime = year + "-" + month;
-
   }
   return dataTime; //将格式化后的字符串输出到前端显示
 });

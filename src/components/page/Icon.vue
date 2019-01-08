@@ -54,8 +54,8 @@
 								<el-input v-model="formLabelAlign.sort"></el-input>
 							</el-form-item>
 							<el-form-item label="图片">
-								<el-upload class="" action="" :on-preview="handlePreview"
-								:on-remove="handleRemove" :file-list="editFileList" list-type="picture">
+								<el-upload class="" action="" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="editFileList"
+								 list-type="picture">
 									<el-button size="small" type="primary">点击上传</el-button>
 									<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
 								</el-upload>
@@ -94,7 +94,6 @@
 					image: ''
 				},
 				formLabelAdd: {
-					id: '',
 					name: '',
 					sort: '',
 					status: '',
@@ -122,32 +121,69 @@
 					status: item.status,
 					type: item.type
 				};
-				this.editFileList=[{
-					name:'',
-					url:item.image.split('"')[1]
+				this.editFileList = [{
+					name: '',
+					url: item.image?item.image.split('"')[1]:''
 				}]
 				this.dialogVisible = true;
 			},
 			//保存编辑
 			saveEdit() {
-				this.$set(this.tableData, this.idx, this.formLabelAlign);
+				// this.$set(this.tableData, this.idx, this.formLabelAlign);
 				this.dialogVisible = false;
 				// 提交编辑请求
-
+				this.$axios.post(`/management/admin/icon!save.action?id=${this.formLabelAlign.id}`, this.$qs.stringify({
+					name: this.formLabelAlign.name,
+					sort: this.formLabelAlign.sort,
+					status: this.formLabelAlign.status,
+					type: this.formLabelAlign.type,
+					image: ''
+				})).then(res => {
+					this.getData(this.page, this.row)
 				this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+				})
 			},
 			//删除
 			deleteRow(index, rows) {
-				rows.splice(index, 1);
+				// rows.splice(index, 1);
 				// 提交删除请求
+				this.$confirm("确认删除？")
+					.then(_ => {
+						this.$axios.post(`/management/admin/icon!delete.action?id=${rows[index].id}`, this.$qs.stringify({
+							name: this.formLabelAlign.name,
+							sort: this.formLabelAlign.sort,
+							status: this.formLabelAlign.status,
+							type: this.formLabelAlign.type,
+							image: ''
+						})).then(res => {
+							this.getData(this.page, this.row)
+							this.$message.success(`删除成功`);
+						})
+					})
+					.catch(_ => {});
 			},
 			// 新增
 			handleAdd() {
-				this.tableData.push(this.formLabelAdd);
+				// this.tableData.push(this.formLabelAdd);
 				this.AddVisible = false;
 				// 提交新增请求
-
-				this.$message.success(`添加成功`);
+				this.$axios.post('/management/admin/icon!save.action', this.$qs.stringify({
+					name: this.formLabelAdd.name,
+					sort: this.formLabelAdd.sort,
+					status: this.formLabelAdd.status,
+					type: this.formLabelAdd.type,
+					image: ''
+				})).then(res => {
+					this.getData(this.page, this.row)
+					this.formLabelAdd = {
+						name: '',
+						sort: '',
+						status: '',
+						type: '',
+						image: ''
+					}
+					this.$message.success(`添加成功`);
+				})
 			},
 			handleClose(done) {
 				this.$confirm("确认关闭？")
@@ -174,7 +210,7 @@
 			},
 			// 请求数据
 			getData(page, row) {
-				var url = 'api/management/admin/icon!list.action'
+				var url = '/management/admin/icon!list.action'
 				this.$axios.get(url, {
 					params: {
 						page: page,
@@ -204,17 +240,17 @@
 </script>
 
 <style scoped>
-	.iconContent{
+	.iconContent {
 		/* padding: 10px 20px 10px 0;
 		box-sizing: border-box; */
 	}
+
 	.handle-box {
 		margin-bottom: 20px
 	}
-	
 </style>
 <style>
-	.el-upload-list__item{
+	.el-upload-list__item {
 		transition: none;
 	}
 </style>

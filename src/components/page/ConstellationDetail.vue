@@ -162,27 +162,7 @@
 			},
 			//保存编辑
 			saveEdit() {
-				this.dialogVisible = false;
-				// 提交编辑请求
-				// 				this.$axios.post(`api/management/admin/constellation-details!save.action?id=${this.tableData[this.idx].id}`,
-				// 				// `api/management/admin/constellation-details!save.action?id=${this.tableData[this.idx].id}&constellationId=${this.formLabelAlign.constellation}&luckScore=${this.formLabelAlign.luckScore}&details=${this.formLabelAlign.details}&date=${this.formLabelAlign.date}&lableId=${this.formLabelAlign.lableId[0]}&message=${this.formLabelAlign.message[0]}&lableId=${this.formLabelAlign.lableId[1]}&message=${this.formLabelAlign.message[1]}&lableId=${this.formLabelAlign.lableId[2]}&message=${this.formLabelAlign.message[2]}`,				
-				// 				this.$qs.stringify({
-				// 					constellationId: this.formLabelAlign.constellation,
-				// 					luckScore: this.formLabelAlign.luckScore,
-				// 					details: this.formLabelAlign.details,
-				// 					date: this.formLabelAlign.date,
-				// 					lableId: this.formLabelAlign.lableId[0],
-				// 					message: this.formLabelAlign.message[0],
-				// 					lableId: this.formLabelAlign.message[1],
-				// 					message: this.formLabelAlign.message[1],
-				// 					lableId: this.formLabelAlign.message[2],
-				// 					message: this.formLabelAlign.message[2]
-				// 				})
-				// 				).then(res=>{
-				// 					console.log(res)
-				// 					this.getData(this.page, this.row)
-				// 				})
-				this.$axios.post(`api/management/admin/constellation-details!save.action?id=${this.tableData[this.idx].id}`,
+				this.$axios.post(`/management/admin/constellation-details!save.action?id=${this.tableData[this.idx].id}`,
 					this.$qs.stringify({
 						constellationId: this.formLabelAlign.constellation,
 						luckScore: this.formLabelAlign.luckScore,
@@ -198,6 +178,7 @@
 				).then(res => {
 					console.log(res)
 					this.getData(this.page, this.row)
+					this.dialogVisible = false;
 				})
 				this.$message.success(`修改第 ${this.idx + 1} 行成功`);
 			},
@@ -236,7 +217,7 @@
 			},
 			// 请求数据
 			getData(page, row) {
-				var url = 'api/management/admin/constellation-details!list.action'
+				var url = '/management/admin/constellation-details!list.action'
 				this.$axios.get(url, {
 					params: {
 						page: page,
@@ -253,7 +234,7 @@
 			// 获取列表
 			this.getData(1, 10)
 			// 获取星座列表
-			this.$axios.get('api/management/admin/constellation!comboData.action').then(res => {
+			this.$axios.get('/management/admin/constellation!comboData.action').then(res => {
 				this.constellationList = res.data
 			})
 		}

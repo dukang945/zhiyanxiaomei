@@ -103,7 +103,7 @@ export default {
   },
   methods: {
     getBrandList(page,row) {
-      this.$axios.get("api/management/admin/brand!list.action",{
+      this.$axios.get("/management/admin/brand!list.action",{
 					params: {
 						page: page,
 						rows: row
@@ -122,7 +122,7 @@ export default {
     // 编辑
     handleEdit(index, row) {
       console.log(index,row)
-      this.$axios.get(`api/management/admin/brand!input.action?id=${row.id}`).then(
+      this.$axios.get(`/management/admin/brand!input.action?id=${row.id}`).then(
         res => {
           if(res.status == 200) {
            this.formLabelAlign = res.data
@@ -145,7 +145,7 @@ export default {
         type: "warning"
       }).then(() => {
         this.$axios
-          .get(`api/management/admin/brand!delete.action?id=${rows[index].id}`)
+          .get(`/management/admin/brand!delete.action?id=${rows[index].id}`)
           .then(res => {
             if (res.status == 200) {
               this.$message.success("删除成功");

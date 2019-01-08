@@ -4,10 +4,10 @@
 			<el-button type="primary" @click="AddVisible = true" size='small'>新增</el-button>
 			<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
 				<el-form :label-position="labelPosition" label-width="100px" :model="formLabelAlign">
-					<el-form-item label="目的名称">
+					<el-form-item label="名称">
 						<el-input v-model="formLabelAdd.name"></el-input>
 					</el-form-item>
-					<el-form-item label="排序号">
+					<el-form-item label="内容">
 						<el-input type="textarea" autosize v-model="formLabelAdd.text"></el-input>
 					</el-form-item>
 				</el-form>
@@ -67,7 +67,6 @@
 					text: ''
 				},
 				formLabelAdd: {
-					id: '',
 					name: '',
 					text: ''
 				},
@@ -134,7 +133,7 @@
 			},
 			// 请求数据
 			getData(page, row) {
-				var url = 'api/management/admin/aboutus!list.action'
+				var url = '/management/admin/aboutus!list.action'
 				this.$axios.get(url, {
 					params: {
 						page: page,
