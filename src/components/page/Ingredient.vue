@@ -1,9 +1,9 @@
 <template>
-  <div>   
+  <div>
     <div class="handle-box">
       <el-button type="primary" @click="AddVisible = true">新增</el-button>
       <el-input v-model="ingredient_Search" placeholder="请输入搜索类容" style="width: 30%">
-          <el-button slot="append" icon="el-icon-search" @click="ingredientSearch"></el-button>
+        <el-button slot="append" icon="el-icon-search" @click="ingredientSearch"></el-button>
       </el-input>
       <el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
         <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
@@ -65,60 +65,78 @@
         </template>
       </el-table-column>
     </el-table>
+    <Pagination :totalNum="totalNum" @change_Page="changePage" @change_Size="changeSize"></Pagination>
   </div>
 </template>
 
 <script>
+import Pagination from "@/components/module/Pagination.vue";
 export default {
   data() {
     return {
       ingredientList: [],
-      ingredient_Search:'',
+      ingredient_Search: "",
       dialogVisible: false,
       AddVisible: false,
       labelPosition: "left",
       idx: -1,
       currentPage4: 1,
-      formLabelAlign: {
-      },
+      formLabelAlign: {},
       formLabelAdd: {
         effect: "",
         name: ""
-      }
+      },
+      page: 1,
+      row: 10,
+      totalNum: 1
     };
+  },
+  components: {
+    Pagination
   },
   mounted() {
     this.getIngredientList();
   },
   methods: {
     getIngredientList() {
-      this.$axios
-        .post("api/management/admin/element!list.action")
-        .then(res => {
-          console.log(res, "");
-          if (res.status == 200) {
-            this.ingredientList = res.data.rows;
-          } else {
-            this.$message.error("请求数据失败!");
-          }
-        });
+      this.$axios.post("/management/admin/element!list.action").then(res => {
+        console.log(res, "");
+        if (res.status == 200) {
+          this.ingredientList = res.data.rows;
+        } else {
+          this.$message.error("请求数据失败!");
+        }
+      });
     },
     // 编辑
     handleEdit(index, row) {
-      this.$axios.get(`api/management/admin/element!input.action?id=${row.id}`).then(
-        res => {
-          if(res.status == 200) {
-           this.formLabelAlign = res.data
+      this.idx = row.id;
+      this.$axios
+        .get(`/management/admin/element!input.action?id=${this.idx}`)
+        .then(res => {
+          if (res.status == 200) {
+            this.formLabelAlign = res.data;
           }
-        }
-      )
+        });
       this.dialogVisible = true;
     },
     //保存编辑
     saveEdit() {
-      this.$set(this.tableData3, this.idx, this.formLabelAlign);
-      this.dialogVisible = false;
-      this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+      this.$axios
+        .post(
+          `/management/admin/element!save.action?id=${this.idx}`,
+          this.$qs.stringify({
+            name: this.formLabelAlign.name,
+            effect: this.formLabelAlign.effect
+          })
+        )
+        .then(res => {
+          if (res.status == 200) {
+            this.dialogVisible = false;
+            this.$message.success(`修改成功`);
+            this.getIngredientList();
+          }
+        });
     },
     //删除
     deleteRow(index, rows) {
@@ -129,7 +147,9 @@ export default {
         type: "warning"
       }).then(() => {
         this.$axios
-          .get(`api/management/admin/element!delete.action?id=${rows[index].id}`)
+          .get(
+            `/management/admin/element!delete.action?id=${rows[index].id}`
+          )
           .then(res => {
             if (res.status == 200) {
               this.$message.success("删除成功");
@@ -140,34 +160,54 @@ export default {
     },
     // 新增
     handleAdd() {
-      const params = {name:this.formLabelAdd.name,effect:this.formLabelAdd.effect}
+      const params = {
+        name: this.formLabelAdd.name,
+        effect: this.formLabelAdd.effect
+      };
 
-      this.$axios.post('api/management/admin/element!save.action',this.$qs.stringify({name:this.formLabelAdd.name,effect:this.formLabelAdd.effect})).then(
-        res => {
-          if(res.status == 200) {
+      this.$axios
+        .post(
+          "/management/admin/element!save.action",
+          this.$qs.stringify({
+            name: this.formLabelAdd.name,
+            effect: this.formLabelAdd.effect
+          })
+        )
+        .then(res => {
+          if (res.status == 200) {
             this.AddVisible = false;
-            this.$message.success('添加成功')
-            this.getIngredientList(); 
+            this.$message.success("添加成功");
+            this.getIngredientList();
           }
-        }
-      )
+        });
     },
     handleClose(done) {
-      done()
+      done();
     },
-    ingredientSearch(){
-        this.$axios.post('api/management/admin/element!list.action',this.$qs.stringify({
-          filter_LIKES_name:this.ingredient_Search,
-          page:1,
-          rows:15
-          })).then(
-            res => {
-                if(res.status == 200) {
-                    console.log(res, '')
-                    this.ingredientList = res.data.rows
-                }
-            }
+    ingredientSearch() {
+      this.$axios
+        .post(
+          "/management/admin/element!list.action",
+          this.$qs.stringify({
+            filter_LIKES_name: this.ingredient_Search,
+            page: 1,
+            rows: 15
+          })
         )
+        .then(res => {
+          if (res.status == 200) {
+            console.log(res, "");
+            this.ingredientList = res.data.rows;
+          }
+        });
+    },
+    changePage(val) {
+      this.page = val;
+      this.getIngredientList(val, this.row);
+    },
+    changeSize(val) {
+      this.row = val;
+      this.getIngredientList(this.page, val);
     }
   }
 };

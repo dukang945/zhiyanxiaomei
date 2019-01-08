@@ -82,7 +82,7 @@
   methods: {
     getMainList() {
       this.$axios
-        .post("api/management/admin/beauty-order!list.action")
+        .post("/management/admin/beauty-order!list.action")
         .then(res => {
           console.log(res, "");
           if (res.status == 200) {
@@ -116,7 +116,7 @@
         type: "warning"
       }).then(() => {
         this.$axios
-          .get(`api/management/admin/beauty-order!delete.action?id=${rows[index].id}`)
+          .get(`/management/admin/beauty-order!delete.action?id=${rows[index].id}`)
           .then(res => {
             if (res.status == 200) {
               this.$message.success("删除成功");
@@ -127,7 +127,7 @@
     },
     // 新增
     handleAdd() {
-      this.$axios.post('api/management/admin/beauty-order!save.action',this.$qs.stringify({name:this.formLabelAdd.name})).then(
+      this.$axios.post('/management/admin/beauty-order!save.action',this.$qs.stringify({name:this.formLabelAdd.name})).then(
         res => {
           if(res.status == 200) {
              this.AddVisible = false;

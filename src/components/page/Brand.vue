@@ -3,10 +3,16 @@
     <div class="handle-box">
       <el-button type="primary" @click="AddVisible = true">新增</el-button>
       <el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
-        <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
-          <el-form-item label="名称">
-            <el-input v-model="formLabelAdd.name"></el-input>
-          </el-form-item>
+        <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAdd">
+           <el-form-item label="品牌名称:">
+                <el-input v-model="formLabelAdd.name"></el-input>
+              </el-form-item>
+              <el-form-item label="简介:">
+                <el-input v-model="formLabelAdd.synopsis"></el-input>
+              </el-form-item>
+              <el-form-item label="主打:">
+                <el-input v-model="formLabelAdd.theMain"></el-input>
+              </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
           <el-button @click="AddVisible = false">取 消</el-button>
@@ -14,12 +20,7 @@
         </span>
       </el-dialog>
     </div>
-    <el-table
-      :data="brandList"
-      border
-      style="width: 90%"
-      @selection-change="handleSelectionChange"
-    >
+    <el-table :data="brandList" border style="width: 90%" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column label="id" width="120">
         <template slot-scope="scope">{{ scope.row.id }}</template>
@@ -61,18 +62,18 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
               <el-button @click="dialogVisible = false">取 消</el-button>
-              <el-button type="primary" @click="saveEdit">确 定</el-button>
+              <el-button type="primary" @click="saveEdit()">确 定</el-button>
             </span>
           </el-dialog>
         </template>
       </el-table-column>
     </el-table>
-    <Pagination :totalNum='totalNum' @change_Page='changePage' @change_Size='changeSize'></Pagination>
+    <Pagination :totalNum="totalNum" @change_Page="changePage" @change_Size="changeSize"></Pagination>
   </div>
 </template>
 
 <script>
-import Pagination from '../module/pagination.vue'
+import Pagination from "@/components/module/Pagination.vue";
 export default {
   data() {
     return {
@@ -85,56 +86,72 @@ export default {
       idx: -1,
       currentPage4: 1,
       formLabelAlign: {
+        synopsis: "",
+        name: "",
+        theMain: ""
       },
       formLabelAdd: {
-        date: "",
-        name: ""
+        synopsis: "",
+        name: "",
+        theMain: ""
       },
       page: 1,
-				row: 10,
-				totalNum: 1
+      row: 10,
+      totalNum: 1
     };
   },
   components: {
-			Pagination
-		},
+    Pagination
+  },
   mounted() {
-    this.getBrandList(1,10);
+    this.getBrandList(1, 10);
   },
   methods: {
-    getBrandList(page,row) {
-      this.$axios.get("api/management/admin/brand!list.action",{
-					params: {
-						page: page,
-						rows: row
-					}
-				}).then(res => {
-        console.log(res, "");
-        if (res.status == 200) {
-          this.totalNum = res.data.total
-          this.brandList = res.data.rows;
-        } else {
-          this.$message.error("请求数据失败!");
-        }
-        // console.log(this.columnList)
-      });
+    getBrandList(page, row) {
+      this.$axios
+        .get("/management/admin/brand!list.action", {
+          params: {
+            page: page,
+            rows: row
+          }
+        })
+        .then(res => {
+          console.log(res, "");
+          if (res.status == 200) {
+            this.totalNum = res.data.total;
+            this.brandList = res.data.rows;
+          } else {
+            this.$message.error("请求数据失败!");
+          }
+          // console.log(this.columnList)
+        });
     },
     // 编辑
     handleEdit(index, row) {
-      console.log(index,row)
-      this.$axios.get(`api/management/admin/brand!input.action?id=${row.id}`).then(
-        res => {
-          if(res.status == 200) {
-           this.formLabelAlign = res.data
+      this.idx = row.id
+      this.$axios
+        .get(`/management/admin/brand!input.action?id=${row.id}`)
+        .then(res => {
+          if (res.status == 200) {
+            this.formLabelAlign = res.data;
           }
-        }
-      )
+        });
       this.dialogVisible = true;
     },
     //保存编辑
     saveEdit() {
-      this.dialogVisible = false;
-      this.$message.success(`修改第 行成功`);
+      this.$axios
+        .post(`/management/admin/brand!save.action?id=${this.idx}`, this.$qs.stringify({
+            name: this.formLabelAlign.name,
+            synopsis: this.formLabelAlign.synopsis,
+            theMain: this.formLabelAlign.theMain
+        }))
+        .then(res => {
+          console.log(res)
+          this.dialogVisible = false;
+          this.$message.success(`修改成功`);
+          this.getBrandList();
+        });
     },
     //删除
     deleteRow(index, rows) {
@@ -145,7 +162,7 @@ export default {
         type: "warning"
       }).then(() => {
         this.$axios
-          .get(`api/management/admin/brand!delete.action?id=${rows[index].id}`)
+          .get(`/management/admin/brand!delete.action?id=${rows[index].id}`)
           .then(res => {
             if (res.status == 200) {
               this.$message.success("删除成功");
@@ -156,15 +173,17 @@ export default {
     },
     // 新增
     handleAdd() {
-      // this.tableData3.push(this.formLabelAdd);
-      // this.AddVisible = false;
-      // this.$message.success(`添加成功`);
-      // this.$axios.post('api/management/admin/skills!list.action').then(
-      //   res =>{
-      //     if(res.status == 200) {
-      //     }
-      //   }
-      // )
+     this.$axios
+        .post(`/management/admin/brand!save.action`, this.$qs.stringify({
+            name: this.formLabelAdd.name,
+            synopsis: this.formLabelAdd.synopsis,
+            theMain: this.formLabelAdd.theMain
+        }))
+        .then(res => {
+          this.AddVisible = false;
+          this.$message.success(`添加成功`);
+          this.getBrandList();
+        });
     },
     // 全选
     toggleSelection(rows) {
@@ -197,14 +216,14 @@ export default {
         .catch(_ => {});
     },
     // 分页
-   changePage(val) {
-				this.page = val;
-				this.getBrandList(val, this.row)
-			},
-			changeSize(val) {
-				this.row = val;
-				this.getBrandList(this.page, val)
-			},
+    changePage(val) {
+      this.page = val;
+      this.getBrandList(val, this.row);
+    },
+    changeSize(val) {
+      this.row = val;
+      this.getBrandList(this.page, val);
+    }
   }
 };
 </script>

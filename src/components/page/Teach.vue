@@ -24,7 +24,7 @@
 			<el-col :span='2' class='treeBox'>
 				<span class="treeTitle">教程栏目列表</span>
 				<el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
-				</el-tree>
+				
 			</el-col>
 			<el-col :span='22'>
 				<el-table :data="tableData" border style="width: 98%" class='table'>
@@ -82,7 +82,7 @@
 </template>
 
 <script>
-	import Pagination from '../module/pagination.vue'
+	import Pagination from '@/components/module/Pagination.vue'
 	export default {
 		data() {
 			return {

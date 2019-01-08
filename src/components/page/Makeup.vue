@@ -56,8 +56,29 @@
             :before-close="handleClose"
           >
             <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
-              <el-form-item label="名称">
+              <el-form-item label="产品名称">
                 <el-input v-model="formLabelAlign.name"></el-input>
+              </el-form-item>
+              <el-form-item label="产品规格">
+                <el-input v-model="formLabelAlign.name"></el-input>
+              </el-form-item>
+              <el-form-item label="新增品牌">
+                <el-button type="primary" icon="el-icon-circle-plus-outline" size="small" class="add">新增</el-button>
+              </el-form-item>
+              <el-form-item label="品牌">
+                <el-select v-model="category" filterable clearable placeholder="请选择">
+                  <el-option
+                    v-for="item in categoryList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  ></el-option>
+                  <Pagination
+                    :totalNum="totalNum2"
+                    @change_Page="changePage2"
+                    @change_Size="changeSize2"
+                  ></Pagination>
+                </el-select>
               </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -73,7 +94,7 @@
 </template>
 
 <script>
-import Pagination from "../module/pagination.vue";
+import Pagination from "@/components/module/Pagination.vue";
 export default {
   data() {
     return {
@@ -118,7 +139,7 @@ export default {
   methods: {
     getGridList(page, row) {
       this.$axios
-        .get("api/management/admin/brand!comboGridlist.action", {
+        .get("/management/admin/brand!comboGridlist.action", {
           params: {
             page: page,
             rows: row
@@ -136,7 +157,7 @@ export default {
     },
     getCategoryList(page, row) {
       this.$axios
-        .get("api/management/admin/beauty-category!comboGridlist.action", {
+        .get("/management/admin/beauty-category!comboGridlist.action", {
           params: {
             page: page,
             rows: row
@@ -154,7 +175,7 @@ export default {
     },
     getMakeupList(page, row) {
       this.$axios
-        .get("api/management/admin/beauty-product!list.action", {
+        .get("/management/admin/beauty-product!list.action", {
           params: {
             page: page,
             rows: row
@@ -172,13 +193,8 @@ export default {
     },
     // 编辑
     handleEdit(index, row) {
-      this.idx = index;
-      const item = this.issueList[index];
-      this.formLabelAlign = {
-        date: item.date,
-        name: item.name
-      };
-      this.dialogVisible = true;
+      this.idx = row.id;
+      this.dialogVisible= true;
     },
     //保存编辑
     saveEdit() {
@@ -196,7 +212,7 @@ export default {
       }).then(() => {
         this.$axios
           .get(
-            `api/management/admin/beauty-product!delete.action?id=${
+            `/management/admin/beauty-product!delete.action?id=${
               rows[index].id
             }`
           )
@@ -220,7 +236,7 @@ export default {
     // 搜索
     makeupSearch() {
       this.$axios
-        .get("api/management/admin/beauty-product!list.action", {
+        .get("/management/admin/beauty-product!list.action", {
           params: {
             filter_EQS_categoryId: this.category,
             filter_EQL_brandId: this.grid,
@@ -265,4 +281,5 @@ export default {
 </script>
 
 <style scoped>
+
 </style>

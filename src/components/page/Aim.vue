@@ -66,7 +66,7 @@
 </template>
 
 <script>
-	import Pagination from '../module/pagination.vue'
+	import Pagination from '@/components/module/Pagination.vue'
 	export default {
 		data() {
 			return {
@@ -167,7 +167,7 @@
 			},
 			// 请求数据
 			getData(page, row) {
-				var url = 'api/management/admin/purpose!list.action'
+				var url = '/management/admin/purpose!list.action'
 				this.$axios.get(url, {
 					params: {
 						page: page,
@@ -196,10 +196,6 @@
 </script>
 
 <style scoped>
-	.aimContent {
-		/* padding: 10px 20px;
-		box-sizing: border-box; */
-	}
 
 	.handle-box {
 		margin-bottom: 20px

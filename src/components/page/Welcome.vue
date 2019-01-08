@@ -26,12 +26,12 @@
 					<aside class="el-aside">
 						<el-menu class="el-menu-vertical-demo" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b"
 						 :collapse="isCollapse" router @select="handleSelect">
-							<el-submenu :index="(item.id).toString()" v-for='(item,index) in menulist' :key='item.id' class='menuOut'>
+							<el-submenu :index="(item.id).toString()" v-for='(item) in menulist' :key='item.id' class='menuOut'>
 								<template slot="title">
 									<i class="el-icon-location"></i>
 									<span>{{item.name}}</span>
 								</template>
-								<el-menu-item-group v-for='(itemChildren,index) in item.children' :key='itemChildren.id' >
+								<el-menu-item-group v-for='(itemChildren) in item.children' :key='itemChildren.id' >
 									<el-menu-item :index="itemChildren.enname">{{itemChildren.name}}</el-menu-item>
 								</el-menu-item-group>
 							</el-submenu>
@@ -39,7 +39,7 @@
 					</aside>
 				</el-scrollbar>
 				<el-main class="mianback">
-					<slider ref="slider" :path='path'></slider>
+					<Slide ref="slider" :path='path'></Slide>
 					<transition name="fade" mode="out-in" enter-active-class="animated fadeInLeft" leave-active-class="animated fadeOutRight"
 					 :duration="200">
 						<router-view></router-view>
@@ -51,10 +51,8 @@
 </template>
 
 <script>
-	import bus from '../common/bus.js';
-	import slide from '../module/slider.vue'
-	// import store from '../../vuex/vuex.js'  
-	// import animate from "animate.css";
+	
+	import Slide from '../module/Slider.vue'
 	export default {
 		data() {
 			return {
@@ -63,7 +61,7 @@
 			};
 		},
 		components:{
-			slider:slide
+			Slide
 		},
 		computed: {
 			username() {
