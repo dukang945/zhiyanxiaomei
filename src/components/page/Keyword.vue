@@ -3,8 +3,8 @@
 		<div class="handle-box">
 			<el-button type="primary" @click="AddVisible = true" size='small'>新增</el-button>
 			<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
-				<el-form :label-position="labelPosition" label-width="100px" :model="formLabelAlign">
-					<el-form-item label="名称">
+				<el-form :label-position="labelPosition"  :rules="rules" ref="formLabelAdd" label-width="100px" :model="formLabelAdd">
+					<el-form-item label="名称" prop='keyName'>
 						<el-input v-model="formLabelAdd.keyName"></el-input>
 					</el-form-item>
 				</el-form>
@@ -19,15 +19,15 @@
 			</el-table-column>
 			<el-table-column prop="id" label="id" width="100" align='center'>
 			</el-table-column>
-			<el-table-column prop="keyName" label="关键字">
+			<el-table-column prop="keyName" label="关键字" align='center'>
 			</el-table-column>
-			<el-table-column label="操作" width="200">
+			<el-table-column label="操作" width="200" align='center'>
 				<template slot-scope="scope">
 					<el-button @click.native.prevent="deleteRow(scope.$index, tableData)" size='small' type="danger" class="el-icon-delete">删除</el-button>
 					<el-button type="primary" size='small' @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
 					<el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
-						<el-form :label-position="labelPosition" label-width="100px" :model="formLabelAlign">
-							<el-form-item label="名称">
+						<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAlign"  label-width="100px" :model="formLabelAlign">
+							<el-form-item label="名称" prop='keyName'>
 								<el-input v-model="formLabelAlign.keyName"></el-input>
 							</el-form-item>
 						</el-form>
@@ -53,8 +53,6 @@
 				AddVisible: false,
 				labelPosition: "left",
 				idx: -1,
-				fileList: [],
-				editFileList: [],
 				formLabelAlign: {
 					id: '',
 					keyName: ''
@@ -62,6 +60,13 @@
 				formLabelAdd: {
 					id: '',
 					keyName: ''
+				},
+				rules:{
+					keyName: [{
+						required: true,
+						message: '请输入关键词',
+						trigger: 'blur'
+					}]
 				},
 				page: 1,
 				row: 10,
@@ -78,46 +83,62 @@
 				const item = this.tableData[index];
 				this.formLabelAlign = {
 					id: item.id,
-					keyName: item.name
+					keyName: item.keyName
 				};
 				this.dialogVisible = true;
 			},
 			//保存编辑
 			saveEdit() {
-				this.$set(this.tableData, this.idx, this.formLabelAlign);
-				this.dialogVisible = false;
-				// 提交编辑请求
-
-				this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+				this.$refs['formLabelAlign'].validate(val => {
+					if (val) {
+						this.$axios.post(`/management/admin/key-word!save.action?id=${this.formLabelAlign.id}`, this.$qs.stringify({
+							keyName: this.formLabelAlign.keyName
+						})).then(res => {
+							this.getData(this.page, this.row)
+							this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+						}).catch(e => {
+							this.$message.error(`出了点问题-.-!`);
+						})
+						this.dialogVisible = false;
+					} else {
+						console.log('error submit!!');
+						return false;
+					}
+				})
 			},
 			//删除
 			deleteRow(index, rows) {
 				this.$confirm("确认删除？")
 					.then(_ => {
-						this.$axios.get(`/management/admin/key-word!delete.action?id=${rows[index].id}`)
-					}).then(res=>{
-						console.log(res);
-						this.tableData.splice(index,1);
-						this.getData(this.page,this.row);
-						this.$message.success(`删除成功`);
+						this.$axios.post(`/management/admin/key-word!delete.action?id=${rows[index].id}`).then(res => {
+							this.getData(this.page, this.row)
+							this.$message.success(`删除成功`);
+						}).catch(e => {
+							this.$message.error(`出了点问题-.-!`);
+						})
 					})
-					.catch(_ => {});
-				// 提交删除请求
 			},
 			// 新增
 			handleAdd() {
-				this.AddVisible = false;
-				// 提交新增请求
-				this.$axios.post('/management/admin/key-word!save.action',this.$qs.stringify({
-					keyName:this.formLabelAdd.keyName
-				})).then(res=>{
-					this.getData(this.page,this.row);
-					this.formLabelAdd={
-						id: '',
-						keyName: ''
+				this.$refs['formLabelAdd'].validate((valid) => {
+					if (valid) {
+						this.$axios.post('/management/admin/key-word!save.action', this.$qs.stringify({
+							keyName:this.formLabelAdd.keyName
+						})).then(res => {
+							this.getData(this.page, this.row)
+							this.formLabelAdd = {
+								keyName: ''
+							}
+							this.$message.success(`添加成功`);
+						}).catch(e => {
+							this.$message.error(`出了点问题-.-!`);
+						})
+						this.AddVisible = false;
+					} else {
+						console.log('error submit!!');
+						return false;
 					}
-					this.$message.success(`添加成功`);
-				})
+				});			
 			},
 			handleClose(done) {
 				this.$confirm("确认关闭？")

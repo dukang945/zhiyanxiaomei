@@ -3,21 +3,21 @@
 		<div class="handle-box">
 			<el-button type="primary" @click="AddVisible = true" size='small'>新增</el-button>
 			<el-dialog title="新增" :visible.sync="AddVisible" width="50%" :before-close="handleClose">
-				<el-form :label-position="labelPosition" label-width="150px" :model="formLabelAdd">
-					<el-form-item label="星座名称(日期-日期)">
+				<el-form :label-position="labelPosition" label-width="150px" :rules="rules" ref="formLabelAdd" :model="formLabelAdd">
+					<el-form-item label="星座名称(日期-日期)" prop='constellation'>
 						<el-select v-model="formLabelAdd.constellation" placeholder="请选择">
-							<el-option v-for="item in constellationList" :key="item.id" :label="item.text" :value="item.text">
+							<el-option v-for="item in constellationList" :key="item.id" :label="item.text" :value="item.id">
 							</el-option>
 						</el-select>
 					</el-form-item>
-					<el-form-item label="今日运势分数">
+					<el-form-item label="今日运势分数" prop='luckScore'>
 						<el-input v-model="formLabelAdd.luckScore"></el-input>
 					</el-form-item>
 					<el-form-item label="今日运势详情">
 						<el-input v-model="formLabelAdd.details" type="textarea" autosize></el-input>
 					</el-form-item>
 					<el-form-item label="运势时间">
-						<el-date-picker type="date" placeholder="选择日期" v-model="formLabelAdd.date" style="width: 100%;"></el-date-picker>
+						<el-date-picker type="date" placeholder="选择日期" v-model="formLabelAdd.date" style="width: 100%;" value-format="yyyy-MM-dd"></el-date-picker>
 					</el-form-item>
 					<el-form-item label="教程1">
 						<el-input v-model="formLabelAdd.lableId[0]"></el-input>
@@ -62,14 +62,14 @@
 					<el-button @click.native.prevent="deleteRow(scope.$index, tableData)" size='small' type="danger" class="el-icon-delete">删除</el-button>
 					<el-button type="primary" size='small' @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
 					<el-dialog title="编辑" :visible.sync="dialogVisible" width="50%" :before-close="handleClose">
-						<el-form :label-position="labelPosition" label-width="150px" :model="formLabelAlign">
-							<el-form-item label="星座名称(日期-日期)">
+						<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAlign" label-width="150px" :model="formLabelAlign">
+							<el-form-item label="星座名称(日期-日期)" prop='constellation'>
 								<el-select v-model="formLabelAlign.constellation" placeholder="请选择">
 									<el-option v-for="item in constellationList" :key="item.id" :label="item.text" :value="item.id">
 									</el-option>
 								</el-select>
 							</el-form-item>
-							<el-form-item label="今日运势分数">
+							<el-form-item label="今日运势分数" prop='luckScore'>
 								<el-input v-model="formLabelAlign.luckScore"></el-input>
 							</el-form-item>
 							<el-form-item label="今日运势详情">
@@ -135,6 +135,18 @@
 					lableId: ['', '', ''],
 					message: ['', '', '']
 				},
+				rules: {
+					constellation: [{
+						required: true,
+						message: '请选择星座',
+						trigger: 'change'
+					}],
+					luckScore: [{
+						required: true,
+						message: '请输入运势分数',
+						trigger: 'blur'
+					}]
+				},
 				page: 1,
 				row: 10,
 				totalNum: 1,
@@ -162,42 +174,80 @@
 			},
 			//保存编辑
 			saveEdit() {
-				this.$axios.post(`/management/admin/constellation-details!save.action?id=${this.tableData[this.idx].id}`,
-					this.$qs.stringify({
-						constellationId: this.formLabelAlign.constellation,
-						luckScore: this.formLabelAlign.luckScore,
-						details: this.formLabelAlign.details,
-						date: this.formLabelAlign.date,
-						lableId: this.formLabelAlign.lableId[0],
-						message: this.formLabelAlign.message[0],
-						lableId: this.formLabelAlign.lableId[1],
-						message: this.formLabelAlign.message[1],
-						lableId: this.formLabelAlign.lableId[2],
-						message: this.formLabelAlign.message[2]
-					})
-				).then(res => {
-					console.log(res)
-					this.getData(this.page, this.row)
-					this.dialogVisible = false;
+				this.$refs['formLabelAlign'].validate((valid) => {
+					if (valid) {
+						this.$axios.post(`/management/admin/constellation-details!save.action?id=${this.formLabelAlign.id}`, this.$qs.stringify({
+							constellationId: this.formLabelAlign.constellation,
+							luckScore: this.formLabelAlign.luckScore,
+							details: this.formLabelAlign.details,
+							date: this.formLabelAlign.date,
+							lableId: this.formLabelAlign.lableId[0],
+							message: this.formLabelAlign.message[0],
+							lableId: this.formLabelAlign.lableId[1],
+							message: this.formLabelAlign.message[1],
+							lableId: this.formLabelAlign.lableId[2],
+							message: this.formLabelAlign.message[2]
+						})).then(res => {
+							this.getData(this.page, this.row)
+							this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+						}).catch(e => {
+							this.$message.error(`出了点问题-.-!`);
+						})
+						this.dialogVisible = false;
+					} else {
+						console.log('error submit!!');
+						return false;
+					}
 				})
-				this.$message.success(`修改第 ${this.idx + 1} 行成功`);
 			},
 			//删除
 			deleteRow(index, rows) {
 				this.$confirm("确认删除？")
 					.then(_ => {
-						rows.splice(index, 1);
+						this.$axios.post(`/management/admin/constellation-details!delete.action?id=${rows[index].id}`).then(res => {
+							this.getData(this.page, this.row)
+							this.$message.success(`删除成功`);
+						}).catch(e => {
+							this.$message.error(`出了点问题-.-!`);
+						})
 					})
 					.catch(_ => {});
-				// 提交删除请求
 			},
 			// 新增
 			handleAdd() {
-				this.tableData.push(this.formLabelAdd);
-				this.AddVisible = false;
-				// 提交新增请求
-
-				this.$message.success(`添加成功`);
+				this.$refs['formLabelAdd'].validate((valid) => {
+					if (valid) {
+						this.$axios.post('/management/admin/constellation-details!save.action', this.$qs.stringify({
+							constellationId: this.formLabelAdd.constellation,
+							luckScore: this.formLabelAdd.luckScore,
+							details: this.formLabelAdd.details,
+							date: this.formLabelAdd.date,
+							lableId: this.formLabelAdd.lableId[0],
+							message: this.formLabelAdd.message[0],
+							lableId: this.formLabelAdd.lableId[1],
+							message: this.formLabelAdd.message[1],
+							lableId: this.formLabelAdd.lableId[2],
+							message: this.formLabelAdd.message[2]
+						})).then(res => {
+							this.getData(this.page, this.row)
+							this.formLabelAdd = {
+								date: '',
+								constellation: '',
+								luckScore: '',
+								details: '',
+								lableId: ['', '', ''],
+								message: ['', '', '']
+							}
+							this.$message.success(`添加成功`);
+						}).catch(e => {
+							this.$message.error(`出了点问题-.-!`);
+						})
+						this.AddVisible = false;
+					} else {
+						console.log('error submit!!');
+						return false;
+					}
+				});
 			},
 			handleClose(done) {
 				this.$confirm("确认关闭？")

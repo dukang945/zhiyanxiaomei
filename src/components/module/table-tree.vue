@@ -3,10 +3,6 @@
 		<div class="tree-head">
 			<table>
 				<tr>
-					<!-- <td class="td1">id</td>
-					<td class="td2">美妆类型名称</td>
-					<td class="td3">上级目录</td>
-					<td class="td4">操作</td> -->
 					<td :class="'td' +(index+1)" v-for="(item, index) in headList">{{item}}</td>
 				</tr>
 			</table>

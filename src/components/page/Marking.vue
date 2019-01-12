@@ -3,14 +3,14 @@
 		<div class="handle-box">
 			<el-button type="primary" @click="AddVisible = true" size='small'>新增</el-button>
 			<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
-				<el-form :label-position="labelPosition" label-width="100px" :model="formLabelAdd">
-					<el-form-item label="最低分">
+				<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAdd" label-width="100px" :model="formLabelAdd">
+					<el-form-item label="最低分" prop='min'>
 						<el-input v-model="formLabelAdd.min"></el-input>
 					</el-form-item>
-					<el-form-item label="最高分">
+					<el-form-item label="最高分" prop='max'>
 						<el-input v-model="formLabelAdd.max"></el-input>
 					</el-form-item>
-					<el-form-item label="标识">
+					<el-form-item label="标识" prop='type'>
 						<el-select v-model="formLabelAdd.type" placeholder="请选择标识">
 							<el-option label="打分详情" value="0"></el-option>
 							<el-option label="打分标题" value="1"></el-option>
@@ -44,14 +44,14 @@
 			</el-table-column>
 		</el-table>
 		<el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
-			<el-form :label-position="labelPosition" label-width="100px" :model="formLabelAlign">
-				<el-form-item label="最低分">
+			<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAlign" label-width="100px" :model="formLabelAlign">
+				<el-form-item label="最低分" prop='min'>
 					<el-input v-model="formLabelAlign.min"></el-input>
 				</el-form-item>
-				<el-form-item label="最高分">
+				<el-form-item label="最高分" prop='max'>
 					<el-input v-model="formLabelAlign.max"></el-input>
 				</el-form-item>
-				<el-form-item label="标识">
+				<el-form-item label="标识" prop='type'>
 					<el-select v-model="formLabelAlign.type" placeholder="请选择标识">
 						<el-option label="打分详情" value="0"></el-option>
 						<el-option label="打分标题" value="1"></el-option>
@@ -94,6 +94,23 @@
 					min: '',
 					type: ''
 				},
+				rules: {
+					min: [{
+						required: true,
+						message: '请输入最小值',
+						trigger: 'blur'
+					}],
+					max: [{
+						required: true,
+						message: '请输入最大值',
+						trigger: 'blur'
+					}],
+					type: [{
+						required: true,
+						message: '请选择类型',
+						trigger: 'change'
+					}]
+				},
 				page: 1,
 				row: 10,
 				totalNum: 1
@@ -109,6 +126,7 @@
 				const item = this.tableData[index];
 				console.log(item)
 				this.formLabelAlign = {
+					id:item.id,
 					gradeJson: item.gradeJson,
 					max: item.max,
 					min: item.min,
@@ -118,39 +136,61 @@
 			},
 			//保存编辑
 			saveEdit() {
-				this.dialogVisible = false;
-				// 提交编辑请求
-				this.$axios.post(`/management/admin/makeup-grading!save.action?id=${this.tableData[this.idx].id}`, {
-					min: this.formLabelAlign.min,
-					max: this.formLabelAlign.max,
-					type: this.formLabelAlign.type,
-					gradeJson: this.formLabelAlign.gradeJson
-				}).then(res => {
-					this.getData(this.page, this.row)
-					this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+				this.$refs['formLabelAlign'].validate((valid) => {
+					if (valid) {
+						if(this.formLabelAlign.type=='打分详情'){
+							this.formLabelAlign.type=0
+						}else if(this.formLabelAlign.type=='打分标题'){
+							this.formLabelAlign.type=1
+						}
+						this.$axios.post(`/management/admin/makeup-grading!save.action?id=${this.formLabelAlign.id}`, this.$qs.stringify({
+							min: this.formLabelAlign.min,
+							max: this.formLabelAlign.max,
+							type: this.formLabelAlign.type,
+							gradeJson: this.formLabelAlign.gradeJson
+						})).then(res => {
+							this.getData(this.page, this.row)
+							this.tempImgUrl = '';
+							this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+						}).catch(e => {
+							this.$message.error(`出了点问题-.-!`);
+						})
+						this.dialogVisible = false;
+					} else {
+						console.log('error submit!!');
+						return false;
+					}
 				})
 			},
 			// 新增
 			handleAdd() {
-				// this.tableData.push(this.formLabelAdd);
-				this.AddVisible = false;
-				// 提交新增请求
-				this.$axios.post('/management/admin/makeup-grading!save.action', this.$qs.stringify({
-					min: this.formLabelAdd.min,
-					max: this.formLabelAdd.max,
-					type: this.formLabelAdd.type,
-					gradeJson: this.formLabelAdd.gradeJson
-				})).then(res => {
-					this.getData(this.page, this.row);
-					this.formLabelAdd = {
-						gradeJson: '',
-						id: '',
-						max: '',
-						min: '',
-						type: ''
+				this.$refs['formLabelAdd'].validate((valid) => {
+					if (valid) {
+						this.$axios.post('/management/admin/makeup-grading!save.action', this.$qs.stringify({
+							min: this.formLabelAdd.min,
+							max: this.formLabelAdd.max,
+							type: this.formLabelAdd.type,
+							gradeJson: this.formLabelAdd.gradeJson
+						})).then(res => {
+							this.getData(this.page, this.row)
+							this.formLabelAdd = {
+								gradeJson: '',
+								id: '',
+								max: '',
+								min: '',
+								type: ''
+							}
+							this.tempImgUrl = '';
+							this.$message.success(`添加成功`);
+						}).catch(e => {
+							this.$message.error(`出了点问题-.-!`);
+						})
+						this.AddVisible = false;
+					} else {
+						console.log('error submit!!');
+						return false;
 					}
-					this.$message.success(`添加成功`);
-				})
+				});
 			},
 			handleClose(done) {
 				this.$confirm("确认关闭？")

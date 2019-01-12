@@ -3,16 +3,16 @@
 		<div class="handle-box">
 			<el-button type="primary" @click="AddVisible = true" size='small'>新增</el-button>
 			<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
-				<el-form :label-position="labelPosition" label-width="100px" :model="formLabelAdd">
-					<el-form-item label="手机号">
+				<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAdd" label-width="100px" :model="formLabelAdd">
+					<el-form-item label="手机号" prop='phone'>
 						<el-input v-model="formLabelAdd.phone"></el-input>
 					</el-form-item>
-					<el-form-item label="昵称">
+					<el-form-item label="昵称" prop='nickName'>
 						<el-input v-model="formLabelAdd.nickName"></el-input>
 					</el-form-item>
 					<el-form-item label="头像">
-						<el-upload class="upload-demo" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handlePreview"
-						 :on-remove="handleRemove" :file-list="fileList" list-type="picture">
+						<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
+						 :before-upload='beforeUpload' :on-success="uploadSuccess" :on-remove="handleRemove" list-type="picture">
 							<el-button size="small" type="primary">点击上传</el-button>
 							<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
 						</el-upload>
@@ -62,15 +62,31 @@
 				AddVisible: false,
 				labelPosition: "left",
 				idx: -1,
-				fileList: [],
 				formLabelAdd: {
 					phone: '',
 					nickName: '',
 					headImage: ''
 				},
+				rules: {
+					phone: [{
+						required: true,
+						message: '请输入手机号',
+						trigger: 'blur'
+					}],
+					nickName: [{
+						required: true,
+						message: '请输入昵称',
+						trigger: 'blur'
+					}]
+				},
 				page: 1,
 				row: 10,
-				totalNum: 1
+				totalNum: 1,
+				imgData: {
+					FileName: '',
+					imgFile: null
+				},
+				tempImgUrl: ''
 			}
 		},
 		components: {
@@ -90,21 +106,30 @@
 
 			// 新增
 			handleAdd() {
-				this.AddVisible = false;
-				// 提交新增请求
-				this.$axios.post('/management/admin/beauty-user!save.action', this.$qs.stringify({
-					phone: this.formLabelAdd.phone,
-					nickName: this.formLabelAdd.nickName,
-					headImage: ''
-				})).then(res => {
-					this.$message.success(`添加成功`);
-					this.formLabelAdd = {
-						phone: '',
-						nickName: '',
-						headImage: ''
-					};
-					this.getData(this.page, this.row)
-				})
+				this.$refs['formLabelAdd'].validate((valid) => {
+					if (valid) {
+						this.$axios.post('/management/admin/beauty-user!save.action', this.$qs.stringify({
+							phone: this.formLabelAdd.phone,
+							nickName: this.formLabelAdd.nickName,
+							headImage: this.tempImgUrl ? `<img src="${this.tempImgUrl}" alt="" />` : ''
+						})).then(res => {
+							this.getData(this.page, this.row)
+							this.formLabelAdd = {
+								phone: '',
+								nickName: '',
+								headImage: ''
+							}
+							this.tempImgUrl = '';
+							this.$message.success(`添加成功`);
+						}).catch(e => {
+							this.$message.error(`出了点问题-.-!`);
+						})
+						this.AddVisible = false;
+					} else {
+						console.log('error submit!!');
+						return false;
+					}
+				});
 			},
 			handleClose(done) {
 				this.$confirm("确认关闭？")
@@ -123,11 +148,20 @@
 				this.getData(this.page, val)
 			},
 			// 操作上传图片(需要图片上传地址)
-			handleRemove(file, fileList) {
-				console.log(file, fileList);
+			beforeUpload(file) {
+				this.imgData.FileName = file.name;
+				this.imgData.imgFile = file
 			},
-			handlePreview(file) {
-				console.log(file);
+			handleRemove(file, fileList) {
+				this.tempImgUrl = '';
+			},
+			uploadSuccess(res, file, fileList) {
+				this.tempImgUrl = res.url;
+				// 清空上传图片参数
+				this.imgData = {
+					FileName: '',
+					imgFile: null
+				}
 			},
 			// 格式化列表数据
 			timestampToTime(row, column, dataNum) {

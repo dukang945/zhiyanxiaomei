@@ -3,14 +3,14 @@
 		<div class="handle-box">
 			<el-button type="primary" @click="AddVisible = true" size='small'>新增</el-button>
 			<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
-				<el-form :label-position="labelPosition" label-width="100px" :model="formLabelAdd">
-					<el-form-item label="分类名称">
+				<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAdd" label-width="100px" :model="formLabelAdd">
+					<el-form-item label="分类名称" prop='name'>
 						<el-input v-model="formLabelAdd.name"></el-input>
 					</el-form-item>
 					<el-form-item label="上级目录">
 						<el-input v-model="formLabelAdd.lableName" readonly></el-input>
 					</el-form-item>
-					<el-form-item label="排序号">
+					<el-form-item label="排序号" prop='sort'>
 						<el-input v-model="formLabelAdd.sort"></el-input>
 					</el-form-item>
 				</el-form>
@@ -24,14 +24,14 @@
 			<TableTree ref="recTree" :list.sync="treeData" :headList.sync="headList" @actionFunc="actionFunc" @deleteFunc="deleteFunc"
 			 @handlerExpand="handlerExpand" @clickRow='clickRow'></TableTree>
 			<el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
-				<el-form :label-position="labelPosition" label-width="100px" :model="formLabelAlign">
-					<el-form-item label="分类名称">
+				<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAlign" label-width="100px" :model="formLabelAlign">
+					<el-form-item label="分类名称" prop='name'>
 						<el-input v-model="formLabelAlign.name"></el-input>
 					</el-form-item>
 					<el-form-item label="上级目录">
 						<el-input v-model="formLabelAlign.lableName" readonly></el-input>
 					</el-form-item>
-					<el-form-item label="排序号">
+					<el-form-item label="排序号" prop='sort'>
 						<el-input v-model="formLabelAlign.sort"></el-input>
 					</el-form-item>
 				</el-form>
@@ -54,8 +54,6 @@
 				AddVisible: false,
 				labelPosition: "left",
 				idx: -1,
-				fileList: [],
-				editFileList: [],
 				formLabelAlign: {
 					id: '',
 					categoryId: '',
@@ -69,10 +67,20 @@
 					name: '',
 					sort: '',
 				},
+				rules:{
+					name:[{
+						required: true,
+						message: '请输入分类名称',
+						trigger: 'blur'
+					}],
+					sort: [{
+						required: true,
+						message: '请输入排序号',
+						trigger: 'blur'
+					}]
+				},
 				treeData: [],
-				headList: ['id', '美妆分类名称', '上级目录', '操作'],
-				categoryId: '',
-				categoryName: '',
+				headList: ['id', '美妆分类名称', '上级目录', '操作']
 			}
 		},
 		components: {
@@ -90,7 +98,6 @@
 						// rows.splice(index, 1);
 						// 调用删除接口
 						this.$axios.get(`/management/admin/category!delete.action?id=${m.id}`).then(res => {
-							console.log(res)
 							this.initData();
 						})
 					})
@@ -102,10 +109,8 @@
 			},
 			// 编辑
 			actionFunc(m) {
-				console.log(m)
 				// 调用编辑接口
-				this.$axios.get(`//management/admin/category!input.action?id=${m.id}`).then(res => {
-					console.log(res)
+				this.$axios.get(`/management/admin/category!input.action?id=${m.id}`).then(res => {
 					this.formLabelAlign = {
 						id: res.data.id,
 						categoryId: res.data.categoryId,
@@ -114,42 +119,58 @@
 						sort: res.data.sort,
 						status: res.data.status
 					};
-					if (res.data.image) {
-						this.editFileList = [{
-							name: '',
-							url: res.data.image.split('"')[1]
-						}]
-					}
 				})
 				this.dialogVisible = true;
 			},
 			//保存编辑
 			saveEdit() {
-				this.dialogVisible = false;
-				// 提交编辑请求
-				this.$message.success(`修改第 ${this.idx + 1} 行成功`);
-				// 重新初始化数据
-				this.initData()
+				this.$refs['formLabelAlign'].validate((valid) => {
+					if (valid) {
+						this.$axios.post(`/management/admin/category!save.action?id=${this.formLabelAlign.id}`, this.$qs.stringify({
+							categoryId: this.formLabelAlign.categoryId,
+							categoryName: this.formLabelAlign.categoryName,
+							name: this.formLabelAlign.name,
+							sort: this.formLabelAlign.sort
+						})).then(res => {
+							this.initData();
+							this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+						}).catch(e => {
+							this.$message.error(`出了点问题-.-!`);
+						})
+						this.dialogVisible = false;
+					} else {
+						console.log('error submit!!');
+						return false;
+					}
+				})
 			},
 			// 新增
 			handleAdd() {
-				this.AddVisible = false;
-				this.$axios.post('/management/admin/category!save.action', this.$qs.stringify({
-					categoryId: this.categoryId,
-					categoryName: this.categoryName,
-					name: this.formLabelAdd.name,
-					sort: this.formLabelAdd.sort
-				})).then(res => {
-					this.initData();
-					this.$message.success(`添加成功`);
-					this.formLabelAdd = {
-						categoryId: '',
-						categoryName: '',
-						name: '',
-						sort: '',
+				this.$refs['formLabelAdd'].validate((valid) => {
+					if (valid) {
+						this.$axios.post('/management/admin/category!save.action', this.$qs.stringify({
+							categoryId: this.formLabelAdd.categoryId,
+							categoryName: this.formLabelAdd.categoryName,
+							name: this.formLabelAdd.name,
+							sort: this.formLabelAdd.sort
+						})).then(res => {
+							this.initData();
+							this.formLabelAdd = {
+								categoryId: '',
+								categoryName: '',
+								name: '',
+								sort: '',
+							}
+							this.$message.success(`添加成功`);
+						}).catch(e => {
+							this.$message.error(`出了点问题-.-!`);
+						})
+						this.AddVisible = false;
+					} else {
+						console.log('error submit!!');
+						return false;
 					}
-
-				})
+				});
 			},
 			handleClose(done) {
 				this.$confirm("确认关闭？")
@@ -157,13 +178,6 @@
 						done();
 					})
 					.catch(_ => {});
-			},
-			// 操作上传图片(需要图片上传地址)
-			handleRemove(file, fileList) {
-				console.log(file, fileList);
-			},
-			handlePreview(file) {
-				console.log(file);
 			},
 			initData() {
 				// 获取表格数据

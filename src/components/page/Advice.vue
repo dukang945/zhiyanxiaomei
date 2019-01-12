@@ -3,8 +3,8 @@
 		<div class="handle-box">
 			<el-button type="primary" @click="AddVisible = true" size='small'>新增</el-button>
 			<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
-				<el-form :label-position="labelPosition" label-width="100px" :model="formLabelAdd">
-					<el-form-item label="化妆建议内容">
+				<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAdd" label-width="120px" :model="formLabelAdd">
+					<el-form-item label="化妆建议内容" prop='text'>
 						<el-input type="textarea" autosize v-model="formLabelAdd.text"></el-input>
 					</el-form-item>
 					<el-form-item label="湿度">
@@ -34,35 +34,34 @@
 			</el-table-column>
 			<el-table-column label="操作" width="100" align='center'>
 				<template slot-scope="scope">
-					<!-- <el-button @click.native.prevent="deleteRow(scope.$index, tableData)" size='small' type="danger" class="el-icon-delete">删除</el-button> -->
 					<el-button type="primary" size='small' @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-					<el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
-						<el-form :label-position="labelPosition" label-width="100px" :model="formLabelAlign">
-							<el-form-item label="化妆建议内容">
-								<el-input type="textarea" autosize v-model="formLabelAlign.text"></el-input>
-							</el-form-item>
-							<el-form-item label="湿度">
-								<el-select v-model="formLabelAlign.humidity" placeholder="请选择湿度">
-									<el-option label="低" value="0"></el-option>
-									<el-option label="高" value="1"></el-option>
-								</el-select>
-							</el-form-item>
-							<el-form-item label="温度">
-								<el-select v-model="formLabelAlign.temperature" placeholder="请选择温度">
-									<el-option label="低" value="0"></el-option>
-									<el-option label="中" value="1"></el-option>
-									<el-option label="高" value="2"></el-option>
-								</el-select>
-							</el-form-item>
-						</el-form>
-						<span slot="footer" class="dialog-footer">
-							<el-button @click="dialogVisible = false">取 消</el-button>
-							<el-button type="primary" @click="saveEdit">确 定</el-button>
-						</span>
-					</el-dialog>
 				</template>
 			</el-table-column>
 		</el-table>
+		<el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+			<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAlign" label-width="120px" :model="formLabelAlign">
+				<el-form-item label="化妆建议内容" prop='text'>
+					<el-input type="textarea" autosize v-model="formLabelAlign.text"></el-input>
+				</el-form-item>
+				<el-form-item label="湿度">
+					<el-select v-model="formLabelAlign.humidity" placeholder="请选择湿度">
+						<el-option label="低" value="0"></el-option>
+						<el-option label="高" value="1"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="温度">
+					<el-select v-model="formLabelAlign.temperature" placeholder="请选择温度">
+						<el-option label="低" value="0"></el-option>
+						<el-option label="中" value="1"></el-option>
+						<el-option label="高" value="2"></el-option>
+					</el-select>
+				</el-form-item>
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="dialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="saveEdit">确 定</el-button>
+			</span>
+		</el-dialog>
 		<Pagination :totalNum='totalNum' @change_Page='changePage' @change_Size='changeSize'></Pagination>
 	</div>
 </template>
@@ -88,6 +87,13 @@
 					id: '',
 					temperature: '',
 					text: ''
+				},
+				rules: {
+					text: [{
+						required: true,
+						message: '请输入建议内容',
+						trigger: 'blur'
+					}]
 				},
 				page: 1,
 				row: 10,
@@ -120,30 +126,36 @@
 			},
 			//保存编辑
 			saveEdit() {
-				this.$set(this.tableData, this.idx, this.formLabelAlign);
-				this.dialogVisible = false;
-				console.log(this.formLabelAlign)
-				// 提交编辑请求
-				if(this.formLabelAlign.humidity=='低'){
-					this.formLabelAlign.humidity=0
-				}else if(this.formLabelAlign.humidity=='高'){
-					this.formLabelAlign.humidity=1
-				}
-				if(this.formLabelAlign.temperature=='低'){
-					this.formLabelAlign.temperature=0
-				}else if(this.formLabelAlign.temperature=='中'){
-					this.formLabelAlign.temperature=1
-				}else if(this.formLabelAlign.temperature=='高'){
-					this.formLabelAlign.temperature=2
-				}
-				this.$axios.post(`/management/admin/skincare!save.action?id=${this.tableData[this.idx].id}`, this.$qs.stringify({
-					text: this.formLabelAlign.text,
-					humidity: this.formLabelAlign.humidity,
-					temperature:this.formLabelAlign.temperature
-				})).then(res => {
-					console.log(res)
-					this.getData(this.page, this.row)
-					this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+				// this.$set(this.tableData, this.idx, this.formLabelAlign);
+				this.$refs['formLabelAlign'].validate((valid) => {
+					if (valid) {
+						if(this.formLabelAlign.humidity=='低'){
+							this.formLabelAlign.humidity=0
+						}else if(this.formLabelAlign.humidity=='高'){
+							this.formLabelAlign.humidity=1
+						}
+						if(this.formLabelAlign.temperature=='低'){
+							this.formLabelAlign.temperature=0
+						}else if(this.formLabelAlign.temperature=='中'){
+							this.formLabelAlign.temperature=1
+						}else if(this.formLabelAlign.temperature=='高'){
+							this.formLabelAlign.temperature=2
+						}
+						this.$axios.post(`/management/admin/skincare!save.action?id=${this.formLabelAlign.id}`, this.$qs.stringify({
+							text: this.formLabelAlign.text,
+							humidity: this.formLabelAlign.humidity,
+							temperature:this.formLabelAlign.temperature
+						})).then(res => {
+							this.getData(this.page, this.row)
+							this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+						}).catch(e => {
+							this.$message.error(`出了点问题-.-!`);
+						})
+						this.dialogVisible = false;
+					} else {
+						console.log('error submit!!');
+						return false;
+					}
 				})
 			},
 			//删除
@@ -162,17 +174,30 @@
 			},
 			// 新增
 			handleAdd() {
-				this.tableData.push(this.formLabelAdd);
-				this.AddVisible = false;
-				// 提交新增请求
-				this.$axios.post('/management/admin/skincare!save.action', this.$qs.stringify({
-					text: this.formLabelAdd.text,
-					humidity: this.formLabelAdd.humidity,
-					temperature:this.formLabelAdd.temperature
-				})).then(res => {
-					this.getData(this.page, this.row);
-					this.$message.success(`添加成功`);
-				})
+				this.$refs['formLabelAdd'].validate((valid) => {
+					if (valid) {
+						this.$axios.post('/management/admin/skincare!save.action', this.$qs.stringify({
+							text: this.formLabelAdd.text,
+							humidity: this.formLabelAdd.humidity,
+							temperature:this.formLabelAdd.temperature
+						})).then(res => {
+							this.getData(this.page, this.row)
+							this.formLabelAdd = {
+								humidity: '',
+								id: '',
+								temperature: '',
+								text: ''
+							}
+							this.$message.success(`添加成功`);
+						}).catch(e => {
+							this.$message.error(`出了点问题-.-!`);
+						})
+						this.AddVisible = false;
+					} else {
+						console.log('error submit!!');
+						return false;
+					}
+				});
 			},
 			handleClose(done) {
 				this.$confirm("确认关闭？")

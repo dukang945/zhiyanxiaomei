@@ -3,19 +3,19 @@
 		<div class="handle-box">
 			<el-button type="primary" @click="AddVisible = true" size='small'>新增</el-button>
 			<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
-				<el-form :label-position="labelPosition" label-width="100px" :model="formLabelAdd">
-					<el-form-item label="标签名称">
+				<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAdd"  label-width="100px" :model="formLabelAdd">
+					<el-form-item label="标签名称" prop='name'>
 						<el-input v-model="formLabelAdd.name"></el-input>
 					</el-form-item>
 					<el-form-item label="上级目录">
 						<el-input v-model="formLabelAdd.lableName" readonly></el-input>
 					</el-form-item>
-					<el-form-item label="排序号">
+					<el-form-item label="排序号" prop='sort'>
 						<el-input v-model="formLabelAdd.sort"></el-input>
 					</el-form-item>
 					<el-form-item label="图片">
-						<el-upload class="upload-demo" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handlePreview"
-						 :on-remove="handleRemove" :file-list="fileList" list-type="picture">
+						<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
+						 :before-upload='beforeUpload' :on-success="uploadSuccess" :on-remove="handleRemove"  list-type="picture">
 							<el-button size="small" type="primary">点击上传</el-button>
 							<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
 						</el-upload>
@@ -31,19 +31,19 @@
 			<TableTree ref="recTree" :list.sync="treeData" :headList.sync="headList" @actionFunc="actionFunc" @deleteFunc="deleteFunc" @handlerExpand="handlerExpand"
 			 @clickRow='clickRow'></TableTree>
 			<el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
-				<el-form :label-position="labelPosition" label-width="100px" :model="formLabelAlign">
-					<el-form-item label="标签名称">
+				<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAlign"  label-width="100px" :model="formLabelAlign">
+					<el-form-item label="标签名称" prop='name'>
 						<el-input v-model="formLabelAlign.name"></el-input>
 					</el-form-item>
 					<el-form-item label="上级目录">
 						<el-input v-model="formLabelAlign.lableName" readonly></el-input>
 					</el-form-item>
-					<el-form-item label="排序号">
+					<el-form-item label="排序号" prop='sort'>
 						<el-input v-model="formLabelAlign.sort"></el-input>
 					</el-form-item>
 					<el-form-item label="图片">
-						<el-upload class="upload-demo" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handlePreview"
-						 :on-remove="handleRemove" :file-list="fileList" list-type="picture">
+						<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
+						 :before-upload='beforeUpload' :on-success="uploadSuccess" :on-remove="handleRemove"  :file-list="editFileList" list-type="picture">
 							<el-button size="small" type="primary">点击上传</el-button>
 							<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
 						</el-upload>
@@ -64,12 +64,10 @@
 	export default {
 		data() {
 			return {
-				tableData: [],
 				dialogVisible: false,
 				AddVisible: false,
 				labelPosition: "left",
 				idx: -1,
-				fileList: [],
 				editFileList: [],
 				formLabelAlign: {
 					id: '',
@@ -91,10 +89,25 @@
 					sort: '',
 					status: ''
 				},
+				rules:{
+					name:[{
+						required: true,
+						message: '请输入标签名称',
+						trigger: 'blur'
+					}],
+					sort: [{
+						required: true,
+						message: '请输入排序号',
+						trigger: 'blur'
+					}]
+				},
 				treeData: [],
 				headList:['id','美妆类型名称','上级目录','操作'],
-				lableId: '',
-				lableName: ''
+				imgData: {
+					FileName: '',
+					imgFile: null
+				},
+				tempImgUrl: ''
 			}
 		},
 		components: {
@@ -124,10 +137,9 @@
 			},
 			// 编辑
 			actionFunc(m) {
-				console.log(m)
+				this.editFileList = [];
 				// 调用编辑接口
 				this.$axios.get(`/management/admin/lable!input.action?id=${m.id}`).then(res => {
-					console.log(res)
 					this.formLabelAlign = {
 						id: res.data.id,
 						image: res.data.image ? res.data.image.split('"')[1] : '',
@@ -149,46 +161,61 @@
 			},
 			//保存编辑
 			saveEdit() {
-				// this.$set(this.tableData, this.idx, this.formLabelAlign);
-				this.dialogVisible = false;
-				// 提交编辑请求
-
-				this.$message.success(`修改第 ${this.idx + 1} 行成功`);
-				// 重新初始化数据
-				this.initData()
+				this.$refs['formLabelAlign'].validate((valid) => {
+					if (valid) {
+						this.$axios.post(`/management/admin/lable!save.action?id=${this.formLabelAlign.id}`, this.$qs.stringify({
+							lableId: this.formLabelAlign.lableId,
+							lableName: this.formLabelAlign.lableName,
+							name: this.formLabelAlign.name,
+							sort: this.formLabelAlign.sort,
+							image: this.tempImgUrl ? `<img src="${this.tempImgUrl}" alt="" />` : this.formLabelAlign.image
+						})).then(res => {
+							this.initData();
+							this.tempImgUrl = '';
+							this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+						}).catch(e => {
+							this.$message.error(`出了点问题-.-!`);
+						})
+						this.dialogVisible = false;
+					} else {
+						console.log('error submit!!');
+						return false;
+					}
+				})
 			},
 			// 新增
 			handleAdd() {
-				// this.tableData.push(this.formLabelAdd);
-				this.AddVisible = false;
-				// 提交新增请求  
-				// 判断上级标签
-				// 				if(this.lableId){
-				// 					this.formLabelAdd.lableId=this.lableId;
-				// 					this.formLabelAdd.lableName=this.lableName
-				// 				}
-				this.$axios.post('/management/admin/lable!save.action', this.$qs.stringify({
-					image: '',
-					lableId: this.formLabelAdd.lableId,
-					lableName: this.formLabelAdd.lableName,
-					name: this.formLabelAdd.name,
-					sort: this.formLabelAdd.sort
-				})).then(res => {
-					// console.log(res)
-					this.initData();
-					this.$message.success(`添加成功`);
-					this.formLabelAdd = {
-							id: '',
-							image: '',
-							lableId: '',
-							lableImage: '',
-							lableName: '',
-							name: '',
-							sort: '',
-							status: ''
-						}
-
-				})
+				this.$refs['formLabelAdd'].validate((valid) => {
+					if (valid) {
+						this.$axios.post('/management/admin/lable!save.action', this.$qs.stringify({
+							lableId: this.formLabelAdd.lableId,
+							lableName: this.formLabelAdd.lableName,
+							name: this.formLabelAdd.name,
+							sort: this.formLabelAdd.sort,
+							image: this.tempImgUrl ? `<img src="${this.tempImgUrl}" alt="" />` : ''
+						})).then(res => {
+							this.initData();
+							this.formLabelAdd = {
+								id: '',
+								image: '',
+								lableId: '',
+								lableImage: '',
+								lableName: '',
+								name: '',
+								sort: '',
+								status: ''
+							}
+							this.tempImgUrl = '';
+							this.$message.success(`添加成功`);
+						}).catch(e => {
+							this.$message.error(`出了点问题-.-!`);
+						})
+						this.AddVisible = false;
+					} else {
+						console.log('error submit!!');
+						return false;
+					}
+				});
 			},
 			handleClose(done) {
 				this.$confirm("确认关闭？")
@@ -198,11 +225,23 @@
 					.catch(_ => {});
 			},
 			// 操作上传图片(需要图片上传地址)
-			handleRemove(file, fileList) {
-				console.log(file, fileList);
+			beforeUpload(file) {
+				console.log(file)
+				this.imgData.FileName = file.name;
+				this.imgData.imgFile = file
 			},
-			handlePreview(file) {
-				console.log(file);
+			handleRemove(file, fileList) {
+				this.formLabelAlign.image = '';
+				this.tempImgUrl = '';
+			},
+			uploadSuccess(res, file, fileList) {
+				console.log(res)
+				this.tempImgUrl = res.url;
+				// 清空上传图片参数
+				this.imgData = {
+					FileName: '',
+					imgFile: null
+				}
 			},
 			initData() {
 				// 获取表格数据

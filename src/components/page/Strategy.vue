@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <h1>strategy</h1>
+    <div class="strategyContent">
+		<img src="../../assets/404.jpg" alt="">
     </div>
 </template>
 
@@ -11,5 +11,14 @@
 </script>
 
 <style scoped>
-
+.strategyContent{
+	width: 100%;
+	height: 100%;
+}
+.strategyContent img{
+	width: 500px;
+	height: auto;
+	margin: 200px auto;
+	display: block;
+}
 </style>
