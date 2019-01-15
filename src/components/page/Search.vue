@@ -24,7 +24,7 @@
 				</span>
 			</el-dialog>
 		</div>
-		<el-table :data="tableData" border style="width: 100%" :row-class-name="tableRowClassName">>
+		<el-table :data="tableData" border style="width: 100%" :row-class-name="tableRowClassName">
 			<el-table-column prop="id" label="编号" width="100" align='center'>
 			</el-table-column>
 			<el-table-column prop="name" label="热搜名称" align='center'>

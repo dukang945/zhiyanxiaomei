@@ -109,17 +109,10 @@
 				this.idx = index;
 				const item = this.tableData[index];
 				console.log(item)
-				if(item.temperature==0){
-					item.temperature='低'
-				}else if(item.temperature==1){
-					item.temperature='中'
-				}else if(item.temperature==2){
-					item.temperature='高'
-				}
 				this.formLabelAlign = {
-					humidity: item.humidity==0?'低':'高',
+					humidity: String(item.humidity),
 					id: item.id,
-					temperature: item.temperature,
+					temperature: String(item.temperature),
 					text: item.text
 				};
 				this.dialogVisible = true;
@@ -129,18 +122,6 @@
 				// this.$set(this.tableData, this.idx, this.formLabelAlign);
 				this.$refs['formLabelAlign'].validate((valid) => {
 					if (valid) {
-						if(this.formLabelAlign.humidity=='低'){
-							this.formLabelAlign.humidity=0
-						}else if(this.formLabelAlign.humidity=='高'){
-							this.formLabelAlign.humidity=1
-						}
-						if(this.formLabelAlign.temperature=='低'){
-							this.formLabelAlign.temperature=0
-						}else if(this.formLabelAlign.temperature=='中'){
-							this.formLabelAlign.temperature=1
-						}else if(this.formLabelAlign.temperature=='高'){
-							this.formLabelAlign.temperature=2
-						}
 						this.$axios.post(`/management/admin/skincare!save.action?id=${this.formLabelAlign.id}`, this.$qs.stringify({
 							text: this.formLabelAlign.text,
 							humidity: this.formLabelAlign.humidity,

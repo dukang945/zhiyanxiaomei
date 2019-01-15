@@ -5,7 +5,7 @@
 				<div class="btnGroup">
 					<el-button type="primary" size='small' @click="add">新增</el-button>
 					<el-dialog title="新增教程" :visible.sync="AddVisible" width="50%" :before-close="handleClose">
-						<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAdd" label-width="120px" :model="formLabelAdd">
+						<el-form :label-position="labelPosition" label-width="120px" :model="formLabelAdd">
 							<el-form-item label="名称">
 								<el-input v-model="formLabelAdd.name"></el-input>
 							</el-form-item>
@@ -129,7 +129,7 @@
 							</el-form-item>
 						</el-form>
 						<span slot="footer" class="dialog-footer">
-							<el-button @click="AddVisible = false">取 消</el-button>
+							<el-button @click="cancelAdd">取 消</el-button>
 							<el-button type="primary" @click="handleAdd">确 定</el-button>
 						</span>
 					</el-dialog>
@@ -155,7 +155,8 @@
 				<el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
 			</el-col>
 			<el-col :span='22'>
-				<el-table :data="tableData" border style="width: 99%" class='table' max-height="620" v-loading="loading">
+				<el-table :data="tableData" border style="width: 99%" class='table' max-height="620" v-loading="loading"
+				 :row-class-name="tableRowClassName">
 					<el-table-column type="selection" width="55" align='center'></el-table-column>
 					<el-table-column type="index" label="序号" width="50" align='center'>
 					</el-table-column>
@@ -185,15 +186,8 @@
 					<el-table-column label="操作" fixed="right" align='center' width='750'>
 						<template slot-scope="scope">
 							<el-button size="small" type="primary" @click="edit(scope.$index, scope.row)" icon='el-icon-edit'>编辑</el-button>
-							<el-dialog title="编辑" :visible.sync="editDialogVisible" width="80%">
-								<el-form :label-position="labelPosition" label-width="80px" :model="editFormData">
-									<el-form-item label="用户ID">
-										<el-input v-model="editFormData.id"></el-input>
-									</el-form-item>
-								</el-form>
-							</el-dialog>
 							<el-button @click.native.prevent="deleteRow(scope.$index, scope.row)" size='small' type="danger" class="el-icon-delete">删除</el-button>
-							<el-button size="small" type="primary" @click="switchOnline(scope.$index, scope.row)">{{tableData[scope.$index].online==0?'下线':'上线'}}</el-button>
+							<el-button size="small" type="primary" @click="switchOnline(scope.$index, scope.row)" class="el-icon-sort">{{tableData[scope.$index].online==0?'下线':'上线'}}</el-button>
 							<el-button size="small" type="primary" @click="creatH5(scope.$index, scope.row)" icon='el-icon-edit-outline'>生成H5</el-button>
 							<el-button size="small" type="primary" @click="updataSort(scope.$index, scope.row)" icon='el-icon-sort'>更新排序</el-button>
 							<el-button size="small" type="primary" @click="push(scope.$index, scope.row)">推送</el-button>
@@ -205,7 +199,268 @@
 				<Pagination :totalNum='totalNum' @change_Page='changePage' @change_Size='changeSize'></Pagination>
 			</el-col>
 		</el-row>
+		<!-- 编辑表单 -->
+		<el-dialog title="编辑" :visible.sync="editDialogVisible" width="50%" :before-close="handleClose">
+			<el-form :label-position="labelPosition" label-width="120px" :model="editFormData">
+				<el-form-item label="名称">
+					<el-input v-model="editFormData.name"></el-input>
+				</el-form-item>
+				<el-form-item label="化妆目的">
+					<el-select v-model="editFormData.purposeId" multiple placeholder="请选择化妆目的" style='width: 100%;'>
+						<el-option v-for="item in purposeOptions" :key="item.id" :label="item.text" :value="item.id">
+						</el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="化妆水平">
+					<el-select v-model="editFormData.level" placeholder="请选择水平">
+						<el-option label="初学乍练" :value="0+0"></el-option>
+						<el-option label="略有小成" :value="1+0"></el-option>
+						<el-option label="自成一派" :value="2+0"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="标签">
+					<el-cascader v-model="editFormData.lableId" :options="tagOptions" change-on-select></el-cascader>
+				</el-form-item>
+				<el-form-item label="点赞次数">
+					<el-input v-model="editFormData.greatNumber"></el-input>
+				</el-form-item>
+				<el-form-item label="点击次数">
+					<el-input v-model="editFormData.clickNumber"></el-input>
+				</el-form-item>
+				<el-form-item label="浏览量">
+					<el-input v-model="editFormData.pageView"></el-input>
+				</el-form-item>
+				<el-form-item label="化妆预估时间">
+					<el-input v-model="editFormData.minute"></el-input>
+				</el-form-item>
+				<el-button size='small' type='primary' class="el-icon-plus addColor" @click='addNewColor'> 新增色号</el-button>
+				<!-- 新增色号弹框 -->
+				<el-dialog title="新增色号" :visible.sync="addColorDialogVisible" width="30%" append-to-body>
+					<el-form :label-position="labelPosition" label-width="120px" :model="addColorFormData">
+						<el-form-item label="产品">
+							<el-select v-model="addColorFormData.productId" placeholder="请选择产品" filterable :filter-method='(q)=>{
+								searchProduct=q;
+								getProductData(productPage,productRow,q)
+							}'
+							 style='width: 100%;'>
+								<div class="productOptionHead">
+									<span class="number">标号</span>
+									<span>产品名称</span>
+								</div>
+								<el-option v-for="item in productOptions" :key="item.id" :label="item.name" :value="item.id">
+									<span class="productOptionItem itemNumber">{{item.id}}</span>
+									<span class="productOptionItem">{{item.name}}</span>
+								</el-option>
+								<div class="noMargin">
+									<Pagination :totalNum='productTotalNum' @change_Page='changeProductPage' @change_Size='changeProductSize'></Pagination>
+								</div>
+							</el-select>
+						</el-form-item>
+						<el-form-item label="产品及色号名称">
+							<el-input v-model="addColorFormData.productName"></el-input>
+						</el-form-item>
+						<el-form-item label="色号名称">
+							<el-input v-model="addColorFormData.colorName"></el-input>
+						</el-form-item>
+						<el-form-item label="对应产品对应色号图片">
+							<el-upload action="/management/admin/kcupload!uploadImage.action?type=beauty_product" :data='imgData'
+							 :before-upload='beforeUpload' :on-success="uploadSuccess" :on-remove="handleRemove" :file-list="fileList"
+							 list-type="picture">
+								<el-button size="small" type="primary">点击上传</el-button>
+								<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+							</el-upload>
+						</el-form-item>
+						<el-form-item>
+							<el-button @click="cancelAddColor">取 消</el-button>
+							<el-button type="primary" @click="addColor">确 定</el-button>
+						</el-form-item>
+					</el-form>
+				</el-dialog>
 
+
+				<el-form-item label='选择色号'>
+					<el-select v-model="editFormData.productColor" multiple placeholder="请选择色号" filterable :filter-method='(q)=>{
+																	searchColor=q;
+																	getColorProductData(colorPage,colorRow,q)
+																}'
+					 style='width: 100%;'>
+						<div class="optionHead">
+							<span class="number">标号</span>
+							<span>色号名称</span>
+							<span>商品名称</span>
+						</div>
+						<el-option v-for="item in productColorOptions" :key="item.id" :label="item.productName" :value="item.id">
+							<span class="optionItem itemNumber">{{item.id}}</span>
+							<span class="optionItem">{{item.name}}</span>
+							<span class="optionItem">{{item.productName}}</span>
+						</el-option>
+						<div class="noMargin">
+							<Pagination :totalNum='colorTotalNum' @change_Page='changeColorPage' @change_Size='changeColorSize'></Pagination>
+						</div>
+					</el-select>
+				</el-form-item>
+				<el-form-item label='选择美妆模型图'>
+					<el-select v-model="editFormData.moduleId" placeholder="请选择美妆模型" style='width: 100%;'>
+						<el-option v-for="item in moduleOptions" :key="item.id" :label="item.text" :value="item.id">
+						</el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="视频">
+
+				</el-form-item>
+				<el-form-item label="简介">
+					<el-input type="textarea" autosize v-model="editFormData.about"></el-input>
+				</el-form-item>
+				<el-form-item label="图片">
+					<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData' :before-upload='beforeUpload'
+					 :on-success="uploadSuccess" :on-remove="handleRemove" :on-preview="handlePictureCardPreview" :file-list="editFileList"
+					 list-type="picture">
+						<el-button size="small" type="primary">点击上传</el-button>
+						<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+					</el-upload>
+				</el-form-item>
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="cancelEdit">取 消</el-button>
+				<el-button type="primary" @click="handleEdit">确 定</el-button>
+			</span>
+		</el-dialog>
+		<!-- 预览图片弹框 -->
+		<el-dialog :visible.sync="imgDialogVisible">
+			<img width="100%" :src="dialogImageUrl" alt="">
+		</el-dialog>
+		<!-- 推送弹框 -->
+		<el-dialog title="推送信息" :visible.sync="pushDialogVisible" width="30%" append-to-body>
+			<el-form :label-position="labelPosition" label-width="120px" :model="pushForm">
+				<el-form-item label="标题">
+					<el-input v-model="pushForm.name"></el-input>
+				</el-form-item>
+				<el-form-item label="内容">
+					<el-input type="textarea" autosize v-model="pushForm.text"></el-input>
+				</el-form-item>
+				<el-form-item label="设备类型">
+					<el-select v-model="pushForm.type" placeholder="请选择设备类型">
+						<el-option label="全部" value="0"></el-option>
+						<el-option label="Android" value="1"></el-option>
+						<el-option label="IOS" value="2"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="环境">
+					<el-select v-model="pushForm.dev" placeholder="请选择推送环境">
+						<el-option label="生产环境" value="0"></el-option>
+						<el-option label="开发环境" value="1"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="点击通知后动作">
+					<el-select v-model="pushForm.action" placeholder="请选择动作">
+						<el-option label="打开应用" value="0"></el-option>
+						<el-option label="打开AndroidActivity" value="1"></el-option>
+						<el-option label="打开URL" value="2"></el-option>
+						<el-option label="无跳转" value="3"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="消息类型">
+					<el-select v-model="pushForm.dev" placeholder="请选择消息类型">
+						<el-option label="消息" value="0"></el-option>
+						<el-option label="通知" value="1"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="消息转通知">
+					<el-select v-model="pushForm.dev" placeholder="请选择消息类型">
+						<el-option label="是" value="0"></el-option>
+						<el-option label="否" value="1"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="推送目标">
+					<el-select v-model="pushForm.dev" placeholder="请选择目标">
+						<el-option label="广播推送" value="0"></el-option>
+						<el-option label="按设备推送" value="1"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="推送值">
+					<el-input v-model="pushForm.value"></el-input>
+				</el-form-item>
+				<el-form-item label="是否定时推送">
+					<el-select v-model="pushForm.dev" placeholder="请选择目标">
+						<el-option label="广播推送" value="0"></el-option>
+						<el-option label="按设备推送" value="1"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="推送时间">
+					<el-col :span="11">
+						<el-date-picker type="date" placeholder="选择日期" v-model="pushForm.date" style="width: 100%;"></el-date-picker>
+					</el-col>
+					<el-col class="line" :span="2">-</el-col>
+					<el-col :span="11">
+						<el-time-picker type="fixed-time" placeholder="选择时间" v-model="pushForm.time" style="width: 100%;"></el-time-picker>
+					</el-col>
+				</el-form-item>
+				<el-form-item label="推送参数">
+					<el-input v-model="pushForm.value"></el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-button @click="cancelPush">取 消</el-button>
+					<el-button type="primary" @click="handlePush">确 定</el-button>
+				</el-form-item>
+			</el-form>
+		</el-dialog>
+		<!-- 新增评论弹框 -->
+		<el-dialog title="添加评论" :visible.sync="addCommentDialogVisible" width="50%" append-to-body>
+			<el-form :label-position="labelPosition" label-width="100px" :model="addCommentForm">
+				<el-form-item label="回复用户">
+					<el-select v-model="addCommentForm.userId" placeholder="请选择用户" style='width: 100%;'>
+						<div class="productOptionHead">
+							<span class="number">编号</span>
+							<span>用户昵称</span>
+						</div>
+						<el-option v-for="item in userOptions" :key="item.id" :label="item.name" :value="item.id">
+							<span class="productOptionItem itemNumber">{{item.id}}</span>
+							<span class="productOptionItem">{{item.name}}</span>
+						</el-option>
+						<div class="noMargin">
+							<Pagination :totalNum='userTotalNum' @change_Page='changeUserPage' @change_Size='changeUserSize'></Pagination>
+						</div>
+					</el-select>		
+				</el-form-item>
+				<el-form-item label="评论内容">
+					<el-input type="textarea" autosize v-model="addCommentForm.content"></el-input>
+				</el-form-item>
+				<el-form-item label="点赞数">
+					<el-input v-model="addCommentForm.greatNumber"></el-input>
+				</el-form-item>
+				
+				<el-form-item>
+					<el-button @click="cancelAddComment">取 消</el-button>
+					<el-button type="primary" @click="handleAddComment">确 定</el-button>
+				</el-form-item>
+			</el-form>
+		</el-dialog>
+		<!-- 查看评论弹框 -->
+		<el-dialog title="评论管理" :visible.sync="checkCommentDialogVisible" width="80%" >
+			<el-table :data="commentTableData" border style="width: 100%">
+				<el-table-column type="index" label="序号" width="50" align='center'>
+				</el-table-column>
+				<el-table-column prop="id" label="编号" width="100" align='center'>
+				</el-table-column>
+				<el-table-column prop="content" label="评论内容" align='center'>
+				</el-table-column>
+				<el-table-column prop="time" label="评论时间" width="150"  align='center'>
+				</el-table-column>
+				<el-table-column prop="userId" label="评论用户" width="100" align='center'>
+				</el-table-column>
+				<el-table-column prop="parentId" label="回复的用户" width="100" align='center'>
+				</el-table-column>
+				<el-table-column prop="greatNumber" label="点赞数" width="100" align='center'>
+				</el-table-column>
+				<el-table-column label="操作" width="200" align='center'>
+					<template slot-scope="scope">
+						<el-button @click.native.prevent="deleteComment(scope.$index, commentTableData)" size='small' type="danger" class="el-icon-delete">删除</el-button>
+						<el-button type="primary" size='small' @click="checkAddComment(scope.$index, scope.row)">添加回复</el-button>
+					</template>
+				</el-table-column>
+			</el-table>
+			<Pagination :totalNum='commentTotalNum' @change_Page='changeCommentPage' @change_Size='changeCommentSize'></Pagination>
+		</el-dialog>
 	</div>
 </template>
 
@@ -219,26 +474,27 @@
 					text: ''
 				}, //搜索框
 
-				editFormData: {
-
-				}, //编辑表单
-
 				formLabelAdd: {
 					name: '',
-					purposeId: '',
+					purposeId: [],
 					level: '',
-					lableId: '',
+					lableId: [],
 					greatNumber: '',
 					clickNumber: '',
 					pageView: '',
 					minute: '',
 					selectName: '',
-					productColor: '',
+					productColor: [],
 					moduleId: '',
 					videoUrl: '',
 					about: '',
 					image: ''
 				}, //新增教程表单
+
+
+				editFormData: {
+
+				}, //编辑表单
 
 				addColorFormData: {
 					productId: '',
@@ -246,7 +502,8 @@
 					colorName: '',
 					image: ''
 				}, //新增色号表单
-
+				pushForm:{},//推送表单
+				addCommentForm:{},//新增评论表单
 				purposeOptions: [], //化妆目的
 				tagOptions: [], //标签
 				productColorOptions: [], //色号产品列表
@@ -254,6 +511,7 @@
 				searchProduct: '', //新增色号产品搜索内容
 				productOptions: [], //新增色号产品列表
 				moduleOptions: [], //美妆模型图列表
+				userOptions:[],//用户列表
 				rules: {
 
 				},
@@ -261,16 +519,26 @@
 				AddVisible: false,
 				addColorDialogVisible: false,
 				editDialogVisible: false,
+				pushDialogVisible:false,
+				addCommentDialogVisible:false,
+				checkCommentDialogVisible:false,
 				totalNum: 10,
 				colorTotalNum: 10,
 				productTotalNum: 10,
+				userTotalNum:10,
+				commentTotalNum:10,
 				tableData: [],
+				commentTableData:[],//评论表格数据
 				page: 1,
 				row: 10,
 				colorRow: 10,
 				colorPage: 1,
 				productRow: 10,
 				productPage: 1,
+				userRow: 10,
+				userPage: 1,
+				commentPage:1,
+				commentRow:10,
 				// 左侧树形控件
 				treeData: [],
 				defaultProps: {
@@ -284,14 +552,29 @@
 					imgFile: null
 				},
 				tempImgUrl: '',
+				tempRowId:'',
 				loading: true,
-				fileList: []
+				fileList: [],
+				editFileList: [],
+				dialogImageUrl: '',
+				imgDialogVisible: false,
+				commentDetailId:''
 			}
 		},
 		components: {
 			Pagination
 		},
 		methods: {
+			tableRowClassName({
+				row,
+				index
+			}) {
+				if (row.online === 0) {
+					return 'online';
+				} else if (row.online === 1) {
+					return '';
+				}
+			},
 			handleClose(done) {
 				this.$confirm("确认关闭？")
 					.then(_ => {
@@ -302,31 +585,12 @@
 			// 新增
 			add() {
 				this.AddVisible = true;
+				// 获取类型数据
+				this.formatTreeData(_ => {
+
+				})
 				// 获取目的数据
 				this.getPurposeData();
-				// 序列化标签数据
-				var tempTagArr = [];
-				console.log(this.treeData)
-				this.treeData.forEach(item => {
-					var tempObj = {};
-					tempObj = {
-						value: item.id,
-						label: item.lable,
-						children: item.children
-					}
-					var tempChildrenArr = []
-					item.children.forEach(item2 => {
-						var tempChildrenObj = {};
-						tempChildrenObj = {
-							value: item2.id,
-							label: item2.lable
-						}
-						tempChildrenArr.push(tempChildrenObj)
-					})
-					tempObj.children = tempChildrenArr
-					tempTagArr.push(tempObj)
-				})
-				this.tagOptions = tempTagArr
 				// 获取色号产品数据
 				this.getColorProductData(1, 20)
 				//获取模型数据
@@ -334,8 +598,75 @@
 			},
 			// 确认新增
 			handleAdd() {
+				// 格式化表单数据为参数所需类型
+				var testObj = {};
+				for (var key in this.formLabelAdd) {
+					if (key != 'lableId' && key != 'productColor' && key != 'purposeId') {
+						testObj[key] = this.formLabelAdd[key]
+					}
+				}
+				if (this.formLabelAdd.lableId.length > 0) {
+					testObj.lableId = this.formLabelAdd.lableId[this.formLabelAdd.lableId.length - 1];
+				}
+				if (this.tempImgUrl) {
+					testObj.image = `<img src="${this.tempImgUrl}" alt="" />`
+				}
+				var productColorString = '';
+				var purposeIdString = '';
+				if (this.formLabelAdd.productColor.length > 0) {
+					for (let i = 0; i < this.formLabelAdd.productColor.length; i++) {
+						productColorString += `&productColor=${this.formLabelAdd.productColor[i]}`
+					}
+				}
+				if (this.formLabelAdd.purposeId.length > 0) {
+					for (let i = 0; i < this.formLabelAdd.purposeId.length; i++) {
+						purposeIdString += `&purposeId=${this.formLabelAdd.purposeId[i]}`
+					}
+				}
 				console.log(this.formLabelAdd)
-				console.log(this.tempImgUrl)
+				let paramsStr = this.$qs.stringify(testObj) + productColorString + purposeIdString
+				this.$axios.post('/management/admin/beauty-details!save.action', paramsStr).then(res => {
+					this.getTableData('/management/admin/beauty-details!list.action', this.page, this.row, this.tempId);
+					this.AddVisible = false;
+					this.tempImgUrl = '';
+					this.formLabelAdd = {
+						name: '',
+						purposeId: [],
+						level: '',
+						lableId: [],
+						greatNumber: '',
+						clickNumber: '',
+						pageView: '',
+						minute: '',
+						selectName: '',
+						productColor: [],
+						moduleId: '',
+						videoUrl: '',
+						about: '',
+						image: ''
+					}
+				})
+			},
+			// 取消新增
+			cancelAdd() {
+				this.AddVisible = false;
+				this.formLabelAdd = {
+					name: '',
+					purposeId: [],
+					level: '',
+					lableId: [],
+					greatNumber: '',
+					clickNumber: '',
+					pageView: '',
+					minute: '',
+					selectName: '',
+					productColor: [],
+					moduleId: '',
+					videoUrl: '',
+					about: '',
+					image: ''
+				}
+				this.tempImgUrl = '';
 			},
 			// 点击新增色号
 			addNewColor() {
@@ -375,6 +706,7 @@
 					colorName: '',
 					image: ''
 				}
+				this.tempImgUrl = '';
 				this.fileList = [];
 				this.addColorDialogVisible = false
 			},
@@ -417,6 +749,10 @@
 				this.getTableData(`/management/admin/beauty-details!list.action`, this.page, this.row, a.id)
 			},
 			// 上传操作
+			handlePictureCardPreview(file) {
+				this.dialogImageUrl = file.url;
+				this.imgDialogVisible = true;
+			},
 			beforeUpload(file) {
 				this.imgData.FileName = file.name;
 				this.imgData.imgFile = file
@@ -435,39 +771,252 @@
 			// 表格操作
 			// 编辑
 			edit(index, row) {
+				var that = this;
+				that.editDialogVisible = true;
+				// 获取色号产品数据
+				that.getColorProductData(1, 10)
+				//获取模型数据
+				that.getModuleData();
+				var tempObj = {};
+				// 格式化row格式填充表单
+				for (var key in row) {
+					if (key != 'ids' && key != 'lableId') {
+						tempObj[key] = row[key]
+					}
+				}
 
+				function formatPurpose() {
+					return that.$axios.get('/management/admin/purpose!getList.action')
+				}
+
+				function formatBeautyColor() {
+					return that.$axios.get(`/management/admin/beauty-color!getSelectDetail.action?id=${row.id}`)
+				}
+				that.$axios.all([formatPurpose(), formatBeautyColor()]).then(that.$axios.spread(function(purposeData, colorData) {
+					tempObj.productColor = [];
+					that.purposeOptions = purposeData.data;
+					let temp = row.ids.split(',');
+					let arr = [];
+					for (let i = 0; i < temp.length; i++) {
+						purposeData.data.forEach(item => {
+							if (item.id == temp[i]) {
+								arr.push(item.id)
+							}
+						})
+					}
+					tempObj.purposeId = arr;
+					let productArr = colorData.data.color;
+					if (productArr.length > 0) {
+						productArr.forEach(item => {
+							tempObj.productColor.push(item.id)
+						})
+					}
+					that.formatTreeData(_ => {
+						tempObj.lableId = [];
+						if (row.lableId) {
+							tempObj.lableId.push(row.lableId);
+							// 查询标签是否有父级
+							that.$axios.get(`/management/admin/lable!input.action?id=${row.lableId}`).then(res => {
+								if (res.data.lableId) {
+									tempObj.lableId.unshift(res.data.lableId)
+								}
+								that.editFormData = tempObj
+							})
+						} else {
+							that.editFormData = tempObj
+						}
+					});
+				}));
+				// 显示图片
+				let testExp = /http.*?(\.png|\.jpg)/gi;
+				if (row.image) {
+					this.editFileList = [{
+						name: '教程图片',
+						url: row.image.match(testExp)[0]
+					}]
+				}
+			},
+			// 取消编辑
+			cancelEdit() {
+				this.editDialogVisible = false;
+				// 清空所有选项
+				this.editFormData = {
+					name: '',
+					purposeId: [],
+					level: '',
+					lableId: [],
+					greatNumber: '',
+					clickNumber: '',
+					pageView: '',
+					minute: '',
+					selectName: '',
+					productColor: [],
+					moduleId: '',
+					videoUrl: '',
+					about: '',
+					image: ''
+				}
+				this.tempImgUrl = '';
+				this.editFileList = [];
+			},
+			// 提交编辑
+			handleEdit() {
+				console.log(this.editFormData)
+				var testObj = {};
+				for (var key in this.editFormData) {
+					if (key != 'lableId' && key != 'productColor' && key != 'purposeId') {
+						testObj[key] = this.editFormData[key]
+					}
+				}
+				if (this.editFormData.lableId.length > 0) {
+					testObj.lableId = this.editFormData.lableId[this.editFormData.lableId.length - 1];
+				}
+				if (this.tempImgUrl) {
+					testObj.image = `<img src="${this.tempImgUrl}" alt="" />`
+				}
+				var productColorString = '';
+				var purposeIdString = '';
+				if (this.editFormData.productColor.length > 0) {
+					for (let i = 0; i < this.editFormData.productColor.length; i++) {
+						productColorString += `&productColor=${this.editFormData.productColor[i]}`
+					}
+				}
+				if (this.editFormData.purposeId.length > 0) {
+					for (let i = 0; i < this.editFormData.purposeId.length; i++) {
+						purposeIdString += `&purposeId=${this.editFormData.purposeId[i]}`
+					}
+				}
+				console.log(testObj)
+				console.log(productColorString)
+				console.log(purposeIdString)
+				let paramsStr = this.$qs.stringify(testObj) + productColorString + purposeIdString
+				this.$axios.post(`/management/admin/beauty-details!save.action?id=${this.editFormData.id}`, paramsStr).then(res => {
+					this.getTableData('/management/admin/beauty-details!list.action', this.page, this.row, this.tempId);
+					this.editDialogVisible = false;
+					this.tempImgUrl = '';
+					this.editFormData = {
+						name: '',
+						purposeId: [],
+						level: '',
+						lableId: [],
+						greatNumber: '',
+						clickNumber: '',
+						pageView: '',
+						minute: '',
+						selectName: '',
+						productColor: [],
+						moduleId: '',
+						videoUrl: '',
+						about: '',
+						image: ''
+					}
+				})
 			},
 			// 删除
 			deleteRow(index, row) {
 				this.$confirm("确认删除？")
 					.then(_ => {
-						this.tableData.splice(index, 1);
+						console.log(123);
+						this.$axios.get(`/management/admin/beauty-details!delete.action?id=${row.id}`).then(res => {
+							console.log(res);
+							this.getTableData(`/management/admin/beauty-details!list.action`, this.page, this.row, this.tempId)
+						})
 					})
 					.catch(_ => {});
 			},
 			// 切换状态
-			switchOnline(index, row) {
-
+			switchOnline(index) {
+				let status = this.tableData[index].online == 0 ? 1 : 0;
+				this.$axios.post(`/management/admin/beauty-details!online.action?id=${this.tableData[index].id}&online=${status}`).then(
+					res => {
+						this.$message.success('切换状态成功')
+						this.getTableData(`/management/admin/beauty-details!list.action`, this.page, this.row, this.tempId)
+					})
 			},
 			// 创建H5页面
-			creatH5() {
-
+			creatH5(index, row) {
+				this.$axios.post(`/management/admin/beauty-details!saveHtml.action?id=${row.id}`).then(
+					res => {
+						if (res.status == 200) {
+							this.$message.success('H5页面创建成功')
+						} else {
+							this.$message.error('好像出了点问题-.-！')
+						}
+					})
 			},
 			// 更新排序
 			updataSort(index, row) {
-
+				this.$axios.post(`/management/admin/beauty-details!updateTime.action?id=${row.id}`).then(
+					res => {
+						if (res.status == 200) {
+							this.$message.success('排序更新成功')
+						} else {
+							this.$message.error('好像出了点问题-.-！')
+						}
+					})
 			},
 			// 推送
 			push(index, row) {
-
+				console.log(index);
+				console.log(row)
+				this.pushDialogVisible=true
+			},
+			cancelPush(){
+				this.pushDialogVisible=false
+			},
+			handlePush(){
+				console.log(this.pushForm)
 			},
 			// 增加评论
 			addComment(index, row) {
-
+				// 获取用户数据
+				this.getUserData(this.userPage,this.userRow);
+				this.addCommentForm.id=row.id
+				this.addCommentDialogVisible=true
+			},
+			cancelAddComment(){
+				this.addCommentDialogVisible=false
+			},
+			handleAddComment(){
+				// 判断是回复评论还是直接评论
+				if(this.commentDetailId){
+					console.log(this.addCommentForm)
+					console.log(this.commentDetailId)
+// 					this.$axios.post(`/management/admin/comment!save.action?detailsId=${row.detailsId}&id=${row.id}&type=1`,this.$qs.stringify(this.addCommentForm)).then(res=>{
+// 						console.log(res)
+// 					})					
+				}else{
+					console.log(this.addCommentForm)
+					let id=this.addCommentForm.id;
+					let tempObj=this.addCommentForm;
+					delete tempObj.id;
+					this.$axios.post(`/management/admin/comment!save.action?detailsId=${id}&type=1`,this.$qs.stringify(tempObj)).then(res=>{
+						this.addCommentDialogVisible=false;
+						this.$message.success('添加成功！')
+						this.addCommentForm={}
+					}).catch(e=>{
+						this.$message.error('出了点问题-.-！')
+					})
+				}
+				
 			},
 			// 查看评论
 			checkComment(index, row) {
-
+				console.log(index);
+				console.log(row);
+				this.checkCommentDialogVisible=true;
+				this.tempRowId=row.id
+				this.getCommentData(this.commentPage,this.commentRow,row.id)
+			},
+			deleteComment(index,rows){
+				console.log(index);
+				console.log(rows)
+			},
+			checkAddComment(index, row){
+				//  /management/admin/comment!save.action?detailsId=391&id=1626&type=1
+				// 添加评论回复
+				this.commentDetailId=row.id;
+				this.addCommentDialogVisible=true;
 			},
 			// 分页
 			changePage(val) {
@@ -490,11 +1039,29 @@
 			// 色号产品分页
 			changeProductPage(val) {
 				this.colorPage = val;
-				this.getProductData(val, this.paoducRow, this.searchProduct)
+				this.getProductData(val, this.productRow, this.searchProduct)
 			},
 			changeProductSize(val) {
 				this.colorRow = val;
 				this.getProductData(this.productPage, val, this.searchProduct)
+			},
+			// 用户分页
+			changeUserPage(val) {
+				this.userPage = val;
+				this.getUserData(val, this.userRow)
+			},
+			changeUserSize(val) {
+				this.userRow = val;
+				this.getUserData(this.userPage, val)
+			},
+			// 评论分页
+			changeCommentPage(val) {
+				this.commentPage = val;
+				this.getCommentData(val, this.commentRow,this.tempRowId)
+			},
+			changeCommentSize(val) {
+				this.commentRow = val;
+				this.getCommentData(this.commentPage, val,this.tempRowId)
 			},
 			// 数据格式化
 			getLevel(row, column, levelNum) {
@@ -576,6 +1143,61 @@
 				this.$axios.get('/management/admin/beauty-module!getList.action').then(res => {
 					this.moduleOptions = res.data
 				})
+			},
+			// 用户数据
+			getUserData(page,row){
+				this.$axios.get('/management/admin/beauty-user!comboGridlist.action', {
+					params: {
+						page: page,
+						rows: row
+					}
+				}).then(res => {
+					this.userTotalNum = res.data.total
+					this.userOptions = res.data.rows
+				})
+			},
+			// 评论数据
+			getCommentData(page,row,id){
+				this.$axios.get(`/management/admin/comment!list.action?detailsId=${id}&type=1`, {
+					params: {
+						page: page,
+						rows: row
+					}
+				}).then(res => {
+					if(res.data.total>0){
+						this.commentTotalNum = res.data.total
+						this.commentTableData = res.data.rows;
+						
+					}
+				})
+			},
+			// 序列化树形数据
+			formatTreeData(callback) {
+				// 序列化标签数据用于表单
+				var tempTagArr = [];
+				this.treeData.forEach(item2 => {
+					var tempObj = {};
+					tempObj = {
+						value: item2.id,
+						label: item2.lable,
+						children: item2.children
+					}
+					var tempChildrenArr = []
+					if (item2.children.length > 0) {
+						item2.children.forEach(item3 => {
+							var tempChildrenObj = {};
+							tempChildrenObj = {
+								value: item3.id,
+								label: item3.lable
+							}
+							tempChildrenArr.push(tempChildrenObj)
+						})
+						tempObj.children = tempChildrenArr
+					}
+					tempTagArr.push(tempObj)
+				})
+				this.tagOptions = tempTagArr
+				callback();
 			}
 		},
 		mounted() {
