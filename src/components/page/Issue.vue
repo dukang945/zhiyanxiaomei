@@ -1,9 +1,9 @@
 <template>
-    <div>
-        <div class="handle-box">
+  <div>
+    <div class="handle-box">
       <el-button type="primary" @click="AddVisible = true">新增</el-button>
       <el-input v-model="issue_Search" placeholder="请输入搜索类容" style="width: 30%">
-          <el-button slot="append" icon="el-icon-search" @click="issueSearch"></el-button>
+        <el-button slot="append" icon="el-icon-search" @click="issueSearch"></el-button>
       </el-input>
       <el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
         <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
@@ -71,17 +71,17 @@
         </template>
       </el-table-column>
     </el-table>
-      <Pagination :totalNum='totalNum' @change_Page='changePage' @change_Size='changeSize'></Pagination>
-    </div>
+    <Pagination :totalNum="totalNum" @change_Page="changePage" @change_Size="changeSize"></Pagination>
+  </div>
 </template>
 
 <script>
-import Pagination from '@/components/module/Pagination.vue'
-   export default {
+import Pagination from "@/components/module/Pagination.vue";
+export default {
   data() {
     return {
       issueList: [],
-      issue_Search:'',
+      issue_Search: "",
       dialogVisible: false,
       AddVisible: false,
       labelPosition: "left",
@@ -94,32 +94,32 @@ import Pagination from '@/components/module/Pagination.vue'
       formLabelAdd: {
         question: "",
         suggest: "",
-        effect:''
+        effect: ""
       },
       page: 1,
-				row: 10,
-				totalNum: 1
+      row: 10,
+      totalNum: 1
     };
   },
   components: {
-			Pagination
-		},
+    Pagination
+  },
   mounted() {
-    this.getIssueList(1,10);
+    this.getIssueList(1, 10);
   },
   methods: {
-    getIssueList(page,row) {
+    getIssueList(page, row) {
       this.$axios
-        .get("/management/admin/skin-problems!list.action",{
-					params: {
-						page: page,
-						rows: row
-					}
-				})
+        .get("/management/admin/skin-problems!list.action", {
+          params: {
+            page: page,
+            rows: row
+          }
+        })
         .then(res => {
           console.log(res, "");
           if (res.status == 200) {
-            this.totalNum = res.data.total
+            this.totalNum = res.data.total;
             this.issueList = res.data.rows;
           } else {
             this.$message.error("请求数据失败!");
@@ -128,25 +128,25 @@ import Pagination from '@/components/module/Pagination.vue'
     },
     // 编辑
     handleEdit(index, row) {
-      this.idx = row.id
-      this.$axios.get(`/management/admin/skin-problems!input.action?id=${this.idx}`).then(
-        res => {
-          if(res.status == 200) {
-           this.formLabelAlign = res.data
+      this.idx = row.id;
+      this.$axios
+        .get(`/management/admin/skin-problems!input.action?id=${this.idx}`)
+        .then(res => {
+          if (res.status == 200) {
+            this.formLabelAlign = res.data;
           }
-        }
-      )
+        });
       this.dialogVisible = true;
     },
     //保存编辑
     saveEdit() {
-       this.$axios
+      this.$axios
         .post(
           `/management/admin/skin-problems!save.action?id=${this.idx}`,
           this.$qs.stringify({
             question: this.formLabelAlign.question,
             effect: this.formLabelAlign.effect,
-            suggest:this.formLabelAlign.suggest
+            suggest: this.formLabelAlign.suggest
           })
         )
         .then(res => {
@@ -166,7 +166,9 @@ import Pagination from '@/components/module/Pagination.vue'
         type: "warning"
       }).then(() => {
         this.$axios
-          .get(`/management/admin/skin-problems!delete.action?id=${rows[index].id}`)
+          .get(
+            `/management/admin/skin-problems!delete.action?id=${rows[index].id}`
+          )
           .then(res => {
             if (res.status == 200) {
               this.$message.success("删除成功");
@@ -177,50 +179,55 @@ import Pagination from '@/components/module/Pagination.vue'
     },
     // 新增
     handleAdd() {
-      this.$axios.post('/management/admin/skin-problems!save.action',this.$qs.stringify({
-        question:this.formLabelAdd.question,
-        effect:this.formLabelAdd.effect,
-        suggest:this.formLabelAdd.suggest
-      })).then(
-        res => {
-          if(res.status == 200) {
+      this.$axios
+        .post(
+          "/management/admin/skin-problems!save.action",
+          this.$qs.stringify({
+            question: this.formLabelAdd.question,
+            effect: this.formLabelAdd.effect,
+            suggest: this.formLabelAdd.suggest
+          })
+        )
+        .then(res => {
+          if (res.status == 200) {
             this.AddVisible = false;
-            this.$message.success('添加成功')
+            this.$message.success("添加成功");
             this.getIssueList();
           }
-        }
-      )
+        });
     },
     handleClose(done) {
-      done()
+      done();
     },
     // 搜索
-    issueSearch(){
-        this.$axios.post('/management/admin/skin-problems!list.action',this.$qs.stringify({
-            filter_LIKES_question:this.issue_Search,
-            page:1,
-            rows:10
-        })).then(
-            res => {
-                if(res.status == 200) {
-                    console.log(res, '')
-                    this.issueList = res.data.rows
-                }
-            }
+    issueSearch() {
+      this.$axios
+        .post(
+          "/management/admin/skin-problems!list.action",
+          this.$qs.stringify({
+            filter_LIKES_question: this.issue_Search,
+            page: 1,
+            rows: 10
+          })
         )
+        .then(res => {
+          if (res.status == 200) {
+            console.log(res, "");
+            this.issueList = res.data.rows;
+          }
+        });
     },
     changePage(val) {
-				this.page = val;
-				this.getIssueList(val, this.row)
-			},
-			changeSize(val) {
-				this.row = val;
-				this.getIssueList(this.page, val)
-			},
+      this.page = val;
+      this.getIssueList(val, this.row);
+    },
+    changeSize(val) {
+      this.row = val;
+      this.getIssueList(this.page, val);
+    }
   }
 };
 </script>
 
 <style scoped>
-
 </style>

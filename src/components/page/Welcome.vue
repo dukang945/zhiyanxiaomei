@@ -52,7 +52,7 @@
 
 <script>
 	
-	import Slide from '../module/Slider.vue'
+	import Slide from '@/components/module/Slider.vue'
 	export default {
 		data() {
 			return {

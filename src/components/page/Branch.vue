@@ -63,6 +63,7 @@
                 :visible.sync="dialogVisible"
                 width="30%"
                 :before-close="handleClose"
+                append-to-body
               >
                 <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
                   <el-form-item label="步骤父类">
@@ -240,7 +241,6 @@ export default {
           if (res.status == 200) {
             this.dialogVisible = false;
             this.$message.success(`添加成功`);
-            this.getCategoryList();
           }
         });
     },
