@@ -21,6 +21,11 @@ body {
   
   height: 100%;
 }
-
-
+.el-upload-list__item {
+		transition: none;
+	}
+.el-table__body tr.online {
+		/* background-color: #f0f9eb; c7e2ff  */
+		background-color: #c7e2ff;  
+	}
 </style>
