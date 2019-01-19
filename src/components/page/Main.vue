@@ -1,10 +1,16 @@
 <template>
-    <div>
-        <div class="handle-box">
-      <el-button type="primary" @click="AddVisible = true">新增</el-button>
-      <el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
-        <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
-          <el-form-item label="名称">
+  <div>
+    <div class="handle-box">
+      <el-button type="primary" @click="AddVisible = true" size="small" v-has>新增</el-button>
+      <el-dialog title="新增" :visible.sync="AddVisible" width="30%">
+        <el-form
+          :label-position="labelPosition"
+          label-width="80px"
+          :model="formLabelAdd"
+          :rules="rules"
+          ref="formLabelAdd"
+        >
+          <el-form-item label="名称" prop="name">
             <el-input v-model="formLabelAdd.name"></el-input>
           </el-form-item>
         </el-form>
@@ -19,74 +25,85 @@
         <template slot-scope="scope">{{ scope.row.id }}</template>
       </el-table-column>
       <el-table-column prop="name" label="名称"></el-table-column>
-      <el-table-column label="操作" width="120">
+      <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, mainList)"
             type="danger"
             size="small"
-            circle
             class="el-icon-delete"
-          ></el-button>
+            v-del
+          >删除</el-button>
           <el-button
             size="small"
             type="primary"
             icon="el-icon-edit"
-            circle
             @click="handleEdit(scope.$index, scope.row)"
-          ></el-button>
+            v-has
+          >编辑</el-button>
           <el-dialog
             title="编辑"
             :visible.sync="dialogVisible"
             width="30%"
             :before-close="handleClose"
           >
-            <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
-              <el-form-item label="名称">
+            <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign" :rules="rules"
+          ref="formLabelAlign">
+              <el-form-item label="名称" prop="name">
                 <el-input v-model="formLabelAlign.name"></el-input>
               </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
               <el-button @click="dialogVisible = false">取 消</el-button>
-              <el-button type="primary" @click="saveEdit">确 定</el-button>
+              <el-button type="primary" @click="saveEdit('formLabelAlign')">确 定</el-button>
             </span>
           </el-dialog>
         </template>
       </el-table-column>
     </el-table>
-    </div>
+     <Pagination :totalNum="totalNum" @change_Page="changePage" @change_Size="changeSize"></Pagination>
+  </div>
 </template>
 
 <script>
-   export default {
+import Pagination from "@/components/module/Pagination.vue";
+export default {
   data() {
     return {
       mainList: [],
-      ingredient_Search:'',
+      ingredient_Search: "",
       dialogVisible: false,
       AddVisible: false,
       labelPosition: "left",
       idx: -1,
-      currentPage4: 1,
-      formLabelAlign: {
+      page: 1,
+      row: 10,
+      totalNum: 1,
+      rules: {
+        name: [{ required: true, message: "请输入名称", trigger: "blur" }]
       },
+      formLabelAlign: {},
       formLabelAdd: {
         date: "",
         name: ""
       }
     };
   },
+  components: {
+    Pagination
+  },
   mounted() {
     this.getMainList();
   },
   methods: {
-    getMainList() {
+    getMainList(page,row) {
       this.$axios
-        .post("/management/admin/beauty-order!list.action")
+        .post("/management/admin/beauty-order!list.action",{params:{page,row}})
         .then(res => {
           console.log(res, "");
           if (res.status == 200) {
             this.mainList = res.data.rows;
+            this.totalNum =res.data.total
           } else {
             this.$message.error("请求数据失败!");
           }
@@ -94,18 +111,40 @@
     },
     // 编辑
     handleEdit(index, row) {
-      this.idx = index;
-      const item = this.mainList[index];
-      this.formLabelAlign = {
-        name: item.name
-      };
+      this.idx = row.id;
       this.dialogVisible = true;
+      this.$axios
+        .get(`/management/admin/beauty-order!input.action?id=${this.idx}`)
+        .then(res => {
+          if (res.status == 200) {
+            this.formLabelAlign = res.data;
+          }
+        });
     },
     //保存编辑
-    saveEdit() {
-      this.$set(this.tableData3, this.idx, this.formLabelAlign);
-      this.dialogVisible = false;
-      this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+    saveEdit(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.$axios
+            .post(
+              `/management/admin/beauty-order!input.action?id=${this.idx}`,
+              this.$qs.stringify({
+                name: this.formLabelAlign.name
+              })
+            )
+            .then(res => {
+              if (res.status == 200) {
+                this.dialogVisible = false;
+                this.$message.success(`修改成功`);
+                this.getMainList()
+                this.formLabelAlign={}
+              }
+            });
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
     //删除
     deleteRow(index, rows) {
@@ -116,7 +155,9 @@
         type: "warning"
       }).then(() => {
         this.$axios
-          .get(`/management/admin/beauty-order!delete.action?id=${rows[index].id}`)
+          .get(
+            `/management/admin/beauty-order!delete.action?id=${rows[index].id}`
+          )
           .then(res => {
             if (res.status == 200) {
               this.$message.success("删除成功");
@@ -127,25 +168,38 @@
     },
     // 新增
     handleAdd() {
-      this.$axios.post('/management/admin/beauty-order!save.action',this.$qs.stringify({name:this.formLabelAdd.name})).then(
-        res => {
-          if(res.status == 200) {
-             this.AddVisible = false;
-            this.$message.success('添加成功')
+      this.$axios
+        .post(
+          "/management/admin/beauty-order!save.action",
+          this.$qs.stringify({ name: this.formLabelAdd.name })
+        )
+        .then(res => {
+          if (res.status == 200) {
+            this.AddVisible = false;
+            this.$message.success("添加成功");
             this.getMainList();
+            this.formLabelAdd={}
           }
-        }
-      )
+        });
     },
     handleClose(done) {
+      done();
+    },
     
-          done();
-       
+  changePage(val) {
+      this.page = val;
+      this.getMainList(val, this.row);
+    },
+    changeSize(val) {
+      this.row = val;
+      this.getMainList(this.page, val);
     }
   }
 };
 </script>
 
 <style scoped>
-
+.handle-box {
+  padding-bottom: 20px;
+}
 </style>

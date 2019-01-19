@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="handle-box">
-      <el-button type="primary" @click="AddVisible = true" size="small">新增</el-button>
+      <el-button type="primary" @click="AddVisible = true" size="small" v-has>新增</el-button>
       <el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
         <el-form
           :label-position="labelPosition"
@@ -60,6 +60,7 @@
             size="small"
             circle
             class="el-icon-delete"
+            v-del
           ></el-button>
           <el-button
             size="small"
@@ -67,6 +68,7 @@
             icon="el-icon-edit"
             circle
             @click="handleEdit(scope.$index, scope.row)"
+            v-has
           ></el-button>
           <el-dialog
             title="编辑"
@@ -202,16 +204,16 @@ export default {
         .then(res => {
           if (res.status == 200) {
             this.formLabelAlign = res.data;
+            console.log(this.formLabelAlign)
             const selectedList = [];
             function temp(id) {
               _this.$axios
                 .get(`/management/admin/resource!input.action?id=${id}`)
                 .then(res => {
-                  if (res.data.parentId & (res.data.id != res.data.parentId)) {
+                  if (res.data.parentId) {
                     selectedList.unshift(res.data.parentId);
                     temp(res.data.parentId);
                     _this.formLabelAlign.selectedList = selectedList;
-                    // _this.dialogVisible = true;
                   } else {
                     _this.dialogVisible = true;
                   }
@@ -231,9 +233,9 @@ export default {
               this.$qs.stringify({
                 name: this.formLabelAlign.name,
                 enname: this.formLabelAlign.enname,
-                parentId: this.formLabelAlign.selectedList[
+                parentId: this.formLabelAlign.selectedList?this.formLabelAlign.selectedList[
                   this.formLabelAlign.selectedList.length - 1
-                ],
+                ]:'',
                 link: this.formLabelAlign.link,
                 icon: this.formLabelAlign.icon,
                 orderid: this.formLabelAlign.orderid,

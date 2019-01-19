@@ -1,19 +1,19 @@
 <template>
   <div>
     <div class="handle-box">
-      <el-button type="primary" @click="AddVisible = true">新增</el-button>
-      <el-input v-model="makeup_Search" placeholder="请输入搜索类容" style="width: 30%">
-        <el-button slot="append" icon="el-icon-search"></el-button>
+      <el-button type="primary" @click="AddVisible = true" v-has size="small">新增</el-button>
+      <el-input v-model="makeup_Search" placeholder="请输入产品名称" style="width: 30%" size="small">
+        <el-button slot="append" icon="el-icon-search" @click="productSearch"></el-button>
       </el-input>
-      <el-select v-model="grid" filterable clearable placeholder="请选择品牌">
+      <el-select v-model="grid" filterable clearable placeholder="请选择品牌" size="small">
         <el-option v-for="item in gridList" :key="item.id" :label="item.name" :value="item.id"></el-option>
         <Pagination :totalNum="totalNum1" @change_Page="changePage1" @change_Size="changeSize1"></Pagination>
       </el-select>
-      <el-select v-model="category" filterable clearable placeholder="请选择分类">
+      <el-select v-model="category" filterable clearable placeholder="请选择分类" size="small">
         <el-option v-for="item in categoryList" :key="item.id" :label="item.name" :value="item.id"></el-option>
         <Pagination :totalNum="totalNum2" @change_Page="changePage2" @change_Size="changeSize2"></Pagination>
       </el-select>
-      <el-button type="primary" icon="el-icon-search" @click="makeupSearch">搜索</el-button>
+      <el-button type="primary" icon="el-icon-search" @click="makeupSearch" size="small">搜索</el-button>
       <el-dialog title="新增" :visible.sync="AddVisible" :before-close="handleClose">
         <el-form
           :label-position="labelPosition"
@@ -32,8 +32,8 @@
           <el-form-item label="新增品牌">
             <el-button type="primary" icon="el-icon-circle-plus-outline" size="small" class="add">新增</el-button>
           </el-form-item>
-          <el-form-item label="品牌" prop="grid">
-            <el-select v-model="formLabelAdd.grid" filterable clearable placeholder="请选择品牌">
+          <el-form-item label="品牌" prop="brandId">
+            <el-select v-model="formLabelAdd.brandId" filterable clearable placeholder="请选择品牌">
               <el-option
                 v-for="item in gridList"
                 :key="item.id"
@@ -64,7 +64,13 @@
             <el-input v-model="formLabelAdd.elementId"></el-input>
           </el-form-item>
           <el-form-item label="分类">
-            <el-select v-model="category2" filterable clearable placeholder="请选择分类">
+            <el-select
+              v-model="formLabelAdd.categoryId"
+              filterable
+              clearable
+              :change="change"
+              placeholder="请选择分类"
+            >
               <el-option
                 v-for="(item,index) in categoryList"
                 :key="index"
@@ -92,7 +98,7 @@
             <el-input v-model="formLabelAdd.appraisalUrl"></el-input>
           </el-form-item>
           <el-form-item label="功效">
-            <el-select v-model="problem" filterable clearable placeholder="请选择功效">
+            <el-select v-model="formLabelAdd.gx" filterable clearable multiple placeholder="请选择功效">
               <el-option
                 v-for="(item,index) in problemList"
                 :key="index"
@@ -117,12 +123,12 @@
             <el-upload
               class="upload-demo"
               action="management/admin/kcupload!uploadImage.action"
-              :data="imgData"
+              :data="imgData1"
               :on-preview="handlePreview"
-              :on-remove="handleRemove"
+              :on-remove="handleRemove1"
               :on-success="handleSuccess1"
               :file-list="fileList"
-              :before-upload="beforeUpload"
+              :before-upload="beforeUpload1"
               list-type="picture"
             >
               <el-button size="small" type="primary">点击上传</el-button>
@@ -143,22 +149,22 @@
       <el-table-column prop="name" label="产品名称"></el-table-column>
       <el-table-column prop="brandName" label="品牌名称"></el-table-column>
       <el-table-column prop="creatUser" label="操作人"></el-table-column>
-      <el-table-column label="操作" width="120">
+      <el-table-column label="操作" >
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, makeupList)"
             type="danger"
             size="small"
-            circle
             class="el-icon-delete"
-          ></el-button>
+            v-del
+          >删除</el-button>
           <el-button
             size="small"
             type="primary"
             icon="el-icon-edit"
-            circle
             @click="handleEdit(scope.$index, scope.row)"
-          ></el-button>
+            v-has
+          >编辑</el-button>
           <el-dialog title="编辑" :visible.sync="dialogVisible" :before-close="handleClose">
             <el-form
               :label-position="labelPosition"
@@ -182,9 +188,9 @@
                   class="add"
                 >新增</el-button>
               </el-form-item>
-              <el-form-item label="品牌" prop="category">
+              <el-form-item label="品牌" prop="brandId">
                 <el-select
-                  v-model="formLabelAlign.category"
+                  v-model="formLabelAlign.brandId"
                   filterable
                   clearable
                   placeholder="请选择品牌"
@@ -206,7 +212,7 @@
                   ></el-pagination>
                 </el-select>
               </el-form-item>
-              <el-form-item label="参考价格">
+              <el-form-item label="参考价格" prop="price">
                 <el-input v-model="formLabelAlign.price"></el-input>
               </el-form-item>
               <el-form-item label="好评率(例如90%就填9.0)">
@@ -219,7 +225,12 @@
                 <el-input v-model="formLabelAlign.elementId"></el-input>
               </el-form-item>
               <el-form-item label="分类">
-                <el-select v-model="category2" filterable clearable placeholder="请选择分类">
+                <el-select
+                  v-model="formLabelAlign.categoryId"
+                  filterable
+                  clearable
+                  placeholder="请选择分类"
+                >
                   <el-option
                     v-for="(item,index) in categoryList"
                     :key="index"
@@ -247,7 +258,13 @@
                 <el-input v-model="formLabelAlign.appraisalUrl"></el-input>
               </el-form-item>
               <el-form-item label="功效">
-                <el-select v-model="problem" filterable clearable placeholder="请选择功效">
+                <el-select
+                  v-model="formLabelAlign.gx"
+                  filterable
+                  clearable
+                  multiple
+                  placeholder="请选择功效"
+                >
                   <el-option
                     v-for="(item,index) in problemList"
                     :key="index"
@@ -277,6 +294,7 @@
                   :on-remove="handleRemove"
                   :on-success="handleSuccess"
                   :file-list="fileList2"
+                  :limit="1"
                   :before-upload="beforeUpload"
                   list-type="picture"
                 >
@@ -311,29 +329,15 @@ export default {
       fileList: [],
       imgData: {},
       imgData1: {},
-      category: "",
-      category2: "",
-      grid: "",
-      grid2: "",
-      problem: "",
       makeup_Search: "",
       dialogVisible: false,
       AddVisible: false,
       labelPosition: "left",
+      grid:'',
+      category:'',
       idx: -1,
-      currentPage4: 1,
-      formLabelAlign: {
-        name: "",
-        price: "",
-        category: "",
-        specification: ""
-      },
-      formLabelAdd: {
-        name: "",
-        price: "",
-        category: "",
-        specification: ""
-      },
+      formLabelAlign: {},
+      formLabelAdd: {},
       page1: 1,
       row1: 10,
       totalNum1: 1,
@@ -356,6 +360,9 @@ export default {
         name: [{ required: true, message: "请输入产品名称", trigger: "blur" }],
         price: [{ required: true, message: "请输入产品价格", trigger: "blur" }],
         category: [
+          { required: true, message: "请输入产品品牌", trigger: "change" }
+        ],
+        brandId: [
           { required: true, message: "请输入产品品牌", trigger: "change" }
         ],
         specification: [
@@ -454,17 +461,45 @@ export default {
         .then(res => {
           if (res.status == 200) {
             console.log(res);
-            this.formLabelAlign = res.data;
+            // this.formLabelAlign = res.data;
             this.$axios
               .get(
                 `management/admin/beauty-product!getSelectDetail.action?id=${
                   this.idx
                 }`
               )
-              .then(res => {
-                if (res.status == 200) {
-                  this.formLabelAlign.brandId = res.data.brandId;
-                  this.formLabelAlign.category = res.data.brandId.name;
+              .then(res2 => {
+                if (res2.status == 200) {
+                  this.formLabelAlign = res.data;
+                  if (res.data.image) {
+                    this.fileList2 = [{ url: res.data.image }];
+                  }
+
+                  this.$set(
+                    this.formLabelAlign,
+                    "brandId",
+                    res2.data.brandId.id
+                  );
+                  if (res2.data.fs) {
+                    this.$set(this.formLabelAlign, "fs", res.data.fs);
+                  }
+                  if (res2.data.gx) {
+                    // this.formLabelAlign.gx =res.data.gx
+                    let gx = [];
+                    for (let i = 0; i < res2.data.gx.length; i++) {
+                      gx.push(res2.data.gx[i].id);
+                    }
+                    this.$set(this.formLabelAlign, "gx", gx);
+                  } else {
+                    this.$set(this.formLabelAlign, "gx", []);
+                  }
+                  if (res2.data.categoryId) {
+                    this.$set(
+                      this.formLabelAlign,
+                      "categoryId",
+                      res2.data.categoryId.id
+                    );
+                  }
                 }
               });
           }
@@ -472,33 +507,43 @@ export default {
     },
     //保存编辑
     saveEdit(formName) {
+      console.log(this.formLabelAlign);
       this.$refs[formName].validate(valid => {
         if (valid) {
+          let gx = "";
+          if (this.formLabelAlign.gx.length) {
+            for (let i = 0; i < this.formLabelAlign.gx.length; i++) {
+              gx += "&gx=" + this.formLabelAlign.gx[i];
+            }
+          }
+          let params =
+            this.$qs.stringify({
+              name: this.formLabelAlign.name,
+              specification: this.formLabelAlign.specification,
+              brandId: this.formLabelAlign.brandId,
+              price: this.formLabelAlign.price,
+              grade: this.formLabelAlign.grade,
+              synopsis: this.formLabelAlign.synopsis,
+              elementId: this.formLabelAlign.elementId,
+              method: this.formLabelAlign.method,
+              categoryId: this.formLabelAlign.categoryId,
+              ageDistribution: this.formLabelAlign.ageDistribution,
+              skinType: this.formLabelAlign.skinType,
+              appraisalUrl: this.formLabelAlign.appraisalUrl,
+              fs: this.formLabelAlign.fs,
+              image: `<img src="` + this.formLabelAlign.image + `"  alt='' />`
+            }) + gx;
           this.$axios
             .post(
               `management/admin/beauty-product!save.action?id=${this.idx}`,
-              this.$qs.stringify({
-                name: this.formLabelAlign.name,
-                specification: this.formLabelAlign.specification,
-                brandId: this.formLabelAlign.category.id,
-                price: this.formLabelAlign.price,
-                grade: this.formLabelAlign.grade,
-                synopsis: this.formLabelAlign.synopsis,
-                elementId: this.formLabelAlign.elementId,
-                method: this.formLabelAlign.method,
-                categoryId: this.formLabelAlign.categoryId,
-                ageDistribution: this.formLabelAlign.ageDistribution,
-                skinType: this.formLabelAlign.skinType,
-                appraisalUrl: this.formLabelAlign.appraisalUrl,
-                fs: this.formLabelAlign.fs,
-                image: "<img src='" + this.formLabelAlign.image + "' />"
-              })
+              params
             )
             .then(res => {
               if (res.status == 200) {
                 this.dialogVisible = false;
                 this.$message.success(`修改成功`);
-                (this.fileList2 = []), this.getMakeupList();
+                this.fileList2 = [];
+                this.getMakeupList();
               }
             });
         } else {
@@ -532,26 +577,31 @@ export default {
     handleAdd(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
+          let gx = "";
+          if (this.formLabelAdd.gx.length) {
+            for (let i = 0; i < this.formLabelAdd.gx.length; i++) {
+              gx += "&gx=" + this.formLabelAdd.gx[i];
+            }
+          }
+          let params =
+            this.$qs.stringify({
+              name: this.formLabelAdd.name,
+              specification: this.formLabelAdd.specification,
+              brandId: this.formLabelAdd.brandId,
+              price: this.formLabelAdd.price,
+              grade: this.formLabelAdd.grade,
+              synopsis: this.formLabelAdd.synopsis,
+              elementId: this.formLabelAdd.elementId,
+              method: this.formLabelAdd.method,
+              categoryId: this.formLabelAdd.categoryId,
+              ageDistribution: this.formLabelAdd.ageDistribution,
+              skinType: this.formLabelAdd.skinType,
+              appraisalUrl: this.formLabelAdd.appraisalUrl,
+              fs: this.formLabelAdd.fs,
+              image: `<img src="` + this.formLabelAdd.image + `"  alt='' />`
+            }) + gx;
           this.$axios
-            .post(
-              `management/admin/beauty-product!save.action`,
-              this.$qs.stringify({
-                name: this.formLabelAdd.name,
-                specification: this.formLabelAdd.specification,
-                brandId: this.formLabelAdd.brandId,
-                price: this.formLabelAdd.price,
-                grade: this.formLabelAdd.grade,
-                synopsis: this.formLabelAdd.synopsis,
-                elementId: this.formLabelAdd.elementId,
-                method: this.formLabelAdd.method,
-                categoryId: this.formLabelAdd.categoryId,
-                ageDistribution: this.formLabelAdd.ageDistribution,
-                skinType: this.formLabelAdd.skinType,
-                appraisalUrl: this.formLabelAdd.appraisalUrl,
-                fs: this.formLabelAdd.fs,
-                image: "<img src='" + this.formLabelAdd.image + "' />"
-              })
-            )
+            .post(`management/admin/beauty-product!save.action`, params)
             .then(res => {
               if (res.status == 200) {
                 this.AddVisible = false;
@@ -578,20 +628,53 @@ export default {
         .get("/management/admin/beauty-product!list.action", {
           params: {
             filter_EQS_categoryId: this.category,
-            filter_EQL_brandId: this.grid,
-            page: 1,
-            rows: 10
+            filter_EQL_brandId: this.grid
           }
         })
         .then(res => {
           if (res.status == 200) {
             this.makeupList = res.data.rows;
+            this.totalNum3 = res.data.total;
           }
         });
     },
+    productSearch(page, row) {
+      this.$axios
+        .post(
+          "/management/admin/beauty-product!list.action",
+          this.$qs.stringify({
+            filter_LIKES_name: this.makeup_Search,
+            page: page,
+            rows: row
+          })
+        )
+        .then(res => {
+          if (res.status == 200) {
+            this.makeupList = res.data.rows;
+            this.totalNum3 = res.data.total;
+          }
+        });
+    },
+    change(val) {
+      console.log(val);
+      console.log(this.gridList);
+    },
     // 图片
     handleRemove(file, fileList) {
-      console.log(file, fileList);
+      this.formLabelAlign.image = "";
+      for (let i = 0; i < fileList.length; i++) {
+        this.formLabelAlign.image +=
+          `<img src="` + fileList[i].url + `"  alt='' />`;
+      }
+    },
+    handleRemove1(file, fileList) {
+      // console.log(this.formLabelAdd,file,fileList)
+      this.formLabelAdd.image = [];
+      for (let i = 0; i < fileList.length; i++) {
+        this.formLabelAdd.image.push(fileList[i].response.url);
+      }
+      console.log(this.formLabelAdd);
+      // this.formLabelAdd.image =''
     },
     handlePreview(file) {
       console.log(file);
@@ -605,6 +688,7 @@ export default {
       this.imgData1.imgFile = file;
     },
     handleSuccess(res) {
+      console.log(res);
       this.formLabelAlign.image = res.url;
     },
     handleSuccess1(res) {
@@ -664,4 +748,7 @@ export default {
 </script>
 
 <style scoped>
+.handle-box {
+  padding-bottom: 20px;
+}
 </style>

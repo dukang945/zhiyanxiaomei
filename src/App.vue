@@ -22,5 +22,10 @@ body {
   height: 100%;
 }
 
-
+.el-upload-list__item {
+  transition: none;
+}
+.handle-box{
+  padding-bottom:20px
+}
 </style>

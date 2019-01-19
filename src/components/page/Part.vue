@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="handle-box">
-      <el-button type="primary" @click="AddVisible = true" size="small">新增</el-button>
+      <el-button type="primary" @click="AddVisible = true" size="small" v-has>新增</el-button>
       <el-dialog title="新增" :visible.sync="AddVisible" @click="handleClear">
         <el-form
           :label-position="labelPosition"
@@ -45,6 +45,7 @@
             circle
             class="el-icon-delete"
             v-if="scope.row.id!=1&scope.row.id!=2&scope.row.id!=3"
+            v-del
           ></el-button>
           <el-button
             size="small"
@@ -53,6 +54,7 @@
             circle
             @click="handleEdit(scope.$index, scope.row)"
             v-if="scope.row.id!=1&scope.row.id!=2&scope.row.id!=3"
+            v-has
           ></el-button>
           
           <el-button

@@ -7,6 +7,14 @@ import App from './App'
 import router from './router'
 import axios from 'axios'
 import qs from 'qs'
+import '@/assets/icon/iconfont.css'
+import {
+  has,
+  del,
+  check,
+  online,
+  push
+} from '@/components/common/btnPermissions';
 Vue.use(ElementUI)
 Vue.prototype.$axios = axios;
 Vue.prototype.$qs = qs;
@@ -18,7 +26,7 @@ axios.defaults.withCredentials = true;
 
 //路由拦截
 router.beforeEach((to, from, next) => {
-  const role = localStorage.getItem('ms_username');
+  const role = sessionStorage.getItem('ms_username');
   if (!role && to.path !== '/login') {
     next('/login');
   } else if (to.meta.permission) {

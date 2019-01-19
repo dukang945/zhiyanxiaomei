@@ -1,25 +1,37 @@
 <template>
   <div>
     <div class="handle-box">
-      <el-button type="primary" @click="AddVisible = true">新增</el-button>
-      <el-input v-model="issue_Search" placeholder="请输入搜索类容" style="width: 30%">
+      <el-button type="primary" @click="AddVisible = true" size="small" v-has>新增</el-button>
+      <el-input
+        v-model="issue_Search"
+        placeholder="请输入搜索类容"
+        style="width: 30%"
+        size="small"
+        @keyup.enter.native="issueSearch"
+      >
         <el-button slot="append" icon="el-icon-search" @click="issueSearch"></el-button>
       </el-input>
       <el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
-        <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
-          <el-form-item label="问题">
+        <el-form
+          :label-position="labelPosition"
+          label-width="80px"
+          :model="formLabelAdd"
+          :rules="rules"
+          ref="formLabelAdd"
+        >
+          <el-form-item label="问题" prop="question">
             <el-input v-model="formLabelAdd.question"></el-input>
           </el-form-item>
-          <el-form-item label="功效">
+          <el-form-item label="功效" prop="effect">
             <el-input v-model="formLabelAdd.effect"></el-input>
           </el-form-item>
-          <el-form-item label="建议">
+          <el-form-item label="建议" prop="suggest">
             <el-input v-model="formLabelAdd.suggest"></el-input>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
           <el-button @click="AddVisible = false">取 消</el-button>
-          <el-button type="primary" @click="handleAdd">确 定</el-button>
+          <el-button type="primary" @click="handleAdd('formLabelAdd')">确 定</el-button>
         </span>
       </el-dialog>
     </div>
@@ -30,42 +42,48 @@
       <el-table-column prop="question" label="问题"></el-table-column>
 
       <el-table-column prop="effect" label="功效"></el-table-column>
-      <el-table-column label="操作" width="120">
+      <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, issueList)"
             type="danger"
             size="small"
-            circle
             class="el-icon-delete"
-          ></el-button>
+            v-del
+          >删除</el-button>
           <el-button
             size="small"
             type="primary"
             icon="el-icon-edit"
-            circle
             @click="handleEdit(scope.$index, scope.row)"
-          ></el-button>
+            v-has
+          >编辑</el-button>
           <el-dialog
             title="编辑"
             :visible.sync="dialogVisible"
             width="30%"
             :before-close="handleClose"
           >
-            <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
-              <el-form-item label="问题">
+            <el-form
+              :label-position="labelPosition"
+              label-width="80px"
+              :model="formLabelAlign"
+              :rules="rules"
+              ref="formLabelAlign"
+            >
+              <el-form-item label="问题" prop="question">
                 <el-input v-model="formLabelAlign.question"></el-input>
               </el-form-item>
-              <el-form-item label="功效">
+              <el-form-item label="功效" prop="effect">
                 <el-input v-model="formLabelAlign.effect"></el-input>
               </el-form-item>
-              <el-form-item label="建议">
+              <el-form-item label="建议" prop="suggest">
                 <el-input v-model="formLabelAlign.suggest"></el-input>
               </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
               <el-button @click="dialogVisible = false">取 消</el-button>
-              <el-button type="primary" @click="saveEdit">确 定</el-button>
+              <el-button type="primary" @click="saveEdit('formLabelAlign')">确 定</el-button>
             </span>
           </el-dialog>
         </template>
@@ -86,7 +104,11 @@ export default {
       AddVisible: false,
       labelPosition: "left",
       idx: -1,
-      currentPage4: 1,
+      rules: {
+        question: [{ required: true, message: "请输入问题", trigger: "blur" }],
+        effect: [{ required: true, message: "请输入功效", trigger: "blur" }],
+        suggest: [{ required: true, message: "请输入建议", trigger: "blur" }]
+      },
       formLabelAlign: {
         date: "",
         name: ""
@@ -139,23 +161,30 @@ export default {
       this.dialogVisible = true;
     },
     //保存编辑
-    saveEdit() {
-      this.$axios
-        .post(
-          `/management/admin/skin-problems!save.action?id=${this.idx}`,
-          this.$qs.stringify({
-            question: this.formLabelAlign.question,
-            effect: this.formLabelAlign.effect,
-            suggest: this.formLabelAlign.suggest
-          })
-        )
-        .then(res => {
-          if (res.status == 200) {
-            this.dialogVisible = false;
-            this.$message.success(`修改成功`);
-            this.getIssueList();
-          }
-        });
+    saveEdit(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.$axios
+            .post(
+              `/management/admin/skin-problems!save.action?id=${this.idx}`,
+              this.$qs.stringify({
+                question: this.formLabelAlign.question,
+                effect: this.formLabelAlign.effect,
+                suggest: this.formLabelAlign.suggest
+              })
+            )
+            .then(res => {
+              if (res.status == 200) {
+                this.dialogVisible = false;
+                this.$message.success(`修改成功`);
+                this.getIssueList();
+              }
+            });
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
     //删除
     deleteRow(index, rows) {
@@ -178,23 +207,30 @@ export default {
       });
     },
     // 新增
-    handleAdd() {
-      this.$axios
-        .post(
-          "/management/admin/skin-problems!save.action",
-          this.$qs.stringify({
-            question: this.formLabelAdd.question,
-            effect: this.formLabelAdd.effect,
-            suggest: this.formLabelAdd.suggest
-          })
-        )
-        .then(res => {
-          if (res.status == 200) {
-            this.AddVisible = false;
-            this.$message.success("添加成功");
-            this.getIssueList();
-          }
-        });
+    handleAdd(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.$axios
+            .post(
+              "/management/admin/skin-problems!save.action",
+              this.$qs.stringify({
+                question: this.formLabelAdd.question,
+                effect: this.formLabelAdd.effect,
+                suggest: this.formLabelAdd.suggest
+              })
+            )
+            .then(res => {
+              if (res.status == 200) {
+                this.AddVisible = false;
+                this.$message.success("添加成功");
+                this.getIssueList();
+              }
+            });
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
     handleClose(done) {
       done();
@@ -214,6 +250,7 @@ export default {
           if (res.status == 200) {
             console.log(res, "");
             this.issueList = res.data.rows;
+            this.totalNum =res.data.total
           }
         });
     },
@@ -230,4 +267,7 @@ export default {
 </script>
 
 <style scoped>
+.handle-box {
+  padding-bottom: 20px;
+}
 </style>

@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="handle-box">
-      <el-button type="primary" @click="AddVisible = true">新增</el-button>
-      <el-input v-model="color_Search" placeholder="请输入搜索类容" style="width: 30%">
+      <el-button type="primary" @click="AddVisible = true" v-has size="small">新增</el-button>
+      <el-input v-model="color_Search" placeholder="请输入搜索类容" style="width: 30%" size="small"> 
         <el-button slot="append" icon="el-icon-search" @click="colorSearch"></el-button>
       </el-input>
       <!-- <el-select v-model="grid" filterable clearable placeholder="请选择品牌">
@@ -42,15 +42,13 @@
               action="management/admin/kcupload!uploadImage.action"
               :data="imgData1"
               :on-preview="handlePreview"
-              :on-remove="handleRemove"
+              :on-remove="handleRemove1"
               :on-success="handleSuccess1"
               :file-list="fileList1"
               :before-upload="beforeUpload1"
-              :limit="1"
               list-type="picture"
             >
               <el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
             </el-upload>
           </el-form-item>
         </el-form>
@@ -67,22 +65,22 @@
       <el-table-column prop="name" label="产品名称"></el-table-column>
       <el-table-column prop="colorName" label="色号名称"></el-table-column>
       <el-table-column prop="creatUser" label="创建人"></el-table-column>
-      <el-table-column label="操作" width="120">
+      <el-table-column label="操作" >
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, colorList)"
             type="danger"
             size="small"
-            circle
             class="el-icon-delete"
-          ></el-button>
+            v-del
+          >删除</el-button>
           <el-button
             size="small"
             type="primary"
             icon="el-icon-edit"
-            circle
             @click="handleEdit(scope.$index, scope.row)"
-          ></el-button>
+            v-has
+          >编辑</el-button>
           <el-dialog title="编辑" :visible.sync="dialogVisible">
             <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
               <el-form-item label="产品及色号名称">
@@ -120,11 +118,9 @@
                   :on-success="handleSuccess"
                   :file-list="fileList"
                   :before-upload="beforeUpload"
-                  :limit="1"
                   list-type="picture"
                 >
                   <el-button size="small" type="primary">点击上传</el-button>
-                  <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
                 </el-upload>
               </el-form-item>
             </el-form>
@@ -170,7 +166,9 @@ export default {
       formLabelAlign: {
         name: "12"
       },
-      formLabelAdd: {}
+      formLabelAdd: {
+        image:[]
+      }
     };
   },
   components: {
@@ -183,7 +181,7 @@ export default {
   methods: {
     getColorList(page1, row1) {
       this.$axios
-        .get("management/admin/beauty-color!list.action", {
+        .get("/management/admin/beauty-color!list.action", {
           params: {
             page: page1,
             rows: row1
@@ -199,7 +197,7 @@ export default {
     },
     getGridList(page2, row2) {
       this.$axios
-        .get("management/admin/beauty-product!comboGridlist.action", {
+        .get("/management/admin/beauty-product!comboGridlist.action", {
           params: {
             page: page2,
             rows: row2
@@ -215,6 +213,10 @@ export default {
     },
     //新增
     handleAdd() {
+      let image = ''
+      for (let i = 0; i < this.formLabelAdd.image.length; i++) {
+        image += `<img src="` + this.formLabelAdd.image[i] + `"  alt='' />`
+      }
       this.$axios
         .post(
           "/management/admin/beauty-color!save.action",
@@ -222,7 +224,7 @@ export default {
             productId: this.formLabelAdd.productId,
             productName: this.formLabelAdd.productName,
             colorName: this.formLabelAdd.colorName,
-            image: `<img src="` + this.formLabelAdd.image + `"  alt='' />`
+            image: image
           })
         )
         .then(res => {
@@ -230,31 +232,34 @@ export default {
             this.AddVisible = false;
             this.$message.success("添加成功");
             this.getColorList();
+            this.formLabelAdd={}
+            this.fileList1=[]
           }
         });
     },
     //编辑
     handleEdit(index, row) {
+      this.fileList=[]
       this.idx = row.id;
       this.$axios
-        .get(`management/admin/beauty-color!input.action?id=${this.idx}`)
+        .get(`/management/admin/beauty-color!input.action?id=${this.idx}`)
         .then(res => {
           if (res.status == 200) {
-            console.log(res);
+            // console.log(res);
             this.formLabelAlign = res.data;
             let str = this.formLabelAlign.image;
-            let srcReg = /[a-zA-z]+:\/\/[^\s]*/;
-            let src = str.match(srcReg)[0].split('"')[0];
-            //    console.log(src)
-            this.fileList = [
-              {
-                url: src
-              }
-            ];
-            this.formLabelAlign.image = src;
+            let srcReg = /[a-zA-z]+:\/\/[^\s]*/g;
+            let srcArr = str.match(srcReg);
+            if(srcArr){
+              for (let i = 0; i < srcArr.length; i++) {
+              this.fileList.push({url:srcArr[i].split('"')[0]})           
+            }
+            }
+            console.log(this.fileList,this.formLabelAlign.image)
+            // return
             this.$axios
               .get(
-                `management/admin/beauty-product!getNameById.action?id=${
+                `/management/admin/beauty-product!getNameById.action?id=${
                   this.formLabelAlign.productId
                 }`
               )
@@ -271,14 +276,16 @@ export default {
     },
     //保存编辑
     saveEdit(formName) {
+      console.log(this.formLabelAlign,this.fileList)
+      // return
       this.$axios
         .post(
-          `management/admin/beauty-color!save.action?id=${this.idx}`,
+          `/management/admin/beauty-color!save.action?id=${this.idx}`,
           this.$qs.stringify({
             productId: this.formLabelAlign.productId,
             productName: this.formLabelAlign.productName,
             colorName: this.formLabelAlign.colorName,
-            image: `<img src="` + this.formLabelAlign.image + `"  alt='' />`
+            image:this.formLabelAlign.image
           })
         )
         .then(res => {
@@ -330,10 +337,20 @@ export default {
     },
     //图片
     handleRemove(file, fileList) {
-      console.log(file, fileList);  
+      this.formLabelAlign.image =''
+      for (let i = 0; i < fileList.length; i++) {
+        this.formLabelAlign.image +=`<img src="` + fileList[i].url + `"  alt='' />`
+      }
     },
     handleRemove1(file, fileList) {
-      console.log(file, fileList);
+      // console.log(this.formLabelAdd,file,fileList)
+      this.formLabelAdd.image = []
+      for (let i = 0; i < fileList.length; i++) {
+        this.formLabelAdd.image.push(fileList[i].response.url)
+      }
+      console.log(this.formLabelAdd)
+      // this.formLabelAdd.image =''
+      
     },
     handlePreview(file) {
       console.log(file);
@@ -348,10 +365,10 @@ export default {
     },
     handleSuccess(res) {
       console.log(res);
-      this.formLabelAlign.image = res.url;
+      this.formLabelAlign.image += res.url;
     },
     handleSuccess1(res) {
-      this.formLabelAdd.image = res.url;
+      this.formLabelAdd.image.push(res.url);
     },
     //分页
     changePage1(val) {
@@ -391,7 +408,4 @@ export default {
 </script>
 
 <style >
-.el-upload-list__item {
-  transition: none;
-}
 </style>

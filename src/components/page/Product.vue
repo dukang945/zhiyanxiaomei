@@ -1,14 +1,20 @@
 <template>
   <div>
     <div class="handle-box">
-      <el-button type="primary" @click="AddVisible = true">新增</el-button>
-      <el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
-        <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
-          <el-form-item label="名称">
+      <el-button type="primary" @click="AddVisible = true" size="small" v-has>新增</el-button>
+      <el-dialog title="新增" :visible.sync="AddVisible" width="30%">
+        <el-form
+          :label-position="labelPosition"
+          label-width="80px"
+          :model="formLabelAdd"
+          :rules="rules"
+          ref="formLabelAdd"
+        >
+          <el-form-item label="标签名称" prop="categoryName">
             <el-input v-model="formLabelAdd.categoryName"></el-input>
           </el-form-item>
-          <el-form-item label="上级目录" >
-            <el-input v-model="formLabelAdd.beautyCategoryName"></el-input>
+          <el-form-item label="上级目录">
+            <el-input v-model="formLabelAdd.beautyCategoryName" :disabled="true"></el-input>
           </el-form-item>
           <el-form-item label="使用方法">
             <el-input v-model="formLabelAdd.method"></el-input>
@@ -19,77 +25,30 @@
         </el-form>
         <span slot="footer" class="dialog-footer">
           <el-button @click="AddVisible = false">取 消</el-button>
-          <el-button type="primary" @click="handleAdd">确 定</el-button>
+          <el-button type="primary" @click="handleAdd('formLabelAdd')">确 定</el-button>
         </span>
       </el-dialog>
     </div>
-    <!-- <el-table :data="productList" border style="width: 90%">
-      <el-table-column label="id" width="120">
-        <template slot-scope="scope">{{ scope.row.id }}</template>
-      </el-table-column>
-      <el-table-column prop="categoryName" label="分类名称"></el-table-column>
-
-      <el-table-column prop="theMain" label="上级目录"></el-table-column>
-      <el-table-column label="操作" width="120">
-        <template slot-scope="scope">
-          <el-button
-            @click.native.prevent="deleteRow(scope.$index, productList)"
-            type="danger"
-            size="small"
-            circle
-            class="el-icon-delete"
-          ></el-button>
-          <el-button
-            size="small"
-            type="primary"
-            icon="el-icon-edit"
-            circle
-            @click="handleEdit(scope.$index, scope.row)"
-          ></el-button>
-          <el-dialog
-            title="编辑"
-            :visible.sync="dialogVisible"
-            width="30%"
-            :before-close="handleClose"
-          >
-            <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
-              <el-form-item label="名称">
-                <el-input v-model="formLabelAlign.categoryName"></el-input>
-              </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-              <el-button @click="dialogVisible = false">取 消</el-button>
-              <el-button type="primary" @click="saveEdit">确 定</el-button>
-            </span>
-          </el-dialog>
-        </template>
-      </el-table-column>
-    </el-table>-->
-    <el-dialog
-            title="编辑"
-            :visible.sync="dialogVisible"
-            width="30%"
-            :before-close="handleClose"
-          >
-            <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
-              <el-form-item label="名称">
-                <el-input v-model="formLabelAlign.categoryName"></el-input>
-              </el-form-item>
-              <el-form-item label="上级目录">
-                <el-input v-model="formLabelAlign.beautyCategoryName" :disabled="true"></el-input>
-              </el-form-item>
-              <el-form-item label="使用方法">
-                <el-input v-model="formLabelAlign.method"></el-input>
-              </el-form-item>
-              <el-form-item label="功效">
-                <el-input v-model="formLabelAlign.efficacy"></el-input>
-              </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-              <el-button @click="dialogVisible = false">取 消</el-button>
-              <el-button type="primary" @click="saveEdit">确 定</el-button>
-            </span>
-          </el-dialog>
+    <el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+      <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
+        <el-form-item label="名称">
+          <el-input v-model="formLabelAlign.categoryName"></el-input>
+        </el-form-item>
+        <el-form-item label="上级目录">
+          <el-input v-model="formLabelAlign.beautyCategoryName" :disabled="true"></el-input>
+        </el-form-item>
+        <el-form-item label="使用方法">
+          <el-input v-model="formLabelAlign.method"></el-input>
+        </el-form-item>
+        <el-form-item label="功效">
+          <el-input v-model="formLabelAlign.efficacy"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveEdit">确 定</el-button>
+      </span>
+    </el-dialog>
     <TableTree
       ref="recTree"
       :list.sync="treeData"
@@ -114,11 +73,11 @@ export default {
       AddVisible: false,
       labelPosition: "left",
       idx: -1,
-      currentPage4: 1,
+      rules: {
+        categoryName: { required: true, message: "请输入名称", trigger: "blur" }
+      },
       formLabelAlign: {},
       formLabelAdd: {
-        date: "",
-        name: ""
       }
     };
   },
@@ -140,33 +99,39 @@ export default {
           //   this.$message.error("请求数据失败!");
           // }
           if (res.status == 200) {
-              this.$axios
-                .get(
-                  `/management/admin/beauty-category!getTreeGrid.action`
-                )
-                .then(res => {
-                  if (res.status == 200) {
-                   let productList =  res.data.map(item => {
-                      return {
-                        id:item.id,
-                        categoryName:item.categoryName,
-                        text:item.text,
-                        children: []
-                      }
-                    });
-                    for( let i = 0; i<productList.length;i++){
-                      this.$axios.get(`/management/admin/beauty-category!getTreeGrid.action?id=${productList[i].id}`).then(
-                        res => {
-                          if(res.status == 200){
-                            productList[i].children = res.data;
-                          }
-                        }
+            this.$axios
+              .get(`/management/admin/beauty-category!getTreeGrid.action`)
+              .then(res => {
+                if (res.status == 200) {
+                  let productList = res.data.map(item => {
+                    return {
+                      id: item.id,
+                      categoryName: item.categoryName,
+                      text: item.text,
+                      children: []
+                    };
+                  });
+                  for (let i = 0; i < productList.length; i++) {
+                    this.$axios
+                      .get(
+                        `/management/admin/beauty-category!getTreeGrid.action?id=${
+                          productList[i].id
+                        }`
                       )
-                    }
-                    this.treeData = productList;
-                    console.log(this.treeData)
+                      .then(res => {
+                        if (res.status == 200) {
+                          res.data.map((item)=>{
+                              // return this.$set(item,'labelName',item.beautyCategoryName)
+                              return item.labelName = item.beautyCategoryName
+                          })
+                          productList[i].children = res.data;
+                        }
+                      });
                   }
-                });
+                  this.treeData = productList;
+                  console.log(this.treeData);
+                }
+              });
           }
         });
     },
@@ -183,14 +148,14 @@ export default {
     //   this.dialogVisible = true;
     // },
     actionFunc(m) {
-      console.log(m)
-        this.idx = m.id;
+      console.log(m);
+      this.idx = m.id;
       this.$axios
         .get(`/management/admin/beauty-category!input.action?id=${this.idx}`)
         .then(res => {
           if (res.status == 200) {
             this.formLabelAlign = res.data;
-            console.log(this.formLabelAlign)
+            console.log(this.formLabelAlign);
           }
         });
       this.dialogVisible = true;
@@ -201,26 +166,27 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      }).then(() => {
-        this.$axios
-          .get(
-            `/management/admin/beauty-category!delete.action?id=${
-              m.id
-            }`
-          )
-          .then(res => {
-            if (res.status == 200) {
-              this.$message.success("删除成功");
-              this.getProductList();
-            }
-          });
-      }).catch(()=>{});
+      })
+        .then(() => {
+          this.$axios
+            .get(`/management/admin/beauty-category!delete.action?id=${m.id}`)
+            .then(res => {
+              if (res.status == 200) {
+                this.$message.success("删除成功");
+                this.getProductList();
+              }
+            });
+        })
+        .catch(() => {});
     },
     handlerExpand(m) {
       m.isExpand = !m.isExpand;
     },
     clickRow(m) {
-      this.formLabelAdd.beautyCategoryName = m.beautyCategoryName
+      console.log(m);
+      this.formLabelAdd.beautyCategoryName = m.categoryName;
+      this.formLabelAdd.beautyCategoryId = m.id;
+      console.log(this.formLabelAdd);
     },
     //保存编辑
     saveEdit() {
@@ -238,8 +204,9 @@ export default {
         .then(res => {
           if (res.status == 200) {
             this.dialogVisible = false;
-            this.$message.success(`添加成功`);
+            this.$message.success(`编辑成功`);
             this.getProductList();
+            this.formLabelAlign = {};
           }
         });
     },
@@ -266,17 +233,43 @@ export default {
     //   });
     // },
     // 新增
-    handleAdd() {},
+
+    handleAdd(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.$axios.post(
+            "/management/admin/beauty-category!save.action",
+            this.$qs.stringify({
+              categoryName: this.formLabelAdd.categoryName,
+              beautyCategoryName: this.formLabelAdd.beautyCategoryName,
+              beautyCategoryId: this.formLabelAdd.beautyCategoryId,
+              method: this.formLabelAdd.method,
+              efficacy: this.formLabelAdd.efficacy
+            })
+          ).then(res => {
+            if(res.status == 200){
+              this.AddVisible = false;
+            this.$message.success(`添加成功`);
+            this.getProductList();
+            this.formLabelAdd = {};
+            }
+          });
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+    },
     handleClose(done) {
-      this.$confirm("确认关闭？")
-        .then(_ => {
-          done();
-        })
-        .catch(_ => {});
+      this.formLabelAlign = {};
+      done();
     }
   }
 };
 </script>
 
 <style scoped>
+.handle-box{
+  padding-bottom: 20px
+}
 </style>
