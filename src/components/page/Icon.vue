@@ -74,7 +74,7 @@
 </template>
 
 <script>
-	import Pagination from '../module/pagination.vue'
+	import Pagination from '@/components/module/Pagination.vue'
 	export default {
 		data() {
 			return {
@@ -291,11 +291,6 @@
 </script>
 
 <style scoped>
-	.iconContent {
-		/* padding: 10px 20px 10px 0;
-		box-sizing: border-box; */
-	}
-
 	.handle-box {
 		margin-bottom: 20px
 	}

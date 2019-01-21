@@ -1681,10 +1681,10 @@
 						children: []
 					}
 				})
-				this.treeData = tempList;
-				for (let i = 0; i < tempList.length; i++) {
-					this.$axios.get(`/management/admin/lable!lableTree.action?id=${tempList[i].id}`).then(res2 => {
-						let temp = res2.data.map(item => {
+				for(let i=0;i<tempList.length;i++){
+					this.$axios.get(`/management/admin/lable!lableTree.action?id=${tempList[i].id}`).then(res2=>{
+						console.log(res2)
+						let temp=res2.data.map(item=>{
 							return {
 								lable: item.text,
 								id: item.id

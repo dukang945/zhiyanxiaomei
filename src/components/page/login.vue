@@ -66,7 +66,8 @@ export default {
                 		menuList.push({
                 			id: item.id,
                 			name: item.name,
-                			enname: item.enname,
+                      enname: item.enname,
+                      icon:item.icon,
                 			children: []
                 		})
                 	}
@@ -83,8 +84,11 @@ export default {
                 		}
                 	})
                 })
-                localStorage.setItem("ms_username", that.ruleForm.username);
                 localStorage.setItem("menuList", JSON.stringify(menuList))
+                that.$router.push('/welcome');
+                sessionStorage.setItem("ms_username", that.ruleForm.username);
+                sessionStorage.setItem("menuList", JSON.stringify(menuList))
+                sessionStorage.setItem("btnPermissions",(res.data.controlbtn))
                 that.$router.push('/welcome');
               } else {
                 that.$message.error("账号或密码错误!");         

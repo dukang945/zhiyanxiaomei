@@ -86,12 +86,12 @@ export default new Router({
         {
           path: '/branch',
 					name:'步骤子类管理',
-          component: Branch
+          component: Branch,
         },
         {
           path: '/brand',
 					name:'品牌管理',
-          component: Brand
+          component: Brand,
         },
         {
           path: '/classify',
@@ -231,7 +231,7 @@ export default new Router({
         {
           path: '/user',
 					name:'',
-          component: User
+          component: User,
         },
         {
           path: '/vipMsg',
