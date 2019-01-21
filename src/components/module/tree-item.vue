@@ -20,9 +20,15 @@
 							</td>
 							<td class="td3">{{model.lableName}}</td>
 							<td class="td4">
+<<<<<<< HEAD
 								<a class="reset" href="javascript:;" @click="actionFunc(model)">编辑</a>
 								<i class="line"></i>
 								<a class="delete" href="javascript:;" @click="deleteFunc(model)">删除</a>
+=======
+								<a class="reset" href="javascript:;" @click="actionFunc(model)" v-has>编辑</a>
+								<i class="line"></i>
+								<a class="delete" href="javascript:;" @click="deleteFunc(model)" v-del>删除</a>
+>>>>>>> 168b38b90c705f8c6b3217affa64ceaf0f8515a9
 							</td>
 						</tr>
 					</table>

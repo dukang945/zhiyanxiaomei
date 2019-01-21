@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="handle-box">
-      <el-button type="primary" @click="AddVisible = true">新增</el-button>
+      <el-button type="primary" @click="AddVisible = true" v-has size="small">新增</el-button>
       <el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
         <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
           <el-form-item label="名称">
@@ -34,7 +34,7 @@
         </span>
       </el-dialog>
     </div>
-    <el-table :data="vipList" border style="width: 90%" current-row-key>
+    <el-table :data="vipList" border style="width: 90%" current-row-key v-loading="loading">
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column label="名称">
         <template slot-scope="scope">{{ scope.row.nickName }}</template>
@@ -63,7 +63,7 @@
       </el-table-column>
       <el-table-column label="操作" width="200">
         <template slot-scope="scope">
-          <el-button type="primary" @click="reset(scope.$index, scope.row)">重置密码</el-button>
+          <el-button type="primary" @click="reset(scope.$index, scope.row)" size="small">重置密码</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -72,30 +72,14 @@
 </template>
 
 <script>
-import Pagination from "../module/pagination.vue";
+import Pagination from "@/components/module/Pagination.vue";
 export default {
   data() {
     return {
-      tableData3: [
-        {
-          name: "杜康",
-          tel: "13164151625",
-          gender: "男",
-          化妆水平: "1",
-          pic: ""
-        },
-        {
-          name: "化妆",
-          type: "妆容教程",
-          isOnline: "true",
-          link: "2",
-          url: ""
-        }
-      ],
       vipList: [],
-      isOnline: true,
       multipleSelection: [],
       del_list: [],
+      loading: true,
       dialogVisible: false,
       AddVisible: false,
       labelPosition: "left",
@@ -140,6 +124,7 @@ export default {
             console.log(res);
             this.totalNum = res.data.total
             this.vipList = res.data.rows;
+            this.loading =false
           }
         });
     },
@@ -163,10 +148,6 @@ export default {
             }
           });
       });
-    },
-    online(index, rows) {
-      rows.isOnline = !rows.isOnline;
-      console.log(rows.isOnline);
     },
     // 新增
     handleAdd() {

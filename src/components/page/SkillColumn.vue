@@ -149,7 +149,7 @@ export default {
       // this.tableData3.push(this.formLabelAdd);
       // this.AddVisible = false;
       // this.$message.success(`添加成功`);
-      // this.$axios.post('api/management/admin/skills!list.action').then(
+      // this.$axios.post('/management/admin/skills!list.action').then(
       //   res =>{
       //     if(res.status == 200) {
             
