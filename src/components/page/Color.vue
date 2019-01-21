@@ -171,6 +171,7 @@ export default {
   },
   methods: {
     getColorList(page1, row1) {
+      console.log(1)
       this.$axios
         .get("/management/admin/beauty-color!list.action", {
           params: {
