@@ -5,15 +5,6 @@
       <el-input v-model="color_Search" placeholder="请输入搜索类容" style="width: 30%" size="small"> 
         <el-button slot="append" icon="el-icon-search" @click="colorSearch"></el-button>
       </el-input>
-      <!-- <el-select v-model="grid" filterable clearable placeholder="请选择品牌">
-        <el-option v-for="item in gridList" :key="item.id" :label="item.name" :value="item.id"></el-option>
-        <Pagination :totalNum="totalNum1" @change_Page="changePage1" @change_Size="changeSize1"></Pagination>
-      </el-select>
-      <el-select v-model="category" filterable clearable placeholder="请选择分类">
-        <el-option v-for="item in categoryList" :key="item.id" :label="item.name" :value="item.id"></el-option>
-        <Pagination :totalNum="totalNum2" @change_Page="changePage2" @change_Size="changeSize2"></Pagination>
-      </el-select>
-      <el-button type="primary" icon="el-icon-search" @click="makeupSearch">搜索</el-button>-->
       <el-dialog title="新增" :visible.sync="AddVisible">
         <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAdd">
           <el-form-item label="产品及色号名称">
