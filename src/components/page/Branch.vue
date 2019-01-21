@@ -1,33 +1,46 @@
     <template>
   <div>
-    <el-button type="primary" @click="AddVisible = true">新增</el-button>
-    <el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
-      <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAdd">
-        <el-form-item label="步骤父类">
-          <el-select v-model="formLabelAdd.beautyOrderId" placeholder="请选择">
-            <el-option v-for="item in mainList" :key="item.id" :label="item.name" :value="item.id"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="产品分类">
-          <el-cascader
-            :options="treeData"
-            change-on-select
-            :show-all-levels="false"
-            @active-item-change="handleItemChange"
-            expand-trigger="hover"
-            :props="props"
-            v-model="formLabelAdd.categoryId"
-          ></el-cascader>
-        </el-form-item>
-        <el-form-item label="步骤数">
-          <el-input v-model="formLabelAdd.orderNumber"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="AddVisible = false">取 消</el-button>
-        <el-button type="primary" @click="handleAdd">确 定</el-button>
-      </span>
-    </el-dialog>
+    <div class="handle-box">
+      <el-button type="primary" @click="AddVisible = true" size="small">新增</el-button>
+      <el-dialog
+        title="新增"
+        :visible.sync="AddVisible"
+        width="30%"
+        :before-close="handleClose"
+        v-has
+      >
+        <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAdd">
+          <el-form-item label="步骤父类">
+            <el-select v-model="formLabelAdd.beautyOrderId" placeholder="请选择">
+              <el-option
+                v-for="item in mainList"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="产品分类">
+            <el-cascader
+              :options="treeData"
+              change-on-select
+              :show-all-levels="false"
+              @active-item-change="handleItemChange"
+              expand-trigger="hover"
+              :props="props"
+              v-model="formLabelAdd.categoryId"
+            ></el-cascader>
+          </el-form-item>
+          <el-form-item label="步骤数">
+            <el-input v-model="formLabelAdd.orderNumber"></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="AddVisible = false">取 消</el-button>
+          <el-button type="primary" @click="handleAdd">确 定</el-button>
+        </span>
+      </el-dialog>
+    </div>
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane
         :label="item.name"
@@ -35,7 +48,6 @@
         v-for="(item) in mainList"
         :key="item.name"
       >
-        <div class="handle-box"></div>
         <el-table :data="branchList" border style="width: 90%">
           <el-table-column label="id" width="120">
             <template slot-scope="scope">{{ scope.row.id }}</template>
@@ -50,6 +62,7 @@
                 size="small"
                 circle
                 class="el-icon-delete"
+                v-del
               ></el-button>
               <el-button
                 size="small"
@@ -57,12 +70,14 @@
                 icon="el-icon-edit"
                 circle
                 @click="handleEdit(scope.$index, scope.row)"
+                v-has
               ></el-button>
               <el-dialog
                 title="编辑"
                 :visible.sync="dialogVisible"
                 width="30%"
                 :before-close="handleClose"
+                append-to-body
               >
                 <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
                   <el-form-item label="步骤父类">
@@ -112,7 +127,7 @@ export default {
       mainList: [],
       branchList: [],
       options: [],
-      selectOptions:[],
+      selectOptions: [],
       treeData: [],
       props: {
         label: "text",
@@ -166,16 +181,17 @@ export default {
         });
     },
     getBranchList(tab) {
-      this.$axios
-        .get(
-          `/management/admin/beauty-order-details!list.action?beautyOrderId=${
-            tab.name
-          }`
-        )
-        .then(res => {
-          console.log(res);
-          this.branchList = res.data.rows;
-        });
+      if (tab) {
+        var url = `/management/admin/beauty-order-details!list.action?beautyOrderId=${
+          tab.name
+        }`;
+      } else {
+        var url = "/management/admin/beauty-order-details!list.action";
+      }
+      this.$axios.get(url).then(res => {
+        console.log(res);
+        this.branchList = res.data.rows;
+      });
     },
     getCategoryList() {
       this.$axios
@@ -214,14 +230,12 @@ export default {
       this.idx = row.id;
       this.$axios
         .get(
-          `/management/admin/beauty-order-details!input.action?id=${
-            this.idx
-          }`
+          `/management/admin/beauty-order-details!input.action?id=${this.idx}`
         )
         .then(res => {
           if (res.status == 200) {
             console.log(res);
-            this.formLabelAlign = res.data
+            this.formLabelAlign = res.data;
           }
         });
     },
@@ -232,7 +246,7 @@ export default {
           `/management/admin/beauty-order-details!save.action?id=${this.idx}`,
           this.$qs.stringify({
             beautyOrderId: this.formLabelAlign.beautyOrderId,
-            categoryId: this.selectOptions[this.selectOptions.length-1],
+            categoryId: this.selectOptions[this.selectOptions.length - 1],
             orderNumber: this.formLabelAlign.orderNumber
           })
         )
@@ -240,7 +254,6 @@ export default {
           if (res.status == 200) {
             this.dialogVisible = false;
             this.$message.success(`添加成功`);
-            this.getCategoryList();
           }
         });
     },
@@ -277,13 +290,15 @@ export default {
     // 新增
 
     handleAdd() {
-     
+      console.log(this.formLabelAdd)
       this.$axios
         .post(
           "/management/admin/beauty-order-details!save.action",
           this.$qs.stringify({
             beautyOrderId: this.formLabelAdd.beautyOrderId,
-            categoryId: this.formLabelAdd.categoryId[this.formLabelAdd.categoryId.length-1],
+            categoryId: this.formLabelAdd.categoryId[
+              this.formLabelAdd.categoryId.length - 1
+            ],
             orderNumber: this.formLabelAdd.orderNumber
           })
         )
@@ -292,7 +307,6 @@ export default {
             this.AddVisible = false;
             this.$message.success("添加成功");
             this.getCategoryList();
-           
           }
         });
     },
@@ -322,4 +336,7 @@ export default {
 </script>
 
 <style scoped>
+.handle-box {
+  padding-bottom: 20px;
+}
 </style>

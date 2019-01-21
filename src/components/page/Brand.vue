@@ -1,22 +1,28 @@
 <template>
   <div>
     <div class="handle-box">
-      <el-button type="primary" @click="AddVisible = true">新增</el-button>
-      <el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
-        <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAdd">
-           <el-form-item label="品牌名称:">
-                <el-input v-model="formLabelAdd.name"></el-input>
-              </el-form-item>
-              <el-form-item label="简介:">
-                <el-input v-model="formLabelAdd.synopsis"></el-input>
-              </el-form-item>
-              <el-form-item label="主打:">
-                <el-input v-model="formLabelAdd.theMain"></el-input>
-              </el-form-item>
+      <el-button type="primary" @click="AddVisible = true" size="small" v-has>新增</el-button>
+      <el-dialog title="新增" :visible.sync="AddVisible" width="30%">
+        <el-form
+          :label-position="labelPosition"
+          label-width="80px"
+          :model="formLabelAdd"
+          :rules="rules"
+          ref="formLabelAdd"
+        >
+          <el-form-item label="品牌名称:" prop="name">
+            <el-input v-model="formLabelAdd.name"></el-input>
+          </el-form-item>
+          <el-form-item label="简介:" prop="synopsis">
+            <el-input v-model="formLabelAdd.synopsis"></el-input>
+          </el-form-item>
+          <el-form-item label="主打:" prop="theMain">
+            <el-input v-model="formLabelAdd.theMain"></el-input>
+          </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
           <el-button @click="AddVisible = false">取 消</el-button>
-          <el-button type="primary" @click="handleAdd">确 定</el-button>
+          <el-button type="primary" @click="handleAdd('formLabelAdd')">确 定</el-button>
         </span>
       </el-dialog>
     </div>
@@ -27,42 +33,48 @@
       </el-table-column>
       <el-table-column prop="name" label="品牌名称"></el-table-column>
       <el-table-column prop="theMain" label="主打"></el-table-column>
-      <el-table-column label="操作" width="120">
+      <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, brandList)"
             type="danger"
             size="small"
-            circle
             class="el-icon-delete"
-          ></el-button>
+            v-del
+          >删除</el-button>
           <el-button
             size="small"
             type="primary"
             icon="el-icon-edit"
-            circle
             @click="handleEdit(scope.$index, scope.row)"
-          ></el-button>
+            v-has
+          >编辑</el-button>
           <el-dialog
             title="编辑"
             :visible.sync="dialogVisible"
             width="30%"
             :before-close="handleClose"
           >
-            <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
-              <el-form-item label="品牌名称:">
+            <el-form
+              :label-position="labelPosition"
+              label-width="80px"
+              :model="formLabelAlign"
+              :rules="rules"
+              ref="formLabelAlign"
+            >
+              <el-form-item label="品牌名称:" prop="name">
                 <el-input v-model="formLabelAlign.name"></el-input>
               </el-form-item>
-              <el-form-item label="简介:">
+              <el-form-item label="简介:" prop="synopsis">
                 <el-input v-model="formLabelAlign.synopsis"></el-input>
               </el-form-item>
-              <el-form-item label="主打:">
+              <el-form-item label="主打:" prop="theMain">
                 <el-input v-model="formLabelAlign.theMain"></el-input>
               </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
               <el-button @click="dialogVisible = false">取 消</el-button>
-              <el-button type="primary" @click="saveEdit()">确 定</el-button>
+              <el-button type="primary" @click="saveEdit('formLabelAlign')">确 定</el-button>
             </span>
           </el-dialog>
         </template>
@@ -84,17 +96,13 @@ export default {
       AddVisible: false,
       labelPosition: "left",
       idx: -1,
-      currentPage4: 1,
-      formLabelAlign: {
-        synopsis: "",
-        name: "",
-        theMain: ""
+      rules: {
+        name: [{ required: true, message: "请输入名称", trigger: "blur" }],
+        synopsis: [{ required: true, message: "请输入简介", trigger: "blur" }],
+        theMain: [{ required: true, message: "请输入主打", trigger: "blur" }]
       },
-      formLabelAdd: {
-        synopsis: "",
-        name: "",
-        theMain: ""
-      },
+      formLabelAlign: {},
+      formLabelAdd: {},
       page: 1,
       row: 10,
       totalNum: 1
@@ -128,7 +136,7 @@ export default {
     },
     // 编辑
     handleEdit(index, row) {
-      this.idx = row.id
+      this.idx = row.id;
       this.$axios
         .get(`/management/admin/brand!input.action?id=${row.id}`)
         .then(res => {
@@ -139,19 +147,30 @@ export default {
       this.dialogVisible = true;
     },
     //保存编辑
-    saveEdit() {
-      this.$axios
-        .post(`/management/admin/brand!save.action?id=${this.idx}`, this.$qs.stringify({
-            name: this.formLabelAlign.name,
-            synopsis: this.formLabelAlign.synopsis,
-            theMain: this.formLabelAlign.theMain
-        }))
-        .then(res => {
-          console.log(res)
-          this.dialogVisible = false;
-          this.$message.success(`修改成功`);
-          this.getBrandList();
-        });
+    saveEdit(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.$axios
+            .post(
+              `/management/admin/brand!save.action?id=${this.idx}`,
+              this.$qs.stringify({
+                name: this.formLabelAlign.name,
+                synopsis: this.formLabelAlign.synopsis,
+                theMain: this.formLabelAlign.theMain
+              })
+            )
+            .then(res => {
+              console.log(res);
+              this.dialogVisible = false;
+              this.$message.success(`修改成功`);
+              this.getBrandList();
+              this.formLabelAlign = {};
+            });
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
     //删除
     deleteRow(index, rows) {
@@ -172,18 +191,29 @@ export default {
       });
     },
     // 新增
-    handleAdd() {
-     this.$axios
-        .post(`/management/admin/brand!save.action`, this.$qs.stringify({
+    handleAdd(formName) {
+       this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.$axios
+        .post(
+          `/management/admin/brand!save.action`,
+          this.$qs.stringify({
             name: this.formLabelAdd.name,
             synopsis: this.formLabelAdd.synopsis,
             theMain: this.formLabelAdd.theMain
-        }))
+          })
+        )
         .then(res => {
           this.AddVisible = false;
           this.$message.success(`添加成功`);
           this.getBrandList();
         });
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      
     },
     // 全选
     toggleSelection(rows) {
@@ -209,11 +239,8 @@ export default {
     //   }
     // },
     handleClose(done) {
-      this.$confirm("确认关闭？")
-        .then(_ => {
-          done();
-        })
-        .catch(_ => {});
+      this.formLabelAlign = {};
+      done();
     },
     // 分页
     changePage(val) {
@@ -229,4 +256,7 @@ export default {
 </script>
 
 <style scoped>
+.handle-box {
+  padding-bottom: 20px;
+}
 </style>

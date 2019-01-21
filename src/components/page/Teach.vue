@@ -190,9 +190,9 @@
 			}
 		},
 		mounted() {
-			this.getData('api/management/admin/beauty-details!list.action', 1, 10, 2);
+			this.getData('/management/admin/beauty-details!list.action', 1, 10, 2);
 			// 获取树形控件数据
-			this.$axios.get('api/management/admin/lable!lableTree.action').then(res => {
+			this.$axios.get('/management/admin/lable!lableTree.action').then(res => {
 				let tempList = res.data.map(item => {
 					return {
 						id: item.id,
@@ -201,7 +201,7 @@
 					}
 				})
 				for(let i=0;i<tempList.length;i++){
-					this.$axios.get(`api/management/admin/lable!lableTree.action?id=${tempList[i].id}`).then(res2=>{
+					this.$axios.get(`/management/admin/lable!lableTree.action?id=${tempList[i].id}`).then(res2=>{
 						console.log(res2)
 						let temp=res2.data.map(item=>{
 							return {
