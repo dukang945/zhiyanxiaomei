@@ -46,13 +46,13 @@
       </el-dialog>
     </div>
     <el-table :data="menuList" border style="width: 90%">
-      <el-table-column prop="name" label="资源名称"></el-table-column>
-      <el-table-column prop="enname" label="英文名称"></el-table-column>
-      <el-table-column prop="parentName" label="上级资源"></el-table-column>
-      <el-table-column prop="type" label="资源类型"></el-table-column>
-      <el-table-column prop="link" label="链接" width="200"></el-table-column>
-      <el-table-column prop="orderid" label="排序"></el-table-column>
-      <el-table-column label="操作" width="200">
+      <el-table-column prop="name" label="资源名称" align="center"></el-table-column>
+      <el-table-column prop="enname" label="英文名称" align="center"></el-table-column>
+      <el-table-column prop="parentName" label="上级资源" align="center"></el-table-column>
+      <el-table-column prop="type" label="资源类型" align="center"></el-table-column>
+      <el-table-column prop="link" label="链接" width="200" align="center"></el-table-column>
+      <el-table-column prop="orderid" label="排序" align="center"></el-table-column>
+      <el-table-column label="操作" width="200" align="center">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, menuList)"

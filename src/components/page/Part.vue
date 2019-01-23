@@ -32,11 +32,11 @@
       </el-dialog>
     </div>
     <el-table :data="partList" border style="width: 90%">
-      <el-table-column label="角色名称" width="120">
+      <el-table-column label="角色名称" width="120" align="center">
         <template slot-scope="scope">{{ scope.row.name }}</template>
       </el-table-column>
-      <el-table-column prop="memo" label="备注"></el-table-column>
-      <el-table-column label="操作">
+      <el-table-column prop="memo" label="备注" align="center"></el-table-column>
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, partList)"

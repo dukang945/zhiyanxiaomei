@@ -144,13 +144,13 @@
       </el-dialog>
     </div>
     <el-table :data="makeupList" border style="width: 90%">
-      <el-table-column label="编号" width="120">
-        <template slot-scope="scope">{{ scope.row.id }}</template>
+      <el-table-column label="编号" width="120" align="center">
+        <template slot-scope="scope" align="center">{{ scope.row.id }}</template>
       </el-table-column>
-      <el-table-column prop="name" label="产品名称"></el-table-column>
-      <el-table-column prop="brandName" label="品牌名称"></el-table-column>
-      <el-table-column prop="creatUser" label="操作人"></el-table-column>
-      <el-table-column label="操作" >
+      <el-table-column prop="name" label="产品名称" align="center"></el-table-column>
+      <el-table-column prop="brandName" label="品牌名称" align="center"></el-table-column>
+      <el-table-column prop="creatUser" label="操作人" align="center"></el-table-column>
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, makeupList)"

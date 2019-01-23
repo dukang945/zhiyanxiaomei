@@ -7,7 +7,7 @@
 </template>
 
 <script>
-	import Editor from '../module/editor.vue'
+	import Editor from '@/components/module/editor.vue'
     export default {
         data(){
 			return {

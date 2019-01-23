@@ -76,15 +76,15 @@
       </el-dialog>
     </div>
     <el-table :data="userList" border style="width: 90%">
-      <el-table-column prop="id" label="编号"></el-table-column>
-      <el-table-column prop="userName" label="用户名"></el-table-column>
-      <el-table-column label="地区"></el-table-column>
-      <el-table-column label="排序号"></el-table-column>
-      <el-table-column label="所属角色"></el-table-column>
-      <el-table-column label="移动电话"></el-table-column>
-      <el-table-column label="部门规模"></el-table-column>
-      <el-table-column label="邮箱"></el-table-column>
-      <el-table-column label="操作" width="440">
+      <el-table-column prop="id" label="编号" align="center"></el-table-column>
+      <el-table-column prop="userName" label="用户名" align="center"></el-table-column>
+      <el-table-column label="地区" align="center"></el-table-column>
+      <el-table-column label="排序号" align="center"></el-table-column>
+      <el-table-column label="所属角色" align="center"></el-table-column>
+      <el-table-column label="移动电话" align="center"></el-table-column>
+      <el-table-column label="部门规模" align="center"></el-table-column>
+      <el-table-column label="邮箱" align="center"></el-table-column>
+      <el-table-column label="操作" width="440" align="center">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, userList)"

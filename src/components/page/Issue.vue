@@ -36,13 +36,13 @@
       </el-dialog>
     </div>
     <el-table :data="issueList" border style="width: 90%">
-      <el-table-column label="id" width="120">
-        <template slot-scope="scope">{{ scope.row.id }}</template>
+      <el-table-column label="id" width="120" align="center">
+        <template slot-scope="scope" >{{ scope.row.id }}</template>
       </el-table-column>
-      <el-table-column prop="question" label="问题"></el-table-column>
+      <el-table-column prop="question" label="问题" align="center"></el-table-column>
 
-      <el-table-column prop="effect" label="功效"></el-table-column>
-      <el-table-column label="操作">
+      <el-table-column prop="effect" label="功效" align="center"></el-table-column>
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, issueList)"
