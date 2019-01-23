@@ -1,12 +1,30 @@
 <template>
     <div class="strategyContent">
-		<img src="../../assets/404.jpg" alt="">
+		<!-- <img src="../../assets/404.jpg" alt=""> -->
+		<Editor :editorText='textData'></Editor>
+		<el-button @click='getText'>获取文本编辑器内容</el-button>
     </div>
 </template>
 
 <script>
+	import Editor from '../module/editor.vue'
     export default {
-        
+        data(){
+			return {
+				textData:''
+			}
+		},
+		components:{
+			Editor
+		},
+		methods:{
+			getText(){
+				
+			}
+		},
+		mounted(){
+			this.textData='<div class="question"><p>产品名1</p></div>';
+		}
     }
 </script>
 
