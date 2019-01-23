@@ -1,0 +1,416 @@
+* {
+	margin: 0;
+	padding: 0;
+	outline: 0
+}
+
+body {
+	background-color: #fefefe;
+}
+
+a {
+	text-decoration: none;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+a:focus {
+	outline: none;
+}
+
+a:link {
+	text-decoration: none;
+}
+
+a:visited {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+a:active {
+	text-decoration: none;
+}
+
+img,
+object {
+	-moz-background-size: contain;
+	-webkit-background-size: contain;
+	-o-background-size: contain;
+	background-size: contain;
+	width: 100%;
+	height: auto;
+}
+
+.clear {
+	clear: both;
+}
+
+/* 媒体查询设置字体 */
+@media only screen and (min-device-width:320px) and (min-device-height:480px) {
+	html,body {
+		font-size: 8.53px;
+	}
+
+}
+
+@media only screen and (min-device-width:320px) and (min-device-height:568px) {
+	html,body {
+		font-size: 8.53px;
+	}
+
+}
+
+@media only screen and (min-device-width:360px) and (min-device-height:640px) {
+	html,body {
+		font-size: 9.6px;
+	}
+
+}
+
+@media only screen and (min-device-width:375px) and (min-device-height:667px) and (-webkit-min-device-pixel-ratio : 2) {
+	html,body {
+		font-size: 10px;
+	}
+}
+
+@media only screen and (min-device-width:414px) and (min-device-height:736px) and (-webkit-min-device-pixel-ratio : 3) {
+	html,body {
+		font-size: 11.04px;
+	}
+}
+
+@media only screen and (min-device-width:736px) {
+	html,body {
+		font-size: 19.627px;
+	}
+}
+
+
+
+
+/* 页面样式 */
+
+#title {
+	margin: 2.1rem 0 1rem 1.4rem;
+	font-size: 1.9rem;
+	color: #333333;
+	line-height: 2.6rem;
+}
+
+#time {
+	margin: 1rem 1.6rem 0;
+}
+
+#time span {
+	font-size: 1.1rem;
+	color: #999999;
+	margin-right: 1.6rem;
+}
+
+#time img {
+	width: .75rem;
+	height: .56rem;
+}
+.description {
+	margin: .8rem 1.5rem 0;
+}
+.description p{
+	font-size: 1.5rem;
+	color: #999999;
+	text-align: justify;
+	line-height: 3rem;
+}
+.question {
+	margin-top: 1.6rem;
+	font-size: 1.6rem;
+	font-weight: bold;
+	color: #A87BFF;
+	text-align: center;
+}
+
+.question .line {
+	display: inline-block;
+	width: 6.6rem;
+	height: .1rem;
+	background-color: #AE83FF;
+	margin-bottom: .4rem;
+}
+
+.question .block {
+	display: inline-block;
+	width: 0.8rem;
+	height: 0.8rem;
+	background-color: #AE83FF;
+	transform: rotate(-315deg);
+}
+
+.question .line:nth-of-type(1) {
+	margin-right: 1.5rem;
+}
+
+.question .line:nth-of-type(5) {
+	margin-left: 1.5rem;
+}
+
+.question .block:nth-of-type(2) {
+	margin-right: .8rem;
+}
+
+.question .block:nth-of-type(4) {
+	margin-left: .8rem;
+}
+
+.answer {
+	margin: 0.8rem 1.5rem 0;
+	font-size: 1.5rem;
+	color: #666666;
+	letter-spacing: 0;
+	line-height: 3rem;
+}
+
+.product2 {
+	margin: 1.9rem 1.5rem 3rem;
+	text-align: center;
+}
+.product2 img {
+	width: 20rem;
+	height: 20rem;
+}
+.product3 {
+	margin: 3.5rem 1.5rem 0;
+	text-align: center;
+}
+.answer p {
+	text-align: left;
+	margin-bottom: 1rem;
+	text-align: justify;
+}
+
+.answer span {
+	font-weight: 700;
+	color: #2A2A2A;
+}
+
+.sub-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 3rem;
+}
+
+.subtitle {
+	position: relative;
+	display: table-cell;
+	text-align: center;
+	margin-top: 4.5rem;
+	height: 2.7rem;
+	border: 1px solid #663ABC;
+	background-color: #fff;
+	border-radius: .3rem;
+}
+
+.subtitle-front {
+	position: absolute;
+	left: .2rem;
+	top: .12rem;
+	background-color: #DECCFF;
+	width: 100%;
+	height: 2.7rem;
+	border: 1px solid #663ABC;
+	border-radius: .3rem;
+	z-index: -1;
+}
+
+.subtitle p {
+	line-height: 2.7rem;
+	letter-spacing: .3rem;
+	color: #C7ABFF;
+	padding: 0 1rem;
+	font-weight: 900;
+	font-size: 1.7rem;
+}
+
+.subtitle span {
+	position: absolute;
+	top: .2rem;
+	width: .1rem;
+	height: .1rem;
+	border: .1rem solid #663ABC;
+	border-radius: 50%;
+	background-color: #FFE300;
+}
+
+.point-left {
+	left: .5rem;
+}
+
+.point-right {
+	right: .5rem;
+}
+
+.point-left::before,
+.point-right::before {
+	content: "";
+	width: .1rem;
+	height: 1.7rem;
+	background-color: #C7ABFF;
+	position: absolute;
+	bottom: .2rem;
+	left: 0;
+}
+
+.comments-content {
+	margin: 2.1rem 1.5rem 0;
+	box-sizing: border-box;
+	background: #F7F7F7;
+	padding: .3rem;
+}
+
+.comments-content img {
+	display: block;
+}
+
+.naked {
+	margin: 1rem;
+	box-shadow: 0 1px 6px 1px#F5F1FD;
+	box-sizing: border-box;
+	padding: 1.5rem 1rem 3.7rem;
+}
+
+.naked img {
+	display: block;
+}
+
+.naked span {
+	color: #666;
+	margin-top: 1rem;
+	font-size: 1.3em;
+	float: right;
+}
+
+.column {
+	margin: 1.5rem 1.5rem;
+	color: #A87BFF;
+	font-size: 1.7rem;
+	font-weight: 500;
+}
+.column i{
+	font-size: 1.7rem;
+}
+
+.column span {
+	display: inline-block;
+	margin-bottom: 1rem;
+}
+.product-title{
+	position: relative;
+	margin: 4.2rem 1.5rem 3.7rem;
+	text-align: justify;
+	color: #666666;
+}
+.ball1,.ball2,.ball3{
+	position: absolute;
+	background-color:#A87BFF;
+	opacity: .2;
+	border-radius: 50%;
+}
+.ball1{
+	width: 4.5rem;
+	height: 4.5rem;
+	top: -1.5rem;
+	left: 0;
+}
+.ball2{
+	width: 2rem;
+	height: 2rem;
+	top: -1.67rem;
+	left: 3.3rem;
+}
+.ball3{
+	width: 0.9rem;
+	height: 0.9rem;
+	top: -0.83rem;
+	left: 5.8rem;
+}
+.product-title .main-title {
+	position: relative;
+	display: inline-block;
+	left: 50%;
+	transform: translateX(-50%);
+	padding-left: 3.5rem;
+	font-size: 1.7rem;
+}
+
+h3 {
+	margin: 1.6rem 1.6rem 0;
+	color: #A87BFF;
+	font-size: 1.7rem;
+	line-height: 2.4rem;
+}
+
+.column p {
+	font-size: 1.3rem;
+	font-weight: 400;
+	color: #999999;
+	text-align: justify;
+	line-height: 3.6rem;
+}
+
+.column img {
+	margin-bottom: 1rem;
+}
+.column-svg img {
+	width: 1rem;
+	margin: 0;
+}
+.original {
+	margin: 7rem 1.4rem 4.6rem;
+	font-size: 1.2rem;
+	color: #999;
+}
+
+.detail {
+	margin: 0 1.5rem;
+	color: #A87BFF;
+}
+.detail-title {
+	margin-bottom: -1.5rem;
+}
+.detail p {
+	color: #2A2A2A;
+	font-size: 1.5rem;
+	text-align: justify;
+	line-height: 3.6rem;
+}
+
+.detail span {
+	font-size: 1.5rem;
+}
+
+.product1 {
+	margin: 2.8rem 1.5rem;
+	text-align: center;
+}
+
+.epilogue {
+	margin: 4rem 1.5rem 2rem;
+	font-size: 1.7rem;
+	color: #A87BFF;
+	line-height: 3rem;
+}
+
+.bottomLabel {
+	margin: 0 1.5rem 6.7rem;
+}
+
+.bottomLabel a {
+	display: inline-block;
+	margin-right: 1.5rem;
+	padding: .4rem 1.3rem;
+	border: .1rem solid #CCCCCC;
+	border-radius: .4rem;
+	font-size: 1.1rem;
+	color: #999999;
+}
