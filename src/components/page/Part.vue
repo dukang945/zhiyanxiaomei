@@ -42,28 +42,25 @@
             @click.native.prevent="deleteRow(scope.$index, partList)"
             type="danger"
             size="small"
-            circle
             class="el-icon-delete"
             v-if="scope.row.id!=1&scope.row.id!=2&scope.row.id!=3"
             v-del
-          ></el-button>
+          >删除</el-button>
           <el-button
             size="small"
             type="primary"
             icon="el-icon-edit"
-            circle
             @click="handleEdit(scope.$index, scope.row)"
             v-if="scope.row.id!=1&scope.row.id!=2&scope.row.id!=3"
             v-has
-          ></el-button>
+          >编辑</el-button>
           
           <el-button
             size="small"
             type="success"
             icon="el-icon-share"
             @click="handleAllot(scope.$index, scope.row)"
-            circle
-          ></el-button>
+          >权限分配</el-button>
           <el-dialog title="角色分配资源" :visible.sync="editVisible" width="30%">
              <el-form
           :label-position="labelPosition"

@@ -125,7 +125,7 @@ export default {
 </script>
 
 <style lang="scss">
-/deep/ .el-scrollbar__wrap {
+.el-scrollbar__wrap {
   overflow-x: hidden;
 }
 

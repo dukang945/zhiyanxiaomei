@@ -335,7 +335,7 @@
 </template>
 
 <script>
-	import Pagination from '../module/pagination.vue'
+	import Pagination from '@/components/module/Pagination.vue'
 	import Clipboard from 'clipboard'
 	import CKEditor from '@ckeditor/ckeditor5-build-decoupled-document'
 	import '@ckeditor/ckeditor5-build-decoupled-document/build/translations/zh-cn'
@@ -439,7 +439,7 @@
 					},
 					language: 'zh-cn'
 				}).then(editor => {
-					const toolbarContainer = document.querySelector('#toolbar-container');
+					const toolbarContainer = document.querySelector('#toolbar-container')
 					toolbarContainer.appendChild(editor.ui.view.toolbar.element);
 					this.editor = editor //将编辑器保存起来，用来随时获取编辑器中的内容等，执行一些操作
 				}).catch(error => {

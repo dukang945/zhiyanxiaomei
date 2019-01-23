@@ -52,24 +52,22 @@
       <el-table-column prop="type" label="资源类型"></el-table-column>
       <el-table-column prop="link" label="链接" width="200"></el-table-column>
       <el-table-column prop="orderid" label="排序"></el-table-column>
-      <el-table-column label="操作" width="120">
+      <el-table-column label="操作" width="200">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, menuList)"
             type="danger"
             size="small"
-            circle
             class="el-icon-delete"
             v-del
-          ></el-button>
+          >删除</el-button>
           <el-button
             size="small"
             type="primary"
             icon="el-icon-edit"
-            circle
             @click="handleEdit(scope.$index, scope.row)"
             v-has
-          ></el-button>
+          >编辑</el-button>
           <el-dialog
             title="编辑"
             :visible.sync="dialogVisible"

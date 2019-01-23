@@ -29,7 +29,7 @@
           <el-form-item label="图片">
             <el-upload
               class="upload-demo"
-              action="management/admin/kcupload!uploadImage.action"
+              action="/management/admin/kcupload!uploadImage.action"
               :data="imgData1"
               :on-preview="handlePreview"
               :on-remove="handleRemove1"
@@ -129,7 +129,7 @@
           <el-form-item label="图片">
             <el-upload
               class="upload-demo"
-              action="management/admin/kcupload!uploadImage.action"
+              action="/management/admin/kcupload!uploadImage.action"
               :data="imgData"
               :on-preview="handlePreview"
               :on-remove="handleRemove"

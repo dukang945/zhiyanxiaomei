@@ -111,6 +111,7 @@ export default {
     // 编辑
     handleEdit(index, row) {
       this.idx = row.id;
+      this.dialogVisible = true;
       this.$axios
         .get(`/management/admin/element!input.action?id=${this.idx}`)
 
