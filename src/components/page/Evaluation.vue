@@ -32,7 +32,7 @@
 							</el-form-item>
 							<el-form-item label="列表图片">
 								<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
-								 :before-upload='beforeUpload' :on-success="uploadListImgSuccess" :on-remove="handleRemoveListPic" :file-list="addFileList"
+								 :before-upload='beforeUpload' :on-success="uploadListImgSuccess" :on-remove="handleRemoveListPic" :on-preview="handlePictureCardPreview" :file-list="addFileList"
 								 list-type="picture">
 									<el-button size="small" type="primary">点击上传</el-button>
 									<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
@@ -40,7 +40,7 @@
 							</el-form-item>
 							<el-form-item label="banner图片">
 								<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
-								 :before-upload='beforeUpload' :on-success="uploadBannerImgSuccess" :on-remove="handleRemoveBannerPic"
+								 :before-upload='beforeUpload' :on-success="uploadBannerImgSuccess" :on-preview="handlePictureCardPreview" :on-remove="handleRemoveBannerPic"
 								 :file-list="addFileList" list-type="picture">
 									<el-button size="small" type="primary">点击上传</el-button>
 									<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
@@ -254,14 +254,14 @@
 
 				<el-form-item label="列表图片">
 					<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData' :before-upload='beforeUpload'
-					 :on-success="uploadListImgSuccess" :on-remove="handleRemoveListPic" :file-list="editListPicFileList" list-type="picture">
+					 :on-success="uploadListImgSuccess" :on-remove="handleRemoveListPic"  :on-preview="handlePictureCardPreview" :file-list="editListPicFileList" list-type="picture">
 						<el-button size="small" type="primary">点击上传</el-button>
 						<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
 					</el-upload>
 				</el-form-item>
 				<el-form-item label="banner图片">
 					<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData' :before-upload='beforeUpload'
-					 :on-success="uploadBannerImgSuccess" :on-remove="handleRemoveBannerPic" :file-list="editBannerPicFileList"
+					 :on-success="uploadBannerImgSuccess" :on-remove="handleRemoveBannerPic" :on-preview="handlePictureCardPreview" :file-list="editBannerPicFileList"
 					 list-type="picture">
 						<el-button size="small" type="primary">点击上传</el-button>
 						<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
@@ -427,6 +427,10 @@
 				</el-form-item>
 			</el-form>
 		</el-dialog>
+		<!-- 预览图片弹框 -->
+		<el-dialog :visible.sync="imgDialogVisible">
+			<img width="100%" :src="dialogImageUrl" alt="">
+		</el-dialog>
 	</div>
 </template>
 
@@ -469,6 +473,7 @@
 				productDialogVisible: false,
 				addProductDialogVisible: false,
 				editProductDialogVisible: false,
+				imgDialogVisible:false,
 				tableData: [],
 				commentTableData: [], //评论表格数据
 				productTableData: [], //产品表格数据

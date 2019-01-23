@@ -12,8 +12,8 @@
 					</el-form-item>
 					<el-form-item label="标识" prop='type'>
 						<el-select v-model="formLabelAdd.type" placeholder="请选择标识">
-							<el-option label="打分详情" value="0"></el-option>
-							<el-option label="打分标题" value="1"></el-option>
+							<el-option label="打分详情" :value="0+0"></el-option>
+							<el-option label="打分标题" :value="1+0"></el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="内容">
@@ -53,8 +53,8 @@
 				</el-form-item>
 				<el-form-item label="标识" prop='type'>
 					<el-select v-model="formLabelAlign.type" placeholder="请选择标识">
-						<el-option label="打分详情" value="0"></el-option>
-						<el-option label="打分标题" value="1"></el-option>
+						<el-option label="打分详情" :value="0+0"></el-option>
+						<el-option label="打分标题" :value="1+0"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="内容">
@@ -130,7 +130,7 @@
 					gradeJson: item.gradeJson,
 					max: item.max,
 					min: item.min,
-					type: item.type == 0 ? '打分详情' : '打分标题'
+					type: item.type
 				};
 				this.dialogVisible = true;
 			},
@@ -138,11 +138,6 @@
 			saveEdit() {
 				this.$refs['formLabelAlign'].validate((valid) => {
 					if (valid) {
-						if(this.formLabelAlign.type=='打分详情'){
-							this.formLabelAlign.type=0
-						}else if(this.formLabelAlign.type=='打分标题'){
-							this.formLabelAlign.type=1
-						}
 						this.$axios.post(`/management/admin/makeup-grading!save.action?id=${this.formLabelAlign.id}`, this.$qs.stringify({
 							min: this.formLabelAlign.min,
 							max: this.formLabelAlign.max,
