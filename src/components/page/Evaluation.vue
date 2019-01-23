@@ -7,7 +7,7 @@
 					<el-button type="primary" size='small' @click="batchOnline">批量上线</el-button>
 					<el-button type="primary" size='small' @click="batchOffline">批量下线</el-button>
 					<el-button type="primary" size='small' @click="batchDelete">批量删除</el-button>
-					<el-dialog title="新增评测评" :visible.sync="AddVisible" width="80%" :before-close="handleClose">
+					<el-dialog title="新增评测评" :visible="AddVisible" width="80%" @close='AddVisible=false'>
 						<el-form :label-position="labelPosition" label-width="120px" :model="formLabelAdd">
 							<el-form-item label="标题">
 								<el-input v-model="formLabelAdd.name"></el-input>
@@ -49,22 +49,118 @@
 
 							<el-form-item label="编辑页面内容">
 								<el-row>
-									<el-col :span='8'>
-										<!-- <el-button @click='addModelOne'>添加内容模板一</el-button>
-										<el-button @click='addModelTwo'>添加内容模板二</el-button>
-										<el-button @click='addModelThree'>添加内容模板三</el-button> -->
+									<el-col :span='8' class='modelBox'>
+										<div class="modelList">模板列表</div>
+										<el-collapse accordion>
+											<el-collapse-item title="产品名称模板" name="1">
+												<div class="modelItem" @click="addProductNameModel1">
+													<div class="question">
+														<p>产品名1</p>
+													</div>
+												</div>
+
+												<div class="modelItem" @click="addProductNameModel2">
+													<div class="product-title">
+														<div class="main-title">
+															<div class="ball1">&nbsp;</div>
+
+															<div class="ball2">&nbsp;</div>
+
+															<div class="ball3">&nbsp;</div>
+
+															<p>产品名2</p>
+														</div>
+													</div>
+												</div>
+											</el-collapse-item>
+											<el-collapse-item title="标题模板" name="2">
+												<div class="modelItem" @click="addTitleModel1">
+													<div class="question">
+														<span class="line"></span>
+														<span class="block"></span>
+														<span>标题一</span>
+														<span class="block"></span>
+														<span class="line"></span>
+													</div>
+												</div>
+												<div class="modelItem" @click="addTitleModel2">
+													<div class="sub-container">
+														<div class="subtitle">
+															<span class="point-left"></span>
+															<p>标题二</p>
+															<span class="point-right"></span>
+															<div class="subtitle-front">&nbsp;</div>
+														</div>
+													</div>
+												</div>
+												<div class="modelItem" @click="addTitleModel3">
+													<div class="epilogue">
+														<span>标题三</span>
+													</div>
+												</div>
+												<div class="modelItem" @click="addTitleModel4">
+													<div class="column column-svg">
+														<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
+														<span>标题四</span>
+													</div>
+												</div>
+
+											</el-collapse-item>
+											<el-collapse-item title="图片模板" name="3">
+												<div class="modelItem" @click="addImgModel1">
+													<div class="product1">
+														<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
+													</div>
+												</div>
+												<div class="modelItem" @click="addImgModel2">
+													<div class="naked">
+														<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
+														<span>参考价格：540/30g</span>
+													</div>
+												</div>
+												<div class="modelItem" @click="addImgModel3">
+													<div class="comments-content">
+														<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
+													</div>
+												</div>
+												<div class="modelItem" @click="addImgModel4">
+													<div class="product2">
+														<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
+													</div>
+												</div>
+											</el-collapse-item>
+											<el-collapse-item title="文字模板" name="4">
+												<div class="modelItem" @click="addTextModel1">
+													<div class="column">
+														<p>文字1</p>
+													</div>
+												</div>
+												<div class="modelItem" @click="addTextModel2">
+													<div class="detail">
+														<p>正文并排</p>
+													</div>
+												</div>
+												<div class="modelItem" @click="addTextModel3">
+													<div class="answer">
+														<p>正文常规</p>
+													</div>
+												</div>
+												<div class="modelItem" @click="addTextModel4">
+													<h3>文字效果一</h3>
+												</div>
+												<div class="modelItem" @click="addTextModel5">
+													<div class="detail">
+														<span>文字效果二</span>
+													</div>
+												</div>
+											</el-collapse-item>
+										</el-collapse>
 									</el-col>
 									<el-col :span='14' :offset="2">
-										<!-- 工具栏容器 -->
-										<div id="toolbar-container"></div>
-
-										<!-- 编辑器容器 -->
-										<div id="editor">
-											<p>This is the initial editor content.</p>
-										</div>
-
+										<textarea id="editorAdd" rows="10" cols="80"></textarea>
 									</el-col>
 								</el-row>
+								<!-- <Editor :editorText='textData' ref="editorCompent"></Editor> -->
 							</el-form-item>
 						</el-form>
 						<span slot="footer" class="dialog-footer">
@@ -132,7 +228,7 @@
 			</el-col>
 		</el-row>
 		<!-- 编辑表单 -->
-		<el-dialog title="编辑" :visible.sync="editDialogVisible" width="50%" :before-close="handleClose">
+		<el-dialog title="编辑" :visible.sync="editDialogVisible" width="80%" :before-close="handleClose">
 			<el-form :label-position="labelPosition" label-width="120px" :model="editFormData">
 				<el-form-item label="标题">
 					<el-input v-model="editFormData.name"></el-input>
@@ -172,7 +268,7 @@
 					</el-upload>
 				</el-form-item>
 				<el-form-item label="编辑页面内容">
-
+					<Editor :editorText='textData' ref="editorCompent"></Editor>
 				</el-form-item>
 			</el-form>
 			<span slot="footer" class="dialog-footer">
@@ -337,9 +433,10 @@
 <script>
 	import Pagination from '../module/pagination.vue'
 	import Clipboard from 'clipboard'
-	import CKEditor from '@ckeditor/ckeditor5-build-decoupled-document'
-	import '@ckeditor/ckeditor5-build-decoupled-document/build/translations/zh-cn'
+	import CKEDITOR from 'CKEDITOR';
+	import Editor from '../module/editor.vue'
 	export default {
+		name: 'editorAdd',
 		data() {
 			return {
 				searchForm: {
@@ -420,32 +517,193 @@
 				innerCommentRowId: '', // 内层产品行id
 				checkedRowId: '',
 				// 文本编辑器
-				editor: null, //编辑器实例
+				hasEditor: false,
+				textData: '' //这是编辑表单文本编辑器内容
 			}
 		},
 		components: {
-			Pagination
+			Pagination,
+			Editor
 		},
 		methods: {
 			// 编辑器
 			initCKEditor() {
-				CKEditor.create(document.querySelector('#editor'), {
-					ckfinder: {
-						uploadUrl: '/management/admin/kcupload!uploadImage.action?type=goods_path',
-// 						options: {
-// 							FileName: 'img'
-// 						}
-						//后端处理上传逻辑返回json数据,包括uploaded(选项true/false)和url两个字段
-					},
-					language: 'zh-cn'
-				}).then(editor => {
-					const toolbarContainer = document.querySelector('#toolbar-container');
-					toolbarContainer.appendChild(editor.ui.view.toolbar.element);
-					this.editor = editor //将编辑器保存起来，用来随时获取编辑器中的内容等，执行一些操作
-				}).catch(error => {
-					console.error(error);
+				CKEDITOR.replace('editorAdd', {
+					height: 500,
+					resize_maxHeight: 3000,
+					filebrowserImageUploadUrl: '/management/admin/kcupload!uploadImg.action?type=goods_path',
+					filebrowserBrowseUrl: '/management/admin/kcupload!getImages.action?type=cosmetics_img',
+					extraPlugins: "beautyappraisal",
+					toolbar: [{
+							name: 'document',
+							items: ['Source', '-', 'Templates']
+						},
+						{
+							name: 'clipboard',
+							items: ['-', 'Undo', 'Redo']
+						},
+						{
+							name: 'insert',
+							items: ['-', 'Image']
+						},
+						{
+							name: 'paragraph',
+							items: ['-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock']
+						},
+						{
+							name: 'colors',
+							items: ['-', 'TextColor']
+						},
+						{
+							name: 'custome_plugin',
+							items: ['productname', 'title', 'img', 'text', 'texteffects', 'bold']
+						}, //将自定义插件加入toolbar
+					],
+					// contentsCss: './static/ckeditor/style.css',
+					contentsCss: '../../../static/ckeditor/style.css',
+					templates_replaceContent: false,
+					autoUpdateElement: true,
+					//编辑器中回车产生的标签
+					enterMode: CKEDITOR.ENTER_BR, //可选：CKEDITOR.ENTER_BR或CKEDITOR.ENTER_P
+					shiftEnterMode: CKEDITOR.ENTER_P
 				});
 			},
+			// 增加模板
+			addProductNameModel1() {
+				CKEDITOR.instances.editorAdd.insertHtml(
+					`<div class="question">
+						<p>产品名1</p>
+					</div>
+					<br>`
+				)
+			},
+			addProductNameModel2() {
+				CKEDITOR.instances.editorAdd.insertHtml(
+					`<div class="product-title">
+						<div class="main-title">
+							<div class="ball1">&nbsp;</div>
+							<div class="ball2">&nbsp;</div>
+							<div class="ball3">&nbsp;</div>
+							<p>产品名2</p>
+						</div>
+					</div>
+					<br>`
+				)
+			},
+			addTitleModel1() {
+				CKEDITOR.instances.editorAdd.insertHtml(
+					`<div class="question">
+						<span class="line"></span>
+						<span class="block"></span>
+						<span>标题一</span>
+						<span class="block"></span>
+						<span class="line"></span>
+					</div>
+					<br>`
+				)
+			},
+			addTitleModel2() {
+				CKEDITOR.instances.editorAdd.insertHtml(
+					`<div class="sub-container">
+						<div class="subtitle">
+							<span class="point-left"></span>
+							<p>标题二</p>
+							<span class="point-right"></span>
+							<div class="subtitle-front">&nbsp;</div>
+						</div>
+					</div>
+					<br>`
+				)
+			},
+			addTitleModel3() {
+				CKEDITOR.instances.editorAdd.insertHtml(
+					`<div class="epilogue">
+						<span>标题三</span>
+					</div>
+					<br>`
+				)
+			},
+			addTitleModel4() {
+				CKEDITOR.instances.editorAdd.insertHtml(
+					`<div class="column column-svg">
+						<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
+						<span>标题四</span>
+					</div>
+					<br>`
+				)
+			},
+			addImgModel1() {
+				CKEDITOR.instances.editorAdd.insertHtml(
+					`<div class="product1">
+						<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
+					</div>
+					<br>`
+				)
+			},
+			addImgModel2() {
+				CKEDITOR.instances.editorAdd.insertHtml(
+					`<div class="naked">
+						<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
+						<span>参考价格：540/30g</span>
+					</div>
+					<br>`
+				)
+			},
+			addImgModel3() {
+				CKEDITOR.instances.editorAdd.insertHtml(
+					`<div class="comments-content">
+						<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
+					</div>
+					<br>`
+				)
+			},
+			addImgModel4() {
+				CKEDITOR.instances.editorAdd.insertHtml(
+					`<div class="product2">
+						<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
+					</div>
+					<br>`
+				)
+			},
+			addTextModel1() {
+				CKEDITOR.instances.editorAdd.insertHtml(
+					`<div class="column">
+						<p>文字1</p>
+					</div>
+					<br>`
+				)
+			},
+			addTextModel2() {
+				CKEDITOR.instances.editorAdd.insertHtml(
+					`<div class="detail">
+						<p>正文并排</p>
+					</div>
+					<br>`
+				)
+			},
+			addTextModel3() {
+				CKEDITOR.instances.editorAdd.insertHtml(
+					`<div class="answer">
+						<p>正文常规</p>
+					</div>
+					<br>`
+				)
+			},
+			addTextModel4() {
+				CKEDITOR.instances.editorAdd.insertHtml(
+					`<h3>文字效果一</h3>
+					<br>`
+				)
+			},
+			addTextModel5() {
+				CKEDITOR.instances.editorAdd.insertHtml(
+					`<div class="detail">
+						<span>文字效果二</span>
+					</div>
+					<br>`
+				)
+			},
+			
 
 			tableRowClassName({
 				row,
@@ -469,11 +727,17 @@
 				let _this = this
 				_this.formatTreeData(_ => {});
 				_this.AddVisible = true;
-				// 初始化文本编辑器
 				setTimeout(function() {
-					_this.initCKEditor()
+					if (_this.hasEditor) {
+						return
+					} else {
+						_this.initCKEditor();
+						_this.hasEditor = true;
+					}
 				}, 100)
-
+// 				setTimeout(function(){
+// 					_this.editorText=''
+// 				},100)
 			},
 			// 确认新增
 			handleAdd() {
@@ -497,9 +761,7 @@
 						categoryIdString += `&categoryId=${this.formLabelAdd.type[i]}`
 					}
 				}
-
-				console.log(this.formLabelAdd)
-				console.log(testObj)
+				testObj.text = CKEDITOR.instances.editorAdd.getData();
 				let paramsStr = this.$qs.stringify(testObj) + categoryIdString
 				this.$axios.post('/management/admin/beauty-appraisal!save.action', paramsStr).then(res => {
 					this.getTableData('/management/admin/beauty-appraisal!list.action', this.page, this.row);
@@ -518,6 +780,7 @@
 			// 取消新增
 			cancelAdd() {
 				this.AddVisible = false;
+				CKEDITOR.instances.editorAdd.setData("")
 				this.formLabelAdd = {
 					name: '',
 					greatNumber: '',
@@ -586,19 +849,23 @@
 			// 复制H5页面路径
 			copyH5Url(row) {
 				var Url = row.url;
-				var clipboard = new Clipboard('.copyBtn', {
-					text: function() {
-						return Url;
-					}
-				});
-				clipboard.on('success', e => {
-					this.$message.success('复制成功')
-					clipboard.destroy()
-				})
-				clipboard.on('error', e => {
-					this.$message.error('浏览器不支持复制')
-					clipboard.destroy()
-				})
+				if(Url){
+					var clipboard = new Clipboard('.copyBtn', {
+						text: function() {
+							return Url;
+						}
+					});
+					clipboard.on('success', e => {
+						this.$message.success('复制成功')
+						clipboard.destroy()
+					})
+					clipboard.on('error', e => {
+						this.$message.error('浏览器不支持复制')
+						clipboard.destroy()
+					})
+				}else{
+					this.$message.error('还没有生成H5页面，请点击生成H5再试')
+				}
 			},
 			// 树形控件操作
 			handleNodeClick(a, b, c) {
@@ -657,12 +924,17 @@
 					image: row.image,
 					bannerImage: row.bannerImage,
 					text: row.text
-				}
+				};
+				setTimeout(function() {
+					that.textData = row.text;
+				}, 100);
 				tempObj.type = [];
-				let arr = row.categoryId.split(',');
-				if (arr.length > 0) {
-					for (let i = 0; i < arr.length; i++) {
-						tempObj.type.push(Number(arr[i]))
+				if (row.categoryId) {
+					let arr = row.categoryId.split(',');
+					if (arr.length > 0) {
+						for (let i = 0; i < arr.length; i++) {
+							tempObj.type.push(Number(arr[i]))
+						}
 					}
 				}
 				that.editFormData = tempObj
@@ -694,11 +966,13 @@
 					reviewLabel: '',
 					type: []
 				}
+				this.textData = '';
 				this.editListPicFileList = [];
 				this.editBannerPicFileList = [];
 			},
 			// 提交编辑
 			handleEdit() {
+				let editorhtml = this.$refs.editorCompent.getEditorData();//获取文本编辑器内容
 				var testObj = {};
 				for (var key in this.editFormData) {
 					if (key != 'type' && key != 'id') {
@@ -715,6 +989,7 @@
 				} else {
 					testObj.bannerImage = ''
 				}
+				testObj.text=editorhtml;
 				var categoryIdString = '';
 				if (this.editFormData.type.length > 0) {
 					for (let i = 0; i < this.editFormData.type.length; i++) {
@@ -727,6 +1002,7 @@
 					this.getTableData('/management/admin/beauty-appraisal!list.action', this.page, this.row);
 					this.editDialogVisible = false;
 					this.$message.success('修改数据成功')
+					this.textData='';
 					this.tempListImgUrl = '';
 					this.tempBannerImgUrl = '';
 					this.editListPicFileList = [];
@@ -776,7 +1052,8 @@
 				this.$axios.post(`/management/admin/beauty-appraisal!saveHtml.action?id=${row.id}`).then(
 					res => {
 						if (res.status == 200) {
-							this.$message.success('H5页面创建成功')
+							this.$message.success('H5页面创建成功');
+							this.getTableData(`/management/admin/beauty-appraisal!list.action`, this.page, this.row, this.tempId)
 						} else {
 							this.$message.error('好像出了点问题-.-！')
 						}
@@ -849,7 +1126,8 @@
 						this.editProductForm.productColor.push(Number(row.productId[i]))
 					}
 				}
-				this.editProductForm.name = row.colorName
+				this.editProductForm.name = row.colorName;
+
 			},
 			cancelEditProduct() {
 				this.editProductDialogVisible = false;
@@ -1111,9 +1389,11 @@
 		},
 		mounted() {
 			var _this = this;
+			// _this.initCKEditor();
 			_this.getTableData('/management/admin/beauty-appraisal!list.action', 1, 10);
 			// 获取教程栏目树形控件数据
 			_this.$axios.get('/management/admin/category!categoryTree.action').then(res => {
+				console.log(res.data)
 				let tempList = res.data.map(item => {
 					return {
 						id: item.id,
@@ -1225,13 +1505,33 @@
 	.productOptionItem.itemNumber {
 		width: 10%;
 	}
-
-	#editor {
-		border: 1px solid #ccc;
-	}
 </style>
 <style>
 	/* 文本编辑器中模板样式 */
+	.modelList {
+		font-size: 20px;
+		line-height: 40px;
+		text-align: center;
+		margin-bottom: 20px;
+	}
+
+	#cke_editor {
+		margin-top: 40px;
+	}
+
+	.modelItem {
+		border: 1px solid #ccc;
+		margin: 10px;
+		padding: 10px 0;
+		box-sizing: border-box;
+		cursor: pointer;
+		transition: all 0.5s;
+	}
+
+	.modelItem:hover {
+		box-shadow: 0 0 5px 5px #eee;
+	}
+
 	#title {
 		margin: 2.1rem 0 1rem 1.4rem;
 		font-size: 1.9rem;
