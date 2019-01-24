@@ -20,9 +20,9 @@
 		<el-table :data="tableData" border style="width: 100%">
 			<el-table-column prop="id" label="id" width="100" align='center'>
 			</el-table-column>
-			<el-table-column prop="name" label="名称">
+			<el-table-column prop="name" label="名称" align='center'>
 			</el-table-column>
-			<el-table-column label="操作" width="200">
+			<el-table-column label="操作" width="200" align='center'>
 				<template slot-scope="scope">
 					<el-button @click.native.prevent="deleteRow(scope.$index, tableData)" size='small' type="danger" class="el-icon-delete">删除</el-button>
 					<el-button type="primary" size='small' @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -197,7 +197,4 @@
 </script>
 
 <style scoped>
-	.handle-box {
-		margin-bottom: 20px
-	}
 </style>

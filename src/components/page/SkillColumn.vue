@@ -200,9 +200,9 @@ export default {
 
 <style>
 .handle-box {
-  margin: 20px;
+  /* margin: 20px; */
 }
 .el-table {
-  margin-left: 20px;
+  /* margin-left: 20px; */
 }
 </style>

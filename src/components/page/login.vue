@@ -84,7 +84,6 @@ export default {
                 		}
                 	})
                 })
-                localStorage.setItem("menuList", JSON.stringify(menuList))
                 that.$router.push('/welcome');
                 sessionStorage.setItem("ms_username", that.ruleForm.username);
                 sessionStorage.setItem("menuList", JSON.stringify(menuList))

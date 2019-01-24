@@ -33,7 +33,7 @@
 		<el-table :data="tableData" border style="width: 100%">
 			<el-table-column prop="id" label="编号" width="50" align='center'>
 			</el-table-column>
-			<el-table-column prop="constellation" label="星座名(日期-日期)" width="200" align='center'>
+			<el-table-column prop="constellation" label="星座名(日期-日期)" width="220" align='center'>
 			</el-table-column>
 			<el-table-column prop="personality" label="星座性格" :show-overflow-tooltip="true">
 			</el-table-column>
@@ -269,7 +269,4 @@
 </script>
 
 <style scoped>
-	.handle-box {
-		margin-bottom: 20px
-	}
 </style>
