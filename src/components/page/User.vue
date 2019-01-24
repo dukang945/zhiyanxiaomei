@@ -76,56 +76,51 @@
       </el-dialog>
     </div>
     <el-table :data="userList" border style="width: 90%">
-      <el-table-column prop="id" label="编号"></el-table-column>
-      <el-table-column prop="userName" label="用户名"></el-table-column>
-      <el-table-column label="地区"></el-table-column>
-      <el-table-column label="排序号"></el-table-column>
-      <el-table-column label="所属角色"></el-table-column>
-      <el-table-column label="移动电话"></el-table-column>
-      <el-table-column label="部门规模"></el-table-column>
-      <el-table-column label="邮箱"></el-table-column>
-      <el-table-column label="操作" width="240">
+      <el-table-column prop="id" label="编号" align="center"></el-table-column>
+      <el-table-column prop="userName" label="用户名" align="center"></el-table-column>
+      <el-table-column label="地区" align="center"></el-table-column>
+      <el-table-column label="排序号" align="center"></el-table-column>
+      <el-table-column label="所属角色" align="center"></el-table-column>
+      <el-table-column label="移动电话" align="center"></el-table-column>
+      <el-table-column label="部门规模" align="center"></el-table-column>
+      <el-table-column label="邮箱" align="center"></el-table-column>
+      <el-table-column label="操作" width="440" align="center">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, userList)"
             type="danger"
             size="small"
-            circle
             class="el-icon-delete"
             v-del
-          ></el-button>
+          >删除</el-button>
           <el-button
             size="small"
             type="primary"
             icon="el-icon-edit"
-            circle
             @click="handleEdit(scope.$index, scope.row)"
             v-has
-          ></el-button>
+          >编辑</el-button>
           <el-button
             size="small"
             type="warning"
             icon="el-icon-refresh"
-            circle
             @click="handleReset(scope.$index, scope.row)"
-          ></el-button>
+          >重置密码</el-button>
           <el-button
             size="small"
             type="success"
             icon="el-icon-check"
-            circle
             v-if="scope.row.enable==0"
             v-check
             @click="handleRefresh(scope.$index, scope.row)"
-          ></el-button>
+          >启用</el-button>
           <el-button
             size="small"
             type="danger"
             icon="el-icon-close"
-            circle
             v-else
             @click="handleRefresh(scope.$index, scope.row)"
-          ></el-button>
+          >禁用</el-button>
           <el-dialog
             title="编辑"
             :visible.sync="dialogVisible"

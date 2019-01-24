@@ -35,33 +35,33 @@
       </el-dialog>
     </div>
     <el-table :data="vipList" border style="width: 90%" current-row-key v-loading="loading">
-      <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column label="名称">
+      <el-table-column type="selection" width="55" align="center"></el-table-column>
+      <el-table-column label="名称" align="center">
         <template slot-scope="scope">{{ scope.row.nickName }}</template>
       </el-table-column>
 
-      <el-table-column label="手机号">
+      <el-table-column label="手机号" align="center">
         <template slot-scope="scope">{{ scope.row.phone }}</template>
       </el-table-column>
-      <el-table-column label="性别">
+      <el-table-column label="性别" align="center">
         <template slot-scope="scope">{{ scope.row.sex == 0? '女' : '男'}}</template>
       </el-table-column>
-      <el-table-column label="化妆水平">
+      <el-table-column label="化妆水平" align="center">
         <template slot-scope="scope">{{ scope.row.level }}</template>
       </el-table-column>
-      <el-table-column label="用户生日">
+      <el-table-column label="用户生日" align="center">
         <template slot-scope="scope">{{ scope.row.birthday }}</template>
       </el-table-column>
-      <el-table-column label="第三方token">
+      <el-table-column label="第三方token" align="center">
         <template slot-scope="scope">{{ scope.row.token }}</template>
       </el-table-column>
-      <el-table-column label="注册时间">
+      <el-table-column label="注册时间" align="center">
         <template slot-scope="scope">{{ scope.row.createTime | formatTime('YMDHMS') }}</template>
       </el-table-column>
-      <el-table-column label="最后登录时间">
+      <el-table-column label="最后登录时间" align="center">
         <template slot-scope="scope">{{ scope.row.loginTime | formatTime('YMDHMS')}}</template>
       </el-table-column>
-      <el-table-column label="操作" width="200">
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button type="primary" @click="reset(scope.$index, scope.row)" size="small">重置密码</el-button>
         </template>

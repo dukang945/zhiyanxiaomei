@@ -431,10 +431,10 @@
 </template>
 
 <script>
-	import Pagination from '../module/pagination.vue'
+	import Pagination from '@/components/module/Pagination.vue'
 	import Clipboard from 'clipboard'
 	import CKEDITOR from 'CKEDITOR';
-	import Editor from '../module/editor.vue'
+	import Editor from '@/components/module/editor.vue'
 	export default {
 		name: 'editorAdd',
 		data() {

@@ -27,27 +27,25 @@
         style="width: 90%"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column label="id" width="120">
+        <el-table-column type="selection" width="55" align="center"></el-table-column>
+        <el-table-column label="id" width="120" align="center">
           <template slot-scope="scope">{{ scope.row.date }}</template>
         </el-table-column>
-        <el-table-column prop="name" label="名称"></el-table-column>
-        <el-table-column label="操作" width="120">
+        <el-table-column prop="name" label="名称" align="center"></el-table-column>
+        <el-table-column label="操作" width="120" align="center">
           <template slot-scope="scope">
             <el-button
               @click.native.prevent="deleteRow(scope.$index, tableData4)"
               type="danger"
               size="small"
-              circle
               class="el-icon-delete"
-            ></el-button>
+            >删除</el-button>
             <el-button
               size="small"
               type="primary"
               icon="el-icon-edit"
-              circle
               @click="handleEdit(scope.$index, scope.row)"
-            ></el-button>
+            >编辑</el-button>
             <el-dialog
               title="编辑"
               :visible.sync="dialogVisible"

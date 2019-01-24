@@ -1,7 +1,8 @@
 <template>
   <div>
     <div class="handle-box">
-      <el-button type="primary" @click="AddVisible = true" v-has size="small">新增</el-button>
+      <el-button type="primary" @click="AddVisible = true" v-has size="small">新增产品</el-button>
+      <el-button type="primary" @click="AddGrid = true" v-has size="small">新增产品牌</el-button>
       <el-input v-model="makeup_Search" placeholder="请输入产品名称" style="width: 30%" size="small">
         <el-button slot="append" icon="el-icon-search" @click="productSearch"></el-button>
       </el-input>
@@ -14,7 +15,7 @@
         <Pagination :totalNum="totalNum2" @change_Page="changePage2" @change_Size="changeSize2"></Pagination>
       </el-select>
       <el-button type="primary" icon="el-icon-search" @click="makeupSearch" size="small">搜索</el-button>
-      <el-dialog title="新增" :visible.sync="AddVisible" :before-close="handleClose">
+      <el-dialog title="新增产品" :visible.sync="AddVisible" :before-close="handleClose">
         <el-form
           :label-position="labelPosition"
           label-width="120px"
@@ -143,13 +144,13 @@
       </el-dialog>
     </div>
     <el-table :data="makeupList" border style="width: 90%">
-      <el-table-column label="编号" width="120">
-        <template slot-scope="scope">{{ scope.row.id }}</template>
+      <el-table-column label="编号" width="120" align="center">
+        <template slot-scope="scope" align="center">{{ scope.row.id }}</template>
       </el-table-column>
-      <el-table-column prop="name" label="产品名称"></el-table-column>
-      <el-table-column prop="brandName" label="品牌名称"></el-table-column>
-      <el-table-column prop="creatUser" label="操作人"></el-table-column>
-      <el-table-column label="操作" >
+      <el-table-column prop="name" label="产品名称" align="center"></el-table-column>
+      <el-table-column prop="brandName" label="品牌名称" align="center"></el-table-column>
+      <el-table-column prop="creatUser" label="操作人" align="center"></el-table-column>
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, makeupList)"
@@ -332,6 +333,7 @@ export default {
       makeup_Search: "",
       dialogVisible: false,
       AddVisible: false,
+      AddGrid: false,
       labelPosition: "left",
       grid:'',
       category:'',
@@ -437,7 +439,7 @@ export default {
     },
     getProblemList(page, row) {
       this.$axios
-        .get("management/admin/skin-problems!comboGridlist.action", {
+        .get("/management/admin/skin-problems!comboGridlist.action", {
           params: {
             page,
             row
@@ -457,14 +459,14 @@ export default {
       this.dialogVisible = true;
       this.idx = row.id;
       this.$axios
-        .get(`management/admin/beauty-product!input.action?id=${this.idx}`)
+        .get(`/management/admin/beauty-product!input.action?id=${this.idx}`)
         .then(res => {
           if (res.status == 200) {
             console.log(res);
             // this.formLabelAlign = res.data;
             this.$axios
               .get(
-                `management/admin/beauty-product!getSelectDetail.action?id=${
+                `/management/admin/beauty-product!getSelectDetail.action?id=${
                   this.idx
                 }`
               )
@@ -535,7 +537,7 @@ export default {
             }) + gx;
           this.$axios
             .post(
-              `management/admin/beauty-product!save.action?id=${this.idx}`,
+              `/management/admin/beauty-product!save.action?id=${this.idx}`,
               params
             )
             .then(res => {
@@ -601,7 +603,7 @@ export default {
               image: `<img src="` + this.formLabelAdd.image + `"  alt='' />`
             }) + gx;
           this.$axios
-            .post(`management/admin/beauty-product!save.action`, params)
+            .post(`/management/admin/beauty-product!save.action`, params)
             .then(res => {
               if (res.status == 200) {
                 this.AddVisible = false;

@@ -60,7 +60,7 @@
 </template>
 
 <script>
-	import TableTree from '../module/table-tree.vue'
+	import TableTree from '@/components/module/table-tree.vue'
 	export default {
 		data() {
 			return {
