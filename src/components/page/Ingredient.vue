@@ -215,7 +215,4 @@ export default {
 </script>
 
 <style scoped>
-.handle-box{
-  padding-bottom: 20px
-}
 </style>

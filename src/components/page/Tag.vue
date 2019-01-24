@@ -271,7 +271,4 @@
 </script>
 
 <style scoped>
-	.handle-box {
-		margin-bottom: 20px
-	}
 </style>
