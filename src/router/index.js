@@ -40,6 +40,7 @@ import Teach from '@/components/page/Teach'
 import Temperament from '@/components/page/Temperament'
 import User from '@/components/page/User'
 import VipMsg from '@/components/page/VipMsg'
+import LabelCountAll from '@/components/page/LabelCountAll'
 
 
 Vue.use(Router)
@@ -232,6 +233,11 @@ export default new Router({
           path: '/user',
 					name:'',
           component: User,
+        },
+        {
+          path: '/labelCountAll',
+					name:'',
+          component: LabelCountAll,
         },
         {
           path: '/vipMsg',
