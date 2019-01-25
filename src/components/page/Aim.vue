@@ -103,7 +103,7 @@
 					}]
 				},
 				page: 1,
-				row: 15,
+				row: 10,
 				totalNum: 1,
 				imgData: {
 					FileName: '',
@@ -260,7 +260,7 @@
 			}
 		},
 		mounted() {
-			this.getData(1, 15)
+			this.getData(1, 10)
 		}
 
 	}

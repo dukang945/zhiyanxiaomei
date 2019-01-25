@@ -104,8 +104,4 @@
 </script>
 
 <style scoped>
-	.feedBackContent {
-		padding: 10px 20px;
-		box-sizing: border-box;
-	}
 </style>
