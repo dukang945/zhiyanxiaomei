@@ -24,7 +24,6 @@
 		},
 		methods: {
 			clickTab(val) {
-				console.log(val, '11')
 				let path = val.name;
 				this.$router.push(path);
 			},

@@ -95,13 +95,14 @@ export default {
       return routePath
     }
   },
-  watch: {
-    
+  mounted() {
+    this.$refs.slider.addTab(this.$route.path, this.$route.name);
   },
   methods: {
     isopen(){
     },
     handleSelect(path, pathName) {
+      console.log(this.$route)
       let cardName = "";
       this.menulist.forEach(item => {
         if (item.id == pathName[0]) {
