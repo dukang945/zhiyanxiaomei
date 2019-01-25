@@ -337,9 +337,6 @@ export default {
 </script>
 
 <style>
-.handle-box {
-		margin-bottom: 20px
-	}
 .el-tree {
   max-height: 500px;
   overflow-y: scroll;

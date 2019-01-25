@@ -12,19 +12,19 @@
 							<el-form-item label="名称">
 								<el-input v-model="formLabelAdd.name"></el-input>
 							</el-form-item>
-							<el-form-item label="化妆目的">
+							<!-- <el-form-item label="化妆目的">
 								<el-select v-model="formLabelAdd.purposeId" multiple placeholder="请选择化妆目的" style='width: 100%;'>
 									<el-option v-for="item in purposeOptions" :key="item.id" :label="item.text" :value="item.id">
 									</el-option>
 								</el-select>
-							</el-form-item>
-							<el-form-item label="化妆水平">
+							</el-form-item> -->
+						<!-- 	<el-form-item label="化妆水平">
 								<el-select v-model="formLabelAdd.level" placeholder="请选择水平">
 									<el-option label="初学乍练" value="0"></el-option>
 									<el-option label="略有小成" value="1"></el-option>
 									<el-option label="自成一派" value="2"></el-option>
 								</el-select>
-							</el-form-item>
+							</el-form-item> -->
 							<el-form-item label="标签">
 								<el-cascader v-model="formLabelAdd.lableId" :options="tagOptions" change-on-select></el-cascader>
 							</el-form-item>
@@ -156,7 +156,7 @@
 				<el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
 			</el-col>
 			<el-col :span='22'>
-				<el-table :data="tableData" border style="width: 99%" class='table' max-height="630" @select='tableSelect'
+				<el-table :data="tableData" border style="width: 100%" class='table'  @select='tableSelect'
 				 v-loading="loading" :row-class-name="tableRowClassName">
 					<el-table-column type="selection" width="55" align='center'></el-table-column>
 					<el-table-column type="index" label="序号" width="50" align='center'>
@@ -165,20 +165,16 @@
 					</el-table-column>
 					<el-table-column prop="name" label="标题" width="200" align='center' :show-overflow-tooltip="true">
 					</el-table-column>
-					<el-table-column prop="lableName" label="标签" width="100" align='center'>
+					<el-table-column prop="labelName" label="标签" width="300" align='center' :show-overflow-tooltip="true">
 					</el-table-column>
-					<!-- <el-table-column prop="level" label="化妆水平" width="100" align='center' :formatter='getLevel'>
-					</el-table-column> -->
 					<el-table-column label="H5地址" width="100" align='center'>
 						<template slot-scope="scope">
 							<el-button class='copyBtn' size="small" @click='copyH5Url(scope.row)' type="primary">复制</el-button>
 						</template>
 					</el-table-column>
-					<el-table-column prop="collectNumber" label="点赞次数" width="100" align='center'>
-					</el-table-column>
-					<!-- <el-table-column prop="clickNumber" label="点击次数" width="100" align='center'>
-					</el-table-column> -->
 					<el-table-column prop="creatUser" label="创建人" width="100" align='center'>
+					</el-table-column>
+					<el-table-column prop="collectNumber" label="点赞次数" width="100" align='center'>
 					</el-table-column>
 					<el-table-column prop="createTime" label="创建时间" width="150" align='center' :formatter='getTime'>
 					</el-table-column>
@@ -206,7 +202,7 @@
 				<el-form-item label="名称">
 					<el-input v-model="editFormData.name"></el-input>
 				</el-form-item>
-				<el-form-item label="化妆目的">
+				<!-- <el-form-item label="化妆目的">
 					<el-select v-model="editFormData.purposeId" multiple placeholder="请选择化妆目的" style='width: 100%;'>
 						<el-option v-for="item in purposeOptions" :key="item.id" :label="item.text" :value="item.id">
 						</el-option>
@@ -218,7 +214,7 @@
 						<el-option label="略有小成" :value="1+0"></el-option>
 						<el-option label="自成一派" :value="2+0"></el-option>
 					</el-select>
-				</el-form-item>
+				</el-form-item> -->
 				<el-form-item label="标签">
 					<el-cascader v-model="editFormData.lableId" :options="tagOptions" change-on-select></el-cascader>
 				</el-form-item>
@@ -788,7 +784,7 @@
 				treeData: [],
 				defaultProps: {
 					children: 'children',
-					label: 'lable'
+					label: 'text'
 				},
 				tempId: 2,
 				// 图片上传
@@ -1109,7 +1105,8 @@
 				that.$axios.all([formatPurpose(), formatBeautyColor()]).then(that.$axios.spread(function(purposeData, colorData) {
 					tempObj.productColor = [];
 					that.purposeOptions = purposeData.data;
-					let temp = row.ids.split(',');
+					console.log(purposeData)
+					let temp = row.labelId.split(',');
 					let arr = [];
 					for (let i = 0; i < temp.length; i++) {
 						purposeData.data.forEach(item => {
@@ -1553,7 +1550,7 @@
 					params: {
 						page: page,
 						rows: row,
-						lableId: id ? id : ''
+						labelId: id ? id : ''
 					}
 				}).then(res => {
 					this.totalNum = res.data.total;
@@ -1671,27 +1668,75 @@
 			}
 		},
 		mounted() {
-			this.getTableData('/management/admin/beauty-details!list.action', 1, 10, 2);
+			this.getTableData('/management/admin/beauty-details!list.action', 1, 10);
+			this.$axios.get('/management/admin/label!getTree.action').then(res=>{
+				console.log(res)
+				this.treeData=res.data
+			})
 			// 获取教程栏目树形控件数据
-			this.$axios.get('/management/admin/lable!lableTree.action').then(res => {
+			this.$axios.get('/management/admin/label!getTreeGrid.action').then(res => {
 				let tempList = res.data.map(item => {
 					return {
 						id: item.id,
-						lable: item.text,
+						name: item.name,
+						text: item.text,
+						state: item.state,
 						children: []
 					}
 				})
-				for(let i=0;i<tempList.length;i++){
-					this.$axios.get(`/management/admin/lable!lableTree.action?id=${tempList[i].id}`).then(res2=>{
-						console.log(res2)
-						let temp=res2.data.map(item=>{
-							return {
-								lable: item.text,
-								id: item.id
+				for (let i = 0; i < tempList.length; i++) {
+					if (tempList[i].state == 'closed') {
+						this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${tempList[i].id}`).then(res2 => {
+							if (res2.data) {
+								var children2 = res2.data.map(item => {
+									return {
+										id: item.id,
+										name: item.name,
+										text: item.text,
+										state: item.state,
+										children: []
+									}
+								})
+								tempList[i].children = children2;
+								for (let j = 0; j < children2.length; j++) {
+									if (children2[j].state == 'closed') {
+										this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${children2[j].id}`).then(res3 => {
+											if (res3.data) {
+												var children3 = res3.data.map(item => {
+													return {
+														id: item.id,
+														name: item.name,
+														text: item.text,
+														state: item.state,
+														children: []
+													}
+												})
+												tempList[i].children[j].children = children3;
+												for (let k = 0; k < children3.length; k++) {
+													if (children3[k].state == 'closed') {
+														this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${children3[k].id}`).then(res4 => {
+															if (res4.data) {
+																var children4 = res4.data.map(item => {
+																	return {
+																		id: item.id,
+																		name: item.name,
+																		text: item.text,
+																		state: item.state,
+																		children: []
+																	}
+																})
+																tempList[i].children[j].children[k].children = children4;
+															}
+														})
+													}
+												}
+											}
+										})
+									}
+								}
 							}
 						})
-						tempList[i].children = temp
-					})
+					}
 				}
 				this.treeData = tempList;
 			})
@@ -1794,5 +1839,20 @@
 	}
 	.el-upload-list__item {
 		/* transition: none; */
+	}
+	
+	.el-table--scrollable-x .el-table__body-wrapper::-webkit-scrollbar{/*滚动条整体样式*/
+	    width: 4px;     /*高宽分别对应横竖滚动条的尺寸*/
+	    height: 10px;
+	}
+	.el-table--scrollable-x .el-table__body-wrapper::-webkit-scrollbar-thumb{/*滚动条里面小方块*/
+	    border-radius: 5px;
+	    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+	    background: rgba(0,0,0,0.2);
+	}
+	.el-table--scrollable-x .el-table__body-wrapper::-webkit-scrollbar-track{/*滚动条里面轨道*/
+	    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+	    border-radius: 0;
+	    background: rgba(0,0,0,0.1);
 	}
 </style>

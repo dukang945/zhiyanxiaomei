@@ -57,6 +57,7 @@
 				let reduceDataFunc = (data, level) => {
 					data.map((m, i) => {
 						m.isExpand = false
+						m.index=i
 						m.children = m.children || []
 						m.level = level
 						m.bLeft = level === 1 ? 34 : (level - 2) * 16 + 34
@@ -94,7 +95,7 @@
 			}
 		},
 		components: {
-			treeItem: () => import('./tree-item.vue')
+			treeItem: () => import('./tree-item-label.vue')
 		},
 		mounted() {
 			const vm = this
@@ -148,13 +149,22 @@
   padding-left: 30px;
 }
 .tree-table .td2 {
-  width: 100px;
+  width: 300px;
 }
 .tree-table .td3 {
-  width: 120px;
+  width: 100px;
 }
 .tree-table .td4 {
-  width: 220px;
+  width: 100px;
+}
+.tree-table .td5 {
+  width: 100px;
+}
+.tree-table .td6 {
+  width: 100px;
+}
+.tree-table .td7 {
+  width: 100px;
 }
 .tree-table .p20 {
   padding-left: 20px;

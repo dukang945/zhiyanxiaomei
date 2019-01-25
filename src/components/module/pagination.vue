@@ -21,11 +21,9 @@
 		},
 		methods:{
 			handleSizeChange(val) {
-				console.log(`每页 ${val} 条`);
 				this.$emit('change_Size',val)
 			},
 			handleCurrentChange(val) {
-				console.log(`当前页: ${val}`);
 				this.$emit('change_Page',val)
 			}
 		}
