@@ -49,6 +49,7 @@ export default new Router({
   routes: [{
       path: '/Welcome',
       component: Welcome,
+      name:'首页',
       children: [{
           path: '/skillColumn',
 					name:'技能栏目管理',
