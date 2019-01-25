@@ -237,7 +237,7 @@ export default new Router({
         },
         {
           path: '/labelCountAll',
-					name:'',
+					name:'标签埋点',
           component: LabelCountAll,
         },
         {

@@ -32,7 +32,7 @@
           <template slot-scope="scope">{{ scope.row.date }}</template>
         </el-table-column>
         <el-table-column prop="name" label="名称" align="center"></el-table-column>
-        <el-table-column label="操作" width="120" align="center">
+        <el-table-column label="操作"  align="center">
           <template slot-scope="scope">
             <el-button
               @click.native.prevent="deleteRow(scope.$index, tableData4)"
