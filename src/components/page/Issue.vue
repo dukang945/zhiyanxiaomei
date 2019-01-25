@@ -36,13 +36,13 @@
       </el-dialog>
     </div>
     <el-table :data="issueList" border style="width: 90%">
-      <el-table-column label="id" width="120">
-        <template slot-scope="scope">{{ scope.row.id }}</template>
+      <el-table-column label="id" width="120" align="center">
+        <template slot-scope="scope" >{{ scope.row.id }}</template>
       </el-table-column>
-      <el-table-column prop="question" label="问题"></el-table-column>
+      <el-table-column prop="question" label="问题" align="center"></el-table-column>
 
-      <el-table-column prop="effect" label="功效"></el-table-column>
-      <el-table-column label="操作">
+      <el-table-column prop="effect" label="功效" align="center"></el-table-column>
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, issueList)"
@@ -132,12 +132,13 @@ export default {
   methods: {
     getIssueList(page, row) {
       this.$axios
-        .get("/management/admin/skin-problems!list.action", {
-          params: {
-            page: page,
-            rows: row
-          }
-        })
+        .get("/management/admin/skin-problems!list.action",{
+					params: {
+						page: page,
+						rows: row
+					}
+				})
+
         .then(res => {
           console.log(res, "");
           if (res.status == 200) {
@@ -150,6 +151,7 @@ export default {
     },
     // 编辑
     handleEdit(index, row) {
+
       this.idx = row.id;
       this.$axios
         .get(`/management/admin/skin-problems!input.action?id=${this.idx}`)
@@ -195,9 +197,8 @@ export default {
         type: "warning"
       }).then(() => {
         this.$axios
-          .get(
-            `/management/admin/skin-problems!delete.action?id=${rows[index].id}`
-          )
+          .get(`/management/admin/skin-problems!delete.action?id=${rows[index].id}`)
+
           .then(res => {
             if (res.status == 200) {
               this.$message.success("删除成功");
@@ -207,6 +208,7 @@ export default {
       });
     },
     // 新增
+
     handleAdd(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -236,6 +238,7 @@ export default {
       done();
     },
     // 搜索
+
     issueSearch() {
       this.$axios
         .post(
@@ -267,7 +270,4 @@ export default {
 </script>
 
 <style scoped>
-.handle-box {
-  padding-bottom: 20px;
-}
 </style>

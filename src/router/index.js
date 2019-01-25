@@ -40,6 +40,7 @@ import Teach from '@/components/page/Teach'
 import Temperament from '@/components/page/Temperament'
 import User from '@/components/page/User'
 import VipMsg from '@/components/page/VipMsg'
+import LabelCountAll from '@/components/page/LabelCountAll'
 
 
 Vue.use(Router)
@@ -48,6 +49,7 @@ export default new Router({
   routes: [{
       path: '/Welcome',
       component: Welcome,
+      name:'首页',
       children: [{
           path: '/skillColumn',
 					name:'技能栏目管理',
@@ -234,6 +236,11 @@ export default new Router({
           component: User,
         },
         {
+          path: '/labelCountAll',
+					name:'',
+          component: LabelCountAll,
+        },
+        {
           path: '/vipMsg',
 					name:'会员信息管理',
           component: VipMsg
@@ -242,7 +249,7 @@ export default new Router({
     },
     {
       path: '/',
-      redirect: '/welcome'
+      redirect: '/login'
     },
     {
       path: '/login',

@@ -1,66 +1,61 @@
 <template>
   <div style="height: 100%">
-    <el-container style="height: 100%">
+    <el-container style="height: 100%;background-color: #f2f8f9;">
       <el-header>
-        <el-radio-group v-model="isCollapse" style="margin-bottom: 20px;">
-          <el-radio-button :label="false">展开</el-radio-button>
-          <el-radio-button :label="true">收起</el-radio-button>
-        </el-radio-group>
         <img src="../../images/icons/logo_home.png" alt>
+        <span class="menuBtn">
+          <i class="el-icon-menu" @click="isCollapse=!isCollapse"></i>
+        </span>
         <div class="container-right">
-          <div class="icon-head">
-            <i class="el-icon-service"></i>
+          <div class="close" @click="logout">
+            <span></span>
           </div>
           <div class="userinfo">
             <span>{{ username }}</span>
-            <span>消息 ()</span>
-          </div>
-          <div class="close" @click="logout">
-            <span></span>
           </div>
         </div>
       </el-header>
 
-      <el-container style="height: 100%">
-        <el-scrollbar style=" background-color: #545c64 ">
-          <aside class="el-aside">
-            <el-menu
-              class="el-menu-vertical-demo"
-              background-color="#545c64"
-              text-color="#fff"
-              active-text-color="#ffd04b"
-              :collapse="isCollapse"
-              router
-              @select="handleSelect"
-            >
-              <el-submenu
-                :index="(item.id).toString()"
-                v-for="(item) in menulist"
-                :key="item.id"
-                class="menuOut"
-              >
-                <template slot="title">
-                  <i :class="item.icon"></i>
-                  <span>{{item.name}}</span>
-                </template>
-                <el-menu-item-group v-for="(itemChildren) in item.children" :key="itemChildren.id">
-                  <el-menu-item :index="itemChildren.enname">{{itemChildren.name}}</el-menu-item>
-                </el-menu-item-group>
-              </el-submenu>
-            </el-menu>
-          </aside>
-        </el-scrollbar>
-        <el-main class="mianback">
-          <Slide ref="slider" :path="path"></Slide>
-          <transition
-            name="fade"
-            mode="out-in"
-            enter-active-class="animated fadeInLeft"
-            leave-active-class="animated fadeOutRight"
-            :duration="200"
+      <el-container style="width: 100%;">
+        <aside class="el-aside">
+          <el-menu
+            class="el-menu-vertical-demo"
+            text-color="#333"
+            active-text-color="#409EFF"
+            :collapse="isCollapse"
+            :default-active="routePath"
+            router
+            @select="handleSelect"
           >
-            <router-view></router-view>
-          </transition>
+            <el-submenu
+              :index="(item.id).toString()"
+              v-for="(item) in menulist"
+              :key="item.id"
+              class="menuOut"
+            >
+              <template slot="title">
+                <i :class="item.icon"></i>
+                <span>{{item.name}}</span>
+              </template>
+              <el-menu-item-group v-for="(itemChildren) in item.children" :key="itemChildren.id">
+                <el-menu-item :index="itemChildren.enname" :class="$route.path=='/'+itemChildren.enname?'is-active':''">{{itemChildren.name}}</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+          </el-menu>
+        </aside>
+        <el-main class="mainback">
+          <div class="mainBox">
+            <Slide ref="slider" :path="path"></Slide>
+            <transition
+              name="fade"
+              mode="out-in"
+              enter-active-class="animated fadeInLeft"
+              leave-active-class="animated fadeOutRight"
+              :duration="200"
+            >
+              <router-view></router-view>
+            </transition>
+          </div>
         </el-main>
       </el-container>
     </el-container>
@@ -94,10 +89,20 @@ export default {
     menulist() {
       let menulist = JSON.parse(sessionStorage.getItem("menuList"));
       return menulist ? menulist : "";
+    },
+    routePath() {
+      let routePath = this.$route.path.substring(1)
+      return routePath
     }
   },
+  mounted() {
+    this.$refs.slider.addTab(this.$route.path, this.$route.name);
+  },
   methods: {
+    isopen(){
+    },
     handleSelect(path, pathName) {
+      console.log(this.$route)
       let cardName = "";
       this.menulist.forEach(item => {
         if (item.id == pathName[0]) {
@@ -125,12 +130,19 @@ export default {
 </script>
 
 <style lang="scss">
-/deep/ .el-scrollbar__wrap {
+.el-menu-item.is-active {
+    color: #409EFF !important;
+}
+.el-scrollbar__wrap {
   overflow-x: hidden;
 }
 
 .el-header {
   text-align: center;
+}
+
+.el-scrollbar__view {
+  height: 100%;
 }
 
 .el-submenu__title span {
@@ -143,9 +155,12 @@ export default {
   font-size: 14px;
 }
 
-.el-radio-group {
+.menuBtn {
   float: left;
-  margin-top: 30px;
+  font-size: 30px;
+  margin-left: 30px;
+  margin-top: 55px;
+  color: #333;
 }
 
 .el-aside {
@@ -153,13 +168,14 @@ export default {
   color: #333;
   text-align: center;
   line-height: 200px;
-  height: 100%;
+  min-height: 100%;
   max-width: 200px;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 .el-menu {
-  height: 100%;
+  min-height: 100%;
+  border-right: none;
 }
 
 .el-menu-vertical-demo:not(.el-menu--collapse) {
@@ -172,14 +188,18 @@ export default {
   max-height: 400px;
 }
 
-.el-main {
-  background-color: #fff;
-  color: #333;
-  padding: 10px;
+.mainback {
+  padding: 20px;
   box-sizing: border-box;
+  color: #333;
   // overflow: hidden;
 }
-
+.mainback .mainBox {
+  width: 100%;
+  background: #fff;
+  padding: 10px;
+  box-sizing: border-box;
+}
 body > .el-container {
   margin-bottom: 40px;
 }
@@ -195,12 +215,13 @@ body > .el-container {
 
 .el-header {
   height: 100px !important;
-  background-color: rgb(14, 127, 183);
+  background: linear-gradient(120deg, #ffffff, #5983e8);
 
   img {
     width: 340px;
     height: 44px;
     margin-top: 28px;
+    float: left;
   }
 
   .container-right {
@@ -229,10 +250,10 @@ body > .el-container {
     }
 
     .userinfo {
-      width: 160px;
-      height: 46px;
+      width: 120px;
       color: #fff;
-      margin-top: 27px;
+      margin-top: 45px;
+      float: right;
 
       span {
         display: block;
@@ -242,16 +263,17 @@ body > .el-container {
 
     .close {
       color: #fff;
-      margin-top: 28px;
+      margin-top: 35px;
       cursor: pointer;
+      float: right;
 
       span {
         display: inline-block;
         padding-left: 2px;
         margin-right: 10px;
         color: #fff;
-        width: 40px;
-        height: 44px;
+        width: 30px;
+        height: 32px;
         background: url(../../images/icons/btn_logout.png) no-repeat;
         background-size: 100% 100%;
       }

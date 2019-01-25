@@ -21,11 +21,11 @@
       </el-dialog>
     </div>
     <el-table :data="mainList" border style="width: 90%">
-      <el-table-column label="编号" width="120">
+      <el-table-column label="编号" width="120" align="center">
         <template slot-scope="scope">{{ scope.row.id }}</template>
       </el-table-column>
-      <el-table-column prop="name" label="名称"></el-table-column>
-      <el-table-column label="操作">
+      <el-table-column prop="name" label="名称" align="center"></el-table-column>
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, mainList)"
@@ -98,6 +98,7 @@ export default {
   methods: {
     getMainList(page,row) {
       this.$axios
+
         .post("/management/admin/beauty-order!list.action",{params:{page,row}})
         .then(res => {
           console.log(res, "");
@@ -155,9 +156,7 @@ export default {
         type: "warning"
       }).then(() => {
         this.$axios
-          .get(
-            `/management/admin/beauty-order!delete.action?id=${rows[index].id}`
-          )
+          .get(`/management/admin/beauty-order!delete.action?id=${rows[index].id}`)
           .then(res => {
             if (res.status == 200) {
               this.$message.success("删除成功");
@@ -199,7 +198,4 @@ export default {
 </script>
 
 <style scoped>
-.handle-box {
-  padding-bottom: 20px;
-}
 </style>

@@ -46,30 +46,28 @@
       </el-dialog>
     </div>
     <el-table :data="menuList" border style="width: 90%">
-      <el-table-column prop="name" label="资源名称"></el-table-column>
-      <el-table-column prop="enname" label="英文名称"></el-table-column>
-      <el-table-column prop="parentName" label="上级资源"></el-table-column>
-      <el-table-column prop="type" label="资源类型"></el-table-column>
-      <el-table-column prop="link" label="链接" width="200"></el-table-column>
-      <el-table-column prop="orderid" label="排序"></el-table-column>
-      <el-table-column label="操作" width="120">
+      <el-table-column prop="name" label="资源名称" align="center"></el-table-column>
+      <el-table-column prop="enname" label="英文名称" align="center"></el-table-column>
+      <el-table-column prop="parentName" label="上级资源" align="center"></el-table-column>
+      <el-table-column prop="type" label="资源类型" align="center"></el-table-column>
+      <el-table-column prop="link" label="链接" width="200" align="center"></el-table-column>
+      <el-table-column prop="orderid" label="排序" align="center"></el-table-column>
+      <el-table-column label="操作" width="200" align="center">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, menuList)"
             type="danger"
             size="small"
-            circle
             class="el-icon-delete"
             v-del
-          ></el-button>
+          >删除</el-button>
           <el-button
             size="small"
             type="primary"
             icon="el-icon-edit"
-            circle
             @click="handleEdit(scope.$index, scope.row)"
             v-has
-          ></el-button>
+          >编辑</el-button>
           <el-dialog
             title="编辑"
             :visible.sync="dialogVisible"
@@ -246,7 +244,7 @@ export default {
               if (res.status == 200) {
                 this.dialogVisible = false;
                 this.$message.success(`修改成功`);
-                this.getMenuList();
+                this.getMenuList(1, 10);
               }
             });
         } else {
@@ -339,9 +337,6 @@ export default {
 </script>
 
 <style>
-.handle-box {
-		margin-bottom: 20px
-	}
 .el-tree {
   max-height: 500px;
   overflow-y: scroll;

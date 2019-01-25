@@ -32,38 +32,35 @@
       </el-dialog>
     </div>
     <el-table :data="partList" border style="width: 90%">
-      <el-table-column label="角色名称" width="120">
+      <el-table-column label="角色名称" width="120" align="center">
         <template slot-scope="scope">{{ scope.row.name }}</template>
       </el-table-column>
-      <el-table-column prop="memo" label="备注"></el-table-column>
-      <el-table-column label="操作">
+      <el-table-column prop="memo" label="备注" align="center"></el-table-column>
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, partList)"
             type="danger"
             size="small"
-            circle
             class="el-icon-delete"
             v-if="scope.row.id!=1&scope.row.id!=2&scope.row.id!=3"
             v-del
-          ></el-button>
+          >删除</el-button>
           <el-button
             size="small"
             type="primary"
             icon="el-icon-edit"
-            circle
             @click="handleEdit(scope.$index, scope.row)"
             v-if="scope.row.id!=1&scope.row.id!=2&scope.row.id!=3"
             v-has
-          ></el-button>
+          >编辑</el-button>
           
           <el-button
             size="small"
             type="success"
             icon="el-icon-share"
             @click="handleAllot(scope.$index, scope.row)"
-            circle
-          ></el-button>
+          >权限分配</el-button>
           <el-dialog title="角色分配资源" :visible.sync="editVisible" width="30%">
              <el-form
           :label-position="labelPosition"
@@ -165,6 +162,7 @@ export default {
     this.getTreeList();
   },
   methods: {
+
     getPartList(page,row) {
       this.$axios.get("/management/admin/role!list.action",{
 					params: {
@@ -172,7 +170,6 @@ export default {
 						rows: row
 					}
 				}).then(res => {
-        // console.log(res, "");
         if (res.status == 200) {
           this.partList = res.data.rows;
           this.totalNum =res.data.total
@@ -332,7 +329,4 @@ export default {
 </script>
 
 <style scoped lang="scss">
- .handle-box {
-		margin-bottom: 20px
-	}
 </style>

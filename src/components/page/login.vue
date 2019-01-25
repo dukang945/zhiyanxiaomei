@@ -1,5 +1,6 @@
 <template>
-  <div class="login-wrap">
+  <!-- <div class="login-wrap" style="background-image: url(../../assets/login-bg.jpg)"> -->
+		<div class="login-wrap" style="background-image: url(./static/img/login-bg.jpg);">
     <div class="ms-login">
       <div class="ms-title">后台管理系统</div>
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="ms-content">
@@ -83,10 +84,11 @@ export default {
                 		}
                 	})
                 })
+                that.$router.push('/welcome');
                 sessionStorage.setItem("ms_username", that.ruleForm.username);
                 sessionStorage.setItem("menuList", JSON.stringify(menuList))
                 sessionStorage.setItem("btnPermissions",(res.data.controlbtn))
-                that.$router.push('/');
+                that.$router.push('/welcome');
               } else {
                 that.$message.error("账号或密码错误!");         
               }
@@ -109,7 +111,7 @@ export default {
   position: relative;
   width: 100%;
   height: 100%;
-  background-image: url(../../assets/login-bg.jpg);
+  
   background-size: 100%;
 }
 .ms-title {

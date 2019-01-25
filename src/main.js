@@ -7,14 +7,14 @@ import App from './App'
 import router from './router'
 import axios from 'axios'
 import qs from 'qs'
-import '@/assets/icon/iconfont.css'
+import './assets/icon/iconfont.css'
 import {
   has,
   del,
   check,
   online,
   push
-} from '@/components/common/btnPermissions';
+} from './components/common/btnPermissions';
 Vue.use(ElementUI)
 Vue.prototype.$axios = axios;
 Vue.prototype.$qs = qs;
@@ -73,7 +73,6 @@ Vue.filter("formatTime", function (value, type) {
     dataTime = hour + ":" + minute + ":" + second;
   } else if (type == "YM") {
     dataTime = year + "-" + month;
-
   }
   return dataTime; //将格式化后的字符串输出到前端显示
 });

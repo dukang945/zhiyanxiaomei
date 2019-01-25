@@ -24,11 +24,12 @@
 		},
 		methods: {
 			clickTab(val) {
-				let path = '/' + val.name;
+				let path = val.name;
 				this.$router.push(path);
 			},
 			addTab(path, pathName) {
 				let tempArr = this.editableTabs2.map(item => {
+					console.log(item)
 					return item.title
 
 				})

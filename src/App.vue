@@ -23,9 +23,15 @@ body {
 }
 
 .el-upload-list__item {
-  transition: none;
-}
+		transition: none;
+	}
+.el-table__body tr.online {
+		background-color: #c7e2ff;  
+	}
 .handle-box{
-  padding-bottom:20px
+  padding-bottom: 20px;
+}
+.el-dialog{
+  text-align-last: left;
 }
 </style>

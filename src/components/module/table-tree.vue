@@ -14,8 +14,8 @@
 						<tr>
 							<td>
 								<tree-item v-for="(model,i) in treeDataSource" :key="'root_node_'+i" :root="0" :num="i" @actionFunc="actionFunc"
-								 @deleteFunc="deleteFunc" @handlerExpand="handlerExpand" @clickRow='clickRow' :nodes="treeDataSource.length" :trees.sync="treeDataSource"
-								 :model.sync="model">
+								 @deleteFunc="deleteFunc" @handlerExpand="handlerExpand" @clickRow='clickRow' :nodes="treeDataSource.length"
+								 :trees.sync="treeDataSource" :model.sync="model">
 								</tree-item>
 							</td>
 						</tr>
@@ -29,7 +29,6 @@
 <script>
 	export default {
 		name: 'treeTable',
-		props: ['list'],
     props: ['list', 'headList'],
 		data() {
 			return {
@@ -41,7 +40,6 @@
 		watch: {
 			'list': {
 				handler() {
-					// console.log('ddddd')
 					this.initTreeData()
 				},
 				deep: true
@@ -108,9 +106,11 @@
 </script>
 
 <style>
-	.tree-table {
-  width: 100%;
-  position: relative;
+.tree-table {
+	width: 100%;
+	position: relative;
+	padding-top: 40px;
+	box-sizing: border-box;
 }
 .tree-table .center {
   text-align: center;
@@ -201,7 +201,7 @@
   font-size: 14px;
 }
 .tree-table > div {
-  position: absolute;
+  position: relative;
   width: 100%;
 }
 .tree-table .line-height {
@@ -211,6 +211,8 @@
 .tree-table .tree-head {
   height: 40px;
   line-height: 40px;
+	position: absolute;
+	top: 0;
 }
 .tree-table .tree-head td {
   color: rgba(0, 0, 0, 0.45);
@@ -253,7 +255,7 @@
   text-overflow: ellipsis;
 }
 .tree-table .tree-wrap {
-  top: 40px;
+  /* margin-top: 20px; */
 }
 .tree-table .tree-body table {
   table-layout: fixed;

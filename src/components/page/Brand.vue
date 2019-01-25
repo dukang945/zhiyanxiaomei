@@ -27,13 +27,13 @@
       </el-dialog>
     </div>
     <el-table :data="brandList" border style="width: 90%" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column label="id" width="120">
+      <el-table-column type="selection" width="55" align="center"></el-table-column>
+      <el-table-column label="id" width="120" align="center">
         <template slot-scope="scope">{{ scope.row.id }}</template>
       </el-table-column>
-      <el-table-column prop="name" label="品牌名称"></el-table-column>
-      <el-table-column prop="theMain" label="主打"></el-table-column>
-      <el-table-column label="操作">
+      <el-table-column prop="name" label="品牌名称" align="center"></el-table-column>
+      <el-table-column prop="theMain" label="主打" align="center"></el-table-column>
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, brandList)"
@@ -115,33 +115,32 @@ export default {
     this.getBrandList(1, 10);
   },
   methods: {
-    getBrandList(page, row) {
-      this.$axios
-        .get("/management/admin/brand!list.action", {
-          params: {
-            page: page,
-            rows: row
-          }
-        })
-        .then(res => {
-          console.log(res, "");
-          if (res.status == 200) {
-            this.totalNum = res.data.total;
-            this.brandList = res.data.rows;
-          } else {
-            this.$message.error("请求数据失败!");
-          }
-          // console.log(this.columnList)
-        });
+    getBrandList(page,row) {
+      this.$axios.get("/management/admin/brand!list.action",{
+					params: {
+						page: page,
+						rows: row
+					}
+				}).then(res => {
+        console.log(res, "");
+        if (res.status == 200) {
+          this.totalNum = res.data.total
+          this.brandList = res.data.rows;
+        } else {
+          this.$message.error("请求数据失败!");
+        }
+        // console.log(this.columnList)
+      });
     },
     // 编辑
     handleEdit(index, row) {
-      this.idx = row.id;
-      this.$axios
-        .get(`/management/admin/brand!input.action?id=${row.id}`)
-        .then(res => {
-          if (res.status == 200) {
-            this.formLabelAlign = res.data;
+      console.log(index,row)
+      this.$axios.get(`/management/admin/brand!input.action?id=${row.id}`).then(
+        res => {
+          if(res.status == 200) {
+           this.formLabelAlign = res.data
+
+
           }
         });
       this.dialogVisible = true;
@@ -256,7 +255,4 @@ export default {
 </script>
 
 <style scoped>
-.handle-box {
-  padding-bottom: 20px;
-}
 </style>

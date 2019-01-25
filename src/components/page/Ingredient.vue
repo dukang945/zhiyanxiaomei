@@ -21,13 +21,13 @@
       </el-dialog>
     </div>
     <el-table :data="ingredientList" border style="width: 90%">
-      <el-table-column label="id" width="120">
-        <template slot-scope="scope">{{ scope.row.id }}</template>
+      <el-table-column label="id" width="120" align="center">
+        <template slot-scope="scope" align="center">{{ scope.row.id }}</template>
       </el-table-column>
-      <el-table-column prop="name" label="成分名称"></el-table-column>
+      <el-table-column prop="name" label="成分名称" align="center"></el-table-column>
 
-      <el-table-column prop="effect" label="功效作用"></el-table-column>
-      <el-table-column label="操作">
+      <el-table-column prop="effect" label="功效作用" align="center"></el-table-column>
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, ingredientList)"
@@ -111,14 +111,15 @@ export default {
     // 编辑
     handleEdit(index, row) {
       this.idx = row.id;
+      this.dialogVisible = true;
       this.$axios
         .get(`/management/admin/element!input.action?id=${this.idx}`)
+
         .then(res => {
           if (res.status == 200) {
             this.formLabelAlign = res.data;
           }
         });
-      this.dialogVisible = true;
     },
     //保存编辑
     saveEdit() {
@@ -147,9 +148,7 @@ export default {
         type: "warning"
       }).then(() => {
         this.$axios
-          .get(
-            `/management/admin/element!delete.action?id=${rows[index].id}`
-          )
+          .get(`/management/admin/element!delete.action?id=${rows[index].id}`)
           .then(res => {
             if (res.status == 200) {
               this.$message.success("删除成功");
@@ -164,6 +163,7 @@ export default {
         name: this.formLabelAdd.name,
         effect: this.formLabelAdd.effect
       };
+
 
       this.$axios
         .post(
@@ -184,6 +184,7 @@ export default {
     handleClose(done) {
       done();
     },
+
     ingredientSearch() {
       this.$axios
         .post(
@@ -214,7 +215,4 @@ export default {
 </script>
 
 <style scoped>
-.handle-box{
-  padding-bottom: 20px
-}
 </style>

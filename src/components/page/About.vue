@@ -3,11 +3,11 @@
 		<div class="handle-box">
 			<el-button type="primary" @click="AddVisible = true" size='small'>新增</el-button>
 			<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
-				<el-form :label-position="labelPosition" label-width="100px" :model="formLabelAlign">
-					<el-form-item label="目的名称">
+				<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAdd" label-width="100px" :model="formLabelAdd">
+					<el-form-item label="名称" prop='name'>
 						<el-input v-model="formLabelAdd.name"></el-input>
 					</el-form-item>
-					<el-form-item label="排序号">
+					<el-form-item label="内容">
 						<el-input type="textarea" autosize v-model="formLabelAdd.text"></el-input>
 					</el-form-item>
 				</el-form>
@@ -18,18 +18,16 @@
 			</el-dialog>
 		</div>
 		<el-table :data="tableData" border style="width: 100%">
-			<el-table-column type="index" label="序号" width="50" align='center'>
-			</el-table-column>
 			<el-table-column prop="id" label="id" width="100" align='center'>
 			</el-table-column>
-			<el-table-column prop="name" label="名称">
+			<el-table-column prop="name" label="名称" align='center'>
 			</el-table-column>
-			<el-table-column label="操作" width="200">
+			<el-table-column label="操作" width="200" align='center'>
 				<template slot-scope="scope">
 					<el-button @click.native.prevent="deleteRow(scope.$index, tableData)" size='small' type="danger" class="el-icon-delete">删除</el-button>
 					<el-button type="primary" size='small' @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
 					<el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
-						<el-form :label-position="labelPosition" label-width="100px" :model="formLabelAlign">
+						<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAlign" label-width="100px" :model="formLabelAlign">
 							<el-form-item label="名称">
 								<el-input v-model="formLabelAlign.name"></el-input>
 							</el-form-item>
@@ -59,17 +57,21 @@
 				AddVisible: false,
 				labelPosition: "left",
 				idx: -1,
-				fileList: [],
-				editFileList: [],
 				formLabelAlign: {
 					id: '',
 					name: '',
 					text: ''
 				},
 				formLabelAdd: {
-					id: '',
 					name: '',
 					text: ''
+				},
+				rules: {
+					name: [{
+						required: true,
+						message: '请输入名称',
+						trigger: 'blur'
+					}]
 				},
 				page: 1,
 				row: 15,
@@ -93,28 +95,61 @@
 			},
 			//保存编辑
 			saveEdit() {
-				this.$set(this.tableData, this.idx, this.formLabelAlign);
-				this.dialogVisible = false;
-				// 提交编辑请求
-
-				this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+				this.$refs['formLabelAlign'].validate(val => {
+					if (val) {
+						this.$axios.post(`/management/admin/aboutus!save.action?id=${this.formLabelAlign.id}`, this.$qs.stringify({
+							name: this.formLabelAlign.name,
+							text: this.formLabelAlign.text
+						})).then(res => {
+							this.getData(this.page, this.row)
+							this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+						}).catch(e => {
+							this.$message.error(`出了点问题-.-!`);
+						})
+						this.dialogVisible = false;
+					} else {
+						console.log('error submit!!');
+						return false;
+					}
+				})
 			},
 			//删除
 			deleteRow(index, rows) {
 				this.$confirm("确认删除？")
 					.then(_ => {
-						rows.splice(index, 1);
+						this.$axios.post(`/management/admin/aboutus!delete.action?id=${rows[index].id}`).then(res => {
+							this.getData(this.page, this.row)
+							this.$message.success(`删除成功`);
+						}).catch(e => {
+							this.$message.error(`出了点问题-.-!`);
+						})
 					})
 					.catch(_ => {});
 				// 提交删除请求
 			},
 			// 新增
 			handleAdd() {
-				this.tableData.push(this.formLabelAdd);
-				this.AddVisible = false;
-				// 提交新增请求
-
-				this.$message.success(`添加成功`);
+				this.$refs['formLabelAdd'].validate((valid) => {
+					if (valid) {
+						this.$axios.post('/management/admin/aboutus!save.action', this.$qs.stringify({
+							name: this.formLabelAdd.name,
+							text: this.formLabelAdd.text
+						})).then(res => {
+							this.getData(this.page, this.row)
+							this.formLabelAdd = {
+								name: '',
+								text: ''
+							}
+							this.$message.success(`添加成功`);
+						}).catch(e => {
+							this.$message.error(`出了点问题-.-!`);
+						})
+						this.AddVisible = false;
+					} else {
+						console.log('error submit!!');
+						return false;
+					}
+				});
 			},
 			handleClose(done) {
 				this.$confirm("确认关闭？")
@@ -134,7 +169,7 @@
 			},
 			// 请求数据
 			getData(page, row) {
-				var url = 'api/management/admin/aboutus!list.action'
+				var url = '/management/admin/aboutus!list.action'
 				this.$axios.get(url, {
 					params: {
 						page: page,
@@ -162,7 +197,4 @@
 </script>
 
 <style scoped>
-	.handle-box {
-		margin-bottom: 20px
-	}
 </style>
