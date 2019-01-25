@@ -329,7 +329,4 @@ export default {
 </script>
 
 <style scoped lang="scss">
- .handle-box {
-		margin-bottom: 20px
-	}
 </style>

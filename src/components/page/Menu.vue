@@ -244,7 +244,7 @@ export default {
               if (res.status == 200) {
                 this.dialogVisible = false;
                 this.$message.success(`修改成功`);
-                this.getMenuList();
+                this.getMenuList(1, 10);
               }
             });
         } else {
