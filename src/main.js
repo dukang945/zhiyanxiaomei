@@ -30,7 +30,7 @@ router.beforeEach((to, from, next) => {
   if (!role && to.path !== '/login') {
     next('/login');
   } else if (to.meta.permission) {
-    // 如果是管理员权限则可进入，这里只是简单的模拟管理员权限而已
+    // 如果是管理员权限则可进入
     role === 'admin' ? next() : next('/403');
   } else {
     // 简单的判断IE10及以下不进入富文本编辑器，该组件不兼容
@@ -43,7 +43,29 @@ router.beforeEach((to, from, next) => {
     }
   }
 })
-
+// http response 拦截器
+axios.interceptors.response.use(
+  response => {
+    if(typeof(response.data)=="string"){
+      router.replace({
+        path: 'login'
+    })
+    }
+      return response;
+  },
+  error => {
+      if (error.response) {
+          switch (error.response.status) {
+              case 401:
+                  // 返回 401 清除token信息并跳转到登录页面
+                  store.commit(types.LOGOUT);
+                  router.replace({
+                      path: 'login'
+                  })
+          }
+      }
+      return Promise.reject(error.response.data)   // 返回接口返回的错误信息
+  })
 // 时间格式化
 //元素的补零计算
 function addZero(val) {

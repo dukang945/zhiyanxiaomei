@@ -67,7 +67,7 @@ export default {
       detailList: [],
       TableVisible: false,
       dateVal: "",
-      idx: "",
+      idx: -1,
       currentPage1: 1,
       page1: 1,
       page2: 1,
