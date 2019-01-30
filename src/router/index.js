@@ -41,6 +41,7 @@ import Temperament from '@/components/page/Temperament'
 import User from '@/components/page/User'
 import VipMsg from '@/components/page/VipMsg'
 import LabelCountAll from '@/components/page/LabelCountAll'
+import Registered from '@/components/page/Registered'
 
 
 Vue.use(Router)
@@ -239,6 +240,11 @@ export default new Router({
           path: '/labelCountAll',
 					name:'标签埋点',
           component: LabelCountAll,
+        },
+        {
+          path: '/registeredUser',
+					name:'用户基础数据',
+          component: Registered,
         },
         {
           path: '/vipMsg',

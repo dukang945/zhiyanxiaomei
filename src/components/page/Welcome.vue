@@ -102,7 +102,6 @@ export default {
     isopen(){
     },
     handleSelect(path, pathName) {
-      console.log(this.$route)
       let cardName = "";
       this.menulist.forEach(item => {
         if (item.id == pathName[0]) {
