@@ -1,5 +1,5 @@
 <template>
-	<div class="markingDetailContent">
+	<div class="adviceContent">
 		<div class="handle-box">
 			<el-button type="primary" @click="AddVisible = true" size='small'>新增</el-button>
 			<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
@@ -7,10 +7,17 @@
 					<el-form-item label="化妆建议内容" prop='text'>
 						<el-input type="textarea" autosize v-model="formLabelAdd.text"></el-input>
 					</el-form-item>
-					<el-form-item label="文案类型" prop='type'>
-						<el-select v-model="formLabelAdd.type" placeholder="请选择类型">
-							<el-option label="第一次颜值与第二次颜值比较文案" value="1"></el-option>
-							<el-option label="打败了多少人的文案" value="2"></el-option>
+					<el-form-item label="湿度">
+						<el-select v-model="formLabelAdd.humidity" placeholder="请选择湿度">
+							<el-option label="低" value="0"></el-option>
+							<el-option label="高" value="1"></el-option>
+						</el-select>
+					</el-form-item>
+					<el-form-item label="温度">
+						<el-select v-model="formLabelAdd.temperature" placeholder="请选择温度">
+							<el-option label="低" value="0"></el-option>
+							<el-option label="中" value="1"></el-option>
+							<el-option label="高" value="2"></el-option>
 						</el-select>
 					</el-form-item>
 				</el-form>
@@ -23,15 +30,11 @@
 		<el-table :data="tableData" border style="width: 100%">
 			<el-table-column prop="id" label="id" width="100" align='center'>
 			</el-table-column>
-			<el-table-column prop="text" label="文本" align='center'>
+			<el-table-column prop="text" label="化妆建议内容" align='center'>
 			</el-table-column>
-			<el-table-column prop="type" label="文案类型" align='center' :formatter='getType'>
-			</el-table-column>
-			<el-table-column label="操作" width="200" align='center'>
+			<el-table-column label="操作" width="100" align='center'>
 				<template slot-scope="scope">
-					<el-button @click.native.prevent="deleteRow(scope.$index, tableData)" size='small' type="danger" class="el-icon-delete">删除</el-button>
 					<el-button type="primary" size='small' @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-
 				</template>
 			</el-table-column>
 		</el-table>
@@ -40,10 +43,17 @@
 				<el-form-item label="化妆建议内容" prop='text'>
 					<el-input type="textarea" autosize v-model="formLabelAlign.text"></el-input>
 				</el-form-item>
-				<el-form-item label="文案类型" prop='type'>
-					<el-select v-model="formLabelAlign.type" placeholder="请选择类型">
-						<el-option label="第一次颜值与第二次颜值比较文案" value="1"></el-option>
-						<el-option label="打败了多少人的文案" value="2"></el-option>
+				<el-form-item label="湿度">
+					<el-select v-model="formLabelAlign.humidity" placeholder="请选择湿度">
+						<el-option label="低" value="0"></el-option>
+						<el-option label="高" value="1"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="温度">
+					<el-select v-model="formLabelAlign.temperature" placeholder="请选择温度">
+						<el-option label="低" value="0"></el-option>
+						<el-option label="中" value="1"></el-option>
+						<el-option label="高" value="2"></el-option>
 					</el-select>
 				</el-form-item>
 			</el-form>
@@ -67,25 +77,22 @@
 				labelPosition: "left",
 				idx: -1,
 				formLabelAlign: {
+					humidity: '',
 					id: '',
-					type: '',
+					temperature: '',
 					text: ''
 				},
 				formLabelAdd: {
+					humidity: '',
 					id: '',
-					type: '',
+					temperature: '',
 					text: ''
 				},
 				rules: {
 					text: [{
 						required: true,
-						message: '请输入文本内容',
+						message: '请输入建议内容',
 						trigger: 'blur'
-					}],
-					type: [{
-						required: true,
-						message: '请选择类型',
-						trigger: 'change'
 					}]
 				},
 				page: 1,
@@ -103,24 +110,22 @@
 				const item = this.tableData[index];
 				console.log(item)
 				this.formLabelAlign = {
+					humidity: String(item.humidity),
 					id: item.id,
-					type: item.type == 1 ? '第一次颜值与第二次颜值比较文案' : '第一次颜值与第二次颜值比较文案',
+					temperature: String(item.temperature),
 					text: item.text
 				};
 				this.dialogVisible = true;
 			},
 			//保存编辑
 			saveEdit() {
+				// this.$set(this.tableData, this.idx, this.formLabelAlign);
 				this.$refs['formLabelAlign'].validate((valid) => {
 					if (valid) {
-						if (this.formLabelAlign.type == '第一次颜值与第二次颜值比较文案') {
-							this.formLabelAlign.type = 1
-						} else if (this.formLabelAlign.type == '第一次颜值与第二次颜值比较文案') {
-							this.formLabelAlign.type = 2
-						}
-						this.$axios.post(`/management/admin/makeup-look!save.action?id=${this.formLabelAlign.id}`, this.$qs.stringify({
+						this.$axios.post(`/management/admin/skincare!save.action?id=${this.formLabelAlign.id}`, this.$qs.stringify({
 							text: this.formLabelAlign.text,
-							type: this.formLabelAlign.type
+							humidity: this.formLabelAlign.humidity,
+							temperature:this.formLabelAlign.temperature
 						})).then(res => {
 							this.getData(this.page, this.row)
 							this.$message.success(`修改第 ${this.idx + 1} 行成功`);
@@ -140,7 +145,7 @@
 					.then(_ => {
 						// rows.splice(index, 1);
 						console.log(rows)
-						this.$axios.post(`/management/admin/makeup-look!delete.action?id=${rows[index].id}`).then(res => {
+						this.$axios.post(`/management/admin/skincare!delete.action?id=${rows[index].id}`).then(res => {
 							this.getData(this.page, this.row);
 							this.$message.success('删除成功');
 						})
@@ -152,14 +157,16 @@
 			handleAdd() {
 				this.$refs['formLabelAdd'].validate((valid) => {
 					if (valid) {
-						this.$axios.post('/management/admin/makeup-look!save.action', this.$qs.stringify({
+						this.$axios.post('/management/admin/skincare!save.action', this.$qs.stringify({
 							text: this.formLabelAdd.text,
-							type: this.formLabelAdd.type
+							humidity: this.formLabelAdd.humidity,
+							temperature:this.formLabelAdd.temperature
 						})).then(res => {
 							this.getData(this.page, this.row)
 							this.formLabelAdd = {
+								humidity: '',
 								id: '',
-								type: '',
+								temperature: '',
 								text: ''
 							}
 							this.$message.success(`添加成功`);
@@ -189,12 +196,9 @@
 				this.row = val;
 				this.getData(this.page, val)
 			},
-			getType(index, row, typeNum) {
-				return typeNum == 1 ? '第一次颜值与第二次颜值比较文案' : '打败了多少人的文案'
-			},
 			// 请求数据
 			getData(page, row) {
-				var url = '/management/admin/makeup-look!list.action'
+				var url = '/management/admin/skincare!list.action'
 				this.$axios.get(url, {
 					params: {
 						page: page,
@@ -203,7 +207,15 @@
 				}).then(res => {
 					this.totalNum = res.data.total
 					console.log(this.totalNum)
-					this.tableData = res.data.rows
+					let tempTableData = res.data.rows.map(item => {
+						return {
+							humidity: item.humidity,
+							id: item.id,
+							temperature: item.temperature,
+							text: item.text
+						}
+					})
+					this.tableData = tempTableData
 				})
 			}
 		},

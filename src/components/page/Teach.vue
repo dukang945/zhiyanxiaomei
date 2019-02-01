@@ -12,6 +12,7 @@
 							<el-form-item label="名称">
 								<el-input v-model="formLabelAdd.name"></el-input>
 							</el-form-item>
+<<<<<<< HEAD
 							<!-- <el-form-item label="化妆目的">
 								<el-select v-model="formLabelAdd.purposeId" multiple placeholder="请选择化妆目的" style='width: 100%;'>
 									<el-option v-for="item in purposeOptions" :key="item.id" :label="item.text" :value="item.id">
@@ -25,8 +26,18 @@
 									<el-option label="自成一派" value="2"></el-option>
 								</el-select>
 							</el-form-item> -->
+=======
+>>>>>>> yb
 							<el-form-item label="标签">
-								<el-cascader v-model="formLabelAdd.lableId" :options="tagOptions" change-on-select></el-cascader>
+								<el-input v-model="formLabelAdd.lableId" @focus=' showTreeBox=true '></el-input>
+								<div class="selectTreeBox" v-show="showTreeBox">
+									<el-tree :data="tagOptions" ref="tree" class='selectItem' show-checkbox node-key="id" :props="defaultProps">
+									</el-tree>
+									<div class="selectTreeBtn">
+										<el-button type='primary' size='small' plain @click='choosedLabel'>选好了</el-button>
+										<el-button type='primary' size='small' plain @click='resetLabel'>重置</el-button>
+									</div>
+								</div>
 							</el-form-item>
 							<el-form-item label="点赞次数">
 								<el-input v-model="formLabelAdd.greatNumber"></el-input>
@@ -150,14 +161,20 @@
 				</el-form>
 			</el-col>
 		</el-row>
-		<el-row>
-			<el-col :span='2' class='treeBox'>
+		<el-row :gutter="10">
+			<el-col :span='3' class='treeBox'>
 				<span class="treeTitle">教程栏目列表</span>
 				<el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
 			</el-col>
+<<<<<<< HEAD
 			<el-col :span='22'>
 				<el-table :data="tableData" border style="width: 100%" class='table'  @select='tableSelect'
 				 v-loading="loading" :row-class-name="tableRowClassName">
+=======
+			<el-col :span='21'>
+				<el-table :data="tableData" border style="width: 100%" class='table' @select='tableSelect' v-loading="loading"
+				 :row-class-name="tableRowClassName">
+>>>>>>> yb
 					<el-table-column type="selection" width="55" align='center'></el-table-column>
 					<el-table-column type="index" label="序号" width="50" align='center'>
 					</el-table-column>
@@ -202,6 +219,7 @@
 				<el-form-item label="名称">
 					<el-input v-model="editFormData.name"></el-input>
 				</el-form-item>
+<<<<<<< HEAD
 				<!-- <el-form-item label="化妆目的">
 					<el-select v-model="editFormData.purposeId" multiple placeholder="请选择化妆目的" style='width: 100%;'>
 						<el-option v-for="item in purposeOptions" :key="item.id" :label="item.text" :value="item.id">
@@ -215,8 +233,18 @@
 						<el-option label="自成一派" :value="2+0"></el-option>
 					</el-select>
 				</el-form-item> -->
+=======
+>>>>>>> yb
 				<el-form-item label="标签">
-					<el-cascader v-model="editFormData.lableId" :options="tagOptions" change-on-select></el-cascader>
+					<el-input v-model="editFormData.labelId" @focus='showTreeBox=true'></el-input>
+					<div class="selectTreeBox" v-show="showTreeBox">
+						<el-tree :data="tagOptions" ref="tree2" class='selectItem' show-checkbox node-key="id" :props="defaultProps">
+						</el-tree>
+						<div class="selectTreeBtn">
+							<el-button type='primary' size='small' plain @click='choosedLabel2'>选好了</el-button>
+							<el-button type='primary' size='small' plain @click='resetLabel2'>重置</el-button>
+						</div>
+					</div>
 				</el-form-item>
 				<el-form-item label="点赞次数">
 					<el-input v-model="editFormData.greatNumber"></el-input>
@@ -578,7 +606,8 @@
 					name: '',
 					purposeId: [],
 					level: '',
-					lableId: [],
+					lableId: '',
+					// lableId: [],
 					greatNumber: '',
 					clickNumber: '',
 					pageView: '',
@@ -786,7 +815,7 @@
 					children: 'children',
 					label: 'text'
 				},
-				tempId: 2,
+				tempId: '',
 				// 图片上传
 				imgData: {
 					FileName: '',
@@ -808,13 +837,57 @@
 				teachId: '', //点击评论管理行id
 				checkedRowId: '',
 				stepTeachId: '', // 点击步骤管理行id
-				stepId:''
+				stepId: '',
+				configTips: '',
+				showTreeBox: false, //显示树形结构
+				selectLabel: '',
+				selectId: [],
+				selectIdEdit: [], //编辑表单的选中labelId
 			}
 		},
 		components: {
 			Pagination
 		},
 		methods: {
+			// 选好标签
+			choosedLabel() {
+				let tempArr = this.$refs.tree.getCheckedNodes();
+				if (tempArr.length > 0) {
+					let tempId = [];
+					let tempLabel = [];
+					for (let i = 0; i < tempArr.length; i++) {
+						tempId.push(tempArr[i].id)
+						tempLabel.push(tempArr[i].text)
+					}
+					this.formLabelAdd.lableId = tempLabel.join(',')
+					this.selectId = tempId;
+				}
+				this.showTreeBox = false
+			},
+			// 重置选中标签
+			resetLabel() {
+				this.$refs.tree.setCheckedKeys([]);
+				this.formLabelAdd.lableId = '';
+			},
+			choosedLabel2() {
+				let tempArr = this.$refs.tree2.getCheckedNodes();
+				if (tempArr.length > 0) {
+					let tempId = [];
+					let tempLabel = [];
+					for (let i = 0; i < tempArr.length; i++) {
+						tempId.push(tempArr[i].id)
+						tempLabel.push(tempArr[i].text)
+					}
+					this.editFormData.labelId = tempLabel.join(',')
+					this.selectIdEdit = tempId;
+				}
+				this.showTreeBox = false
+			},
+			// 重置选中标签
+			resetLabel2() {
+				this.$refs.tree2.setCheckedKeys([]);
+				this.editFormData.labelId = '';
+			},
 			tableRowClassName({
 				row,
 				index
@@ -835,11 +908,6 @@
 			// 新增
 			add() {
 				this.AddVisible = true;
-				// 获取类型数据
-				this.formatTreeData(_ => {
-
-				})
-				// 获取目的数据
 				this.getPurposeData();
 				// 获取色号产品数据
 				this.getColorProductData(1, 10)
@@ -855,35 +923,30 @@
 						testObj[key] = this.formLabelAdd[key]
 					}
 				}
-				if (this.formLabelAdd.lableId.length > 0) {
-					testObj.lableId = this.formLabelAdd.lableId[this.formLabelAdd.lableId.length - 1];
-				}
 				if (this.tempImgUrl) {
 					testObj.image = `<img src="${this.tempImgUrl}" alt="" />`
 				}
 				var productColorString = '';
-				var purposeIdString = '';
 				if (this.formLabelAdd.productColor.length > 0) {
 					for (let i = 0; i < this.formLabelAdd.productColor.length; i++) {
 						productColorString += `&productColor=${this.formLabelAdd.productColor[i]}`
 					}
 				}
-				if (this.formLabelAdd.purposeId.length > 0) {
-					for (let i = 0; i < this.formLabelAdd.purposeId.length; i++) {
-						purposeIdString += `&purposeId=${this.formLabelAdd.purposeId[i]}`
+				var labelIdString = '';
+				if (this.selectId.length > 0) {
+					for (let i = 0; i < this.selectId.length; i++) {
+						labelIdString += `&labelId=${this.selectId[i]}`
 					}
 				}
-				console.log(this.formLabelAdd)
-				let paramsStr = this.$qs.stringify(testObj) + productColorString + purposeIdString
+				let paramsStr = this.$qs.stringify(testObj) + productColorString + labelIdString
 				this.$axios.post('/management/admin/beauty-details!save.action', paramsStr).then(res => {
 					this.getTableData('/management/admin/beauty-details!list.action', this.page, this.row, this.tempId);
 					this.AddVisible = false;
 					this.tempImgUrl = '';
 					this.formLabelAdd = {
 						name: '',
-						purposeId: [],
 						level: '',
-						lableId: [],
+						lableId: '',
 						greatNumber: '',
 						clickNumber: '',
 						pageView: '',
@@ -896,6 +959,7 @@
 						image: ''
 					};
 					this.addFileList = []
+					this.resetLabel()
 				})
 			},
 			// 取消新增
@@ -903,9 +967,8 @@
 				this.AddVisible = false;
 				this.formLabelAdd = {
 					name: '',
-					purposeId: [],
 					level: '',
-					lableId: [],
+					lableId: '',
 					greatNumber: '',
 					clickNumber: '',
 					pageView: '',
@@ -919,11 +982,12 @@
 				}
 				this.addFileList = []
 				this.tempImgUrl = '';
+				this.resetLabel()
 			},
 			// 点击新增色号
 			addNewColor() {
 				this.addColorDialogVisible = true;
-				this.getProductData(1, 10) 
+				this.getProductData(1, 10)
 			},
 			// 提交新增色号
 			addColor() {
@@ -1015,6 +1079,8 @@
 			// 提交搜索
 			onSubmitSearch() {
 				console.log('提交搜索项目');
+				this.loading = true;
+				this.getTableData('/management/admin/beauty-details!list.action', this.page, this.row, '', this.searchForm.text)
 			},
 			// 复制H5页面路径
 			copyH5Url(row) {
@@ -1081,6 +1147,7 @@
 			// 表格操作
 			// 编辑
 			edit(index, row) {
+				console.log(row)
 				var that = this;
 				that.editDialogVisible = true;
 				// 获取色号产品数据
@@ -1088,13 +1155,18 @@
 				//获取模型数据
 				that.getModuleData();
 				var tempObj = {};
-				// 格式化row格式填充表单
-				for (var key in row) {
-					if (key != 'ids' && key != 'lableId') {
-						tempObj[key] = row[key]
-					}
-				}
-				console.log(tempObj)
+				tempObj.id = row.id;
+				tempObj.name = row.name;
+				tempObj.greatNumber = row.greatNumber;
+				tempObj.pageView = row.pageView;
+				tempObj.minute = row.minute;
+				tempObj.star = row.star;
+				tempObj.moduleId = row.moduleId;
+				tempObj.videoUrl = row.videoUrl;
+				tempObj.about = row.about;
+				tempObj.image = row.image;
+				tempObj.labelId = row.labelName;
+
 				function formatPurpose() {
 					return that.$axios.get('/management/admin/purpose!getList.action')
 				}
@@ -1104,6 +1176,7 @@
 				}
 				that.$axios.all([formatPurpose(), formatBeautyColor()]).then(that.$axios.spread(function(purposeData, colorData) {
 					tempObj.productColor = [];
+<<<<<<< HEAD
 					that.purposeOptions = purposeData.data;
 					console.log(purposeData)
 					let temp = row.labelId.split(',');
@@ -1114,30 +1187,20 @@
 								arr.push(item.id)
 							}
 						})
+=======
+					let temp = row.labelId.split(',');
+					if (temp.length > 0) {
+						that.$refs.tree2.setCheckedKeys(temp);
+>>>>>>> yb
 					}
-					tempObj.purposeId = arr;
 					let productArr = colorData.data.color;
-					if (productArr.length > 0) {
+					if (productArr.length && productArr.length > 0) {
 						productArr.forEach(item => {
 							tempObj.productColor.push(item.id)
 						})
 					}
-					that.formatTreeData(_ => {
-						tempObj.lableId = [];
-						if (row.lableId) {
-							tempObj.lableId.push(row.lableId);
-							// 查询标签是否有父级
-							that.$axios.get(`/management/admin/lable!input.action?id=${row.lableId}`).then(res => {
-								if (res.data.lableId) {
-									tempObj.lableId.unshift(res.data.lableId)
-								}
-								that.editFormData = tempObj
-								console.log(tempObj)
-							})
-						} else {
-							that.editFormData = tempObj
-						}
-					});
+					console.log(that.editFormData)
+					that.editFormData = tempObj
 				}));
 				// 显示图片
 				let testExp = /http.*?(\.png|\.jpg)/gi;
@@ -1154,9 +1217,8 @@
 				// 清空所有选项
 				this.editFormData = {
 					name: '',
-					purposeId: [],
 					level: '',
-					lableId: [],
+					labelId: '',
 					greatNumber: '',
 					clickNumber: '',
 					pageView: '',
@@ -1170,47 +1232,41 @@
 				}
 				this.tempImgUrl = '';
 				this.editFileList = [];
+				this.resetLabel2()
 			},
 			// 提交编辑
 			handleEdit() {
 				console.log(this.editFormData)
 				var testObj = {};
 				for (var key in this.editFormData) {
-					if (key != 'lableId' && key != 'productColor' && key != 'purposeId') {
+					if (key != 'labelId' && key != 'productColor' && key != 'lableId' && key != 'id') {
 						testObj[key] = this.editFormData[key]
 					}
-				}
-				if (this.editFormData.lableId.length > 0) {
-					testObj.lableId = this.editFormData.lableId[this.editFormData.lableId.length - 1];
 				}
 				if (this.tempImgUrl) {
 					testObj.image = `<img src="${this.tempImgUrl}" alt="" />`
 				}
 				var productColorString = '';
-				var purposeIdString = '';
 				if (this.editFormData.productColor.length > 0) {
 					for (let i = 0; i < this.editFormData.productColor.length; i++) {
 						productColorString += `&productColor=${this.editFormData.productColor[i]}`
 					}
 				}
-				if (this.editFormData.purposeId.length > 0) {
-					for (let i = 0; i < this.editFormData.purposeId.length; i++) {
-						purposeIdString += `&purposeId=${this.editFormData.purposeId[i]}`
+				var labelIdString = '';
+				if (this.selectIdEdit.length > 0) {
+					for (let i = 0; i < this.selectIdEdit.length; i++) {
+						labelIdString += `&labelId=${this.selectIdEdit[i]}`
 					}
 				}
-				console.log(testObj)
-				console.log(productColorString)
-				console.log(purposeIdString)
-				let paramsStr = this.$qs.stringify(testObj) + productColorString + purposeIdString
+				let paramsStr = this.$qs.stringify(testObj) + labelIdString + productColorString
 				this.$axios.post(`/management/admin/beauty-details!save.action?id=${this.editFormData.id}`, paramsStr).then(res => {
 					this.getTableData('/management/admin/beauty-details!list.action', this.page, this.row, this.tempId);
 					this.editDialogVisible = false;
 					this.tempImgUrl = '';
 					this.editFormData = {
 						name: '',
-						purposeId: [],
 						level: '',
-						lableId: [],
+						lableId: '',
 						greatNumber: '',
 						clickNumber: '',
 						pageView: '',
@@ -1221,7 +1277,9 @@
 						videoUrl: '',
 						about: '',
 						image: ''
-					}
+					};
+					this.editFileList = []
+					this.resetLabel2()
 				})
 			},
 			// 删除
@@ -1332,6 +1390,7 @@
 						.stringify(this.addStepForm))
 					.then(res => {
 						this.$message.success('新增成功！')
+						this.getStepData(this.stepPage, this.stepRow, this.stepTeachId);
 						this.addStepDialogVisible = false;
 						this.addStepForm = {};
 						this.tempImgUrl = '';
@@ -1354,17 +1413,17 @@
 			},
 			// 编辑步骤
 			editStep(index, row) {
-				this.editStepDialogVisible=true;
-				this.stepId=row.id;
+				this.editStepDialogVisible = true;
+				this.stepId = row.id;
 				this.editStepForm = {
 					procedureName: row.procedureName,
 					procedureSort: row.procedureSort,
 					procedureDes: row.procedureDes,
 					desSort: row.desSort,
-					procedureImg:row.procedureImg
+					procedureImg: row.procedureImg
 				};
 				let testExp = /http.*?(\.png|\.jpg|\.gif)/gi;
-				if(row.procedureImg){
+				if (row.procedureImg) {
 					this.editStepfileList = [{
 						name: '步骤图片',
 						url: row.procedureImg.match(testExp)[0]
@@ -1373,18 +1432,20 @@
 			},
 			//取消编辑步骤
 			cancelEditStep() {
-				this.editStepForm={};
-				this.editStepDialogVisible=false;
-				this.tempImgUrl=''
+				this.editStepForm = {};
+				this.editStepDialogVisible = false;
+				this.tempImgUrl = ''
 			},
 			//提交编辑步骤
 			handleEditStep() {
 				this.editStepDialogVisible = false;
-				if(this.tempImgUrl){
-					this.editStepForm.procedureImg=`<img src="${this.tempImgUrl}" alt="" />`
+				if (this.tempImgUrl) {
+					this.editStepForm.procedureImg = `<img src="${this.tempImgUrl}" alt="" />`
 				}
-				this.$axios.post(`/management/admin/beauty-details-relation!save.action?id=${this.stepId}&beautyDetailsId=${this.stepTeachId}`, this.$qs.stringify(
-					this.editStepForm)).then(
+				this.$axios.post(
+					`/management/admin/beauty-details-relation!save.action?id=${this.stepId}&beautyDetailsId=${this.stepTeachId}`,
+					this.$qs.stringify(
+						this.editStepForm)).then(
 					res => {
 						this.$message.success('编辑成功！')
 						this.getStepData(this.stepPage, this.stepRow, this.stepTeachId);
@@ -1544,13 +1605,19 @@
 				return statusNum == 0 ? '上线' : '下线'
 			},
 			// 列表数据
-			getTableData(url, page, row, id) {
+			getTableData(url, page, row, id, q) {
 				this.loading = true;
 				this.$axios.get(url, {
 					params: {
 						page: page,
 						rows: row,
+<<<<<<< HEAD
 						labelId: id ? id : ''
+=======
+						labelId: id ? id : '',
+						q: q ? q : ''
+						// q:this.searchForm.text?encodeURIComponent(this.searchForm.text):''
+>>>>>>> yb
 					}
 				}).then(res => {
 					this.totalNum = res.data.total;
@@ -1638,37 +1705,14 @@
 					this.stepTotalNum = res.data.total
 				})
 			},
-			// 序列化树形数据
-			formatTreeData(callback) {
-				// 序列化标签数据用于表单
-				var tempTagArr = [];
-				this.treeData.forEach(item2 => {
-					var tempObj = {};
-					tempObj = {
-						value: item2.id,
-						label: item2.lable,
-						children: item2.children
-					}
-					var tempChildrenArr = []
-					if (item2.children.length > 0) {
-						item2.children.forEach(item3 => {
-							var tempChildrenObj = {};
-							tempChildrenObj = {
-								value: item3.id,
-								label: item3.lable
-							}
-							tempChildrenArr.push(tempChildrenObj)
-						})
-						tempObj.children = tempChildrenArr
-					}
-					tempTagArr.push(tempObj)
-				})
-				this.tagOptions = tempTagArr
-				callback();
-			}
+			getSelected(val) {
+				this.selectGroups = val;
+				this.configTips = `已选择${val.length}个分组`;
+			},
 		},
 		mounted() {
 			this.getTableData('/management/admin/beauty-details!list.action', 1, 10);
+<<<<<<< HEAD
 			this.$axios.get('/management/admin/label!getTree.action').then(res=>{
 				console.log(res)
 				this.treeData=res.data
@@ -1739,7 +1783,89 @@
 					}
 				}
 				this.treeData = tempList;
+=======
+			this.$axios.get('/management/admin/label!getTree.action').then(res => {
+				console.log(res)
+				this.treeData = res.data;
+				this.tagOptions = res.data;
+>>>>>>> yb
 			})
+			// 获取教程栏目树形控件数据
+			// 			this.$axios.get('/management/admin/label!getTreeGrid.action').then(res => {
+			// 				let tempList = res.data.map(item => {
+			// 					return {
+			// 						id: item.id,
+			// 						label: item.text,
+			// 						value: item.id,
+			// 						name: item.name,
+			// 						text: item.text,
+			// 						state: item.state,
+			// 						checked: false
+			// 					}
+			// 				})
+			// 				for (let i = 0; i < tempList.length; i++) {
+			// 					if (tempList[i].state == 'closed') {
+			// 						this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${tempList[i].id}`).then(res2 => {
+			// 							if (res2.data) {
+			// 								var children2 = res2.data.map(item => {
+			// 									return {
+			// 										id: item.id,
+			// 										name: item.name,
+			// 										label: item.text,
+			// 										value: item.id,
+			// 										text: item.text,
+			// 										state: item.state,
+			// 										checked: false
+			// 									}
+			// 								})
+			// 								tempList[i].children = children2;
+			// 								for (let j = 0; j < children2.length; j++) {
+			// 									if (children2[j].state == 'closed') {
+			// 										this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${children2[j].id}`).then(res3 => {
+			// 											if (res3.data) {
+			// 												var children3 = res3.data.map(item => {
+			// 													return {
+			// 														id: item.id,
+			// 														name: item.name,
+			// 														text: item.text,
+			// 														value: item.id,
+			// 														label: item.text,
+			// 														state: item.state,
+			// 														checked: false
+			// 													}
+			// 												})
+			// 												tempList[i].children[j].children = children3;
+			// 												for (let k = 0; k < children3.length; k++) {
+			// 													if (children3[k].state == 'closed') {
+			// 														this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${children3[k].id}`).then(res4 => {
+			// 															if (res4.data) {
+			// 																var children4 = res4.data.map(item => {
+			// 																	return {
+			// 																		id: item.id,
+			// 																		name: item.name,
+			// 																		text: item.text,
+			// 																		value: item.id,
+			// 																		label: item.text,
+			// 																		state: item.state,
+			// 																		checked: false
+			// 																	}
+			// 																})
+			// 																tempList[i].children[j].children[k].children = children4;
+			// 															}
+			// 														})
+			// 													}
+			// 												}
+			// 											}
+			// 										})
+			// 									}
+			// 								}
+			// 							}
+			// 						})
+			// 					}
+			// 				}
+			// 				this.treeData = tempList;
+			// 				this.tagOptions = tempList;
+			// 			})
 		}
 	}
 </script>
@@ -1756,6 +1882,8 @@
 	.treeBox {
 		padding: 0 10px;
 		box-sizing: border-box;
+		max-height: 650px;
+		overflow-y: auto;
 	}
 
 	.treeTitle {
@@ -1831,15 +1959,37 @@
 	.productOptionItem.itemNumber {
 		width: 10%;
 	}
+
+	.selectTreeBox {
+		border: 1px solid #dcdfe6;
+		border-top: none;
+		padding: 10px 0;
+	}
+
+	.selectTreeBox .selectItem {
+		max-height: 500px;
+		overflow-y: scroll;
+		position: relative;
+		z-index: 99;
+	}
+
+	.selectTreeBtn {
+		padding: 10px 0;
+		display: flex;
+		justify-content: space-around;
+	}
+
 </style>
 <style>
 	.el-table__body tr.online {
 		/* background-color: #f0f9eb; c7e2ff  */
-		background-color: #c7e2ff;  
+		background-color: #c7e2ff;
 	}
+
 	.el-upload-list__item {
 		/* transition: none; */
 	}
+<<<<<<< HEAD
 	
 	.el-table--scrollable-x .el-table__body-wrapper::-webkit-scrollbar{/*滚动条整体样式*/
 	    width: 4px;     /*高宽分别对应横竖滚动条的尺寸*/
@@ -1854,5 +2004,31 @@
 	    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
 	    border-radius: 0;
 	    background: rgba(0,0,0,0.1);
+=======
+
+	.el-table--scrollable-x .el-table__body-wrapper::-webkit-scrollbar {
+		/*滚动条整体样式*/
+		width: 4px;
+		/*高宽分别对应横竖滚动条的尺寸*/
+		height: 10px;
+	}
+
+	.el-table--scrollable-x .el-table__body-wrapper::-webkit-scrollbar-thumb {
+		/*滚动条里面小方块*/
+		border-radius: 5px;
+		-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+		background: rgba(0, 0, 0, 0.2);
+	}
+
+	.el-table--scrollable-x .el-table__body-wrapper::-webkit-scrollbar-track {
+		/*滚动条里面轨道*/
+		-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+		border-radius: 0;
+		background: rgba(0, 0, 0, 0.1);
+	}
+
+	.table.el-table td {
+		padding: 10px 0;
+>>>>>>> yb
 	}
 </style>
