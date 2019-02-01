@@ -31,4 +31,7 @@ body {
 .handle-box{
   padding-bottom: 20px;
 }
+.el-dialog{
+  text-align-last: left;
+}
 </style>

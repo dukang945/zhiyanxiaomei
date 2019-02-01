@@ -42,6 +42,8 @@ import User from '@/components/page/User'
 import VipMsg from '@/components/page/VipMsg'
 import Beautyknowledge from '@/components/page/Beautyknowledge'
 import Hotsearch from '@/components/page/Hotsearch'
+import LabelCountAll from '@/components/page/LabelCountAll'
+import Registered from '@/components/page/Registered'
 
 
 Vue.use(Router)
@@ -50,6 +52,7 @@ export default new Router({
   routes: [{
       path: '/Welcome',
       component: Welcome,
+      name:'首页',
       children: [{
           path: '/skillColumn',
 					name:'技能栏目管理',
@@ -234,6 +237,16 @@ export default new Router({
           path: '/user',
 					name:'',
           component: User,
+        },
+        {
+          path: '/labelCountAll',
+					name:'标签埋点',
+          component: LabelCountAll,
+        },
+        {
+          path: '/registeredUser',
+					name:'用户基础数据',
+          component: Registered,
         },
         {
           path: '/vipMsg',

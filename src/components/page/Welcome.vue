@@ -1,106 +1,131 @@
 <template>
-	<div style="height: 100%">
-		<el-container style="height: 100%;background-color: #f2f8f9;">
-			<el-header>
-				<img src="../../images/icons/logo_home.png" alt>
-				<span class="menuBtn"><i class="el-icon-menu" @click="isCollapse=!isCollapse"></i></span>
-				<div class="container-right">
-					<div class="close" @click="logout">
-						<span></span>
-					</div>
-					<div class="userinfo">
-						<span>{{ username }}</span>
-					</div>
-				</div>
-			</el-header>
+  <div style="height: 100%">
+    <el-container style="height: 100%;background-color: #f2f8f9;">
+      <el-header>
+        <img src="../../images/icons/logo_home.png" alt>
+        <span class="menuBtn">
+          <i class="el-icon-menu" @click="isCollapse=!isCollapse"></i>
+        </span>
+        <div class="container-right">
+          <div class="close" @click="logout">
+            <span></span>
+          </div>
+          <div class="userinfo">
+            <span>{{ username }}</span>
+          </div>
+        </div>
+      </el-header>
 
-			<el-container style="width: 100%;">
-				<aside class="el-aside">
-					<el-menu class="el-menu-vertical-demo" text-color="#666" active-text-color="#409EFF" :collapse="isCollapse" router
-					 @select="handleSelect">
-						<el-submenu :index="(item.id).toString()" v-for="(item) in menulist" :key="item.id" class="menuOut">
-							<template slot="title">
-								<i :class="item.icon"></i>
-								<span>{{item.name}}</span>
-							</template>
-							<el-menu-item-group v-for="(itemChildren) in item.children" :key="itemChildren.id" >
-							<!-- <el-menu-item-group v-for="(itemChildren) in item.children" :key="itemChildren.id" v-if='itemChildren.enname'> -->
-								<el-menu-item :index="itemChildren.enname">{{itemChildren.name}}</el-menu-item>
-							</el-menu-item-group>
-						</el-submenu>
-					</el-menu>
-				</aside>
-				<el-main class="mainback">
-					<div class="mainBox">
-						<Slide ref="slider" :path="path"></Slide>
-						<transition name="fade" mode="out-in" enter-active-class="animated fadeInLeft" leave-active-class="animated fadeOutRight"
-						 :duration="200">
-							<router-view></router-view>
-						</transition>
-					</div>
-				</el-main>
-			</el-container>
-
-		</el-container>
-	</div>
+      <el-container style="width: 100%;">
+        <aside class="el-aside">
+          <el-menu
+            class="el-menu-vertical-demo"
+            text-color="#333"
+            active-text-color="#409EFF"
+            :collapse="isCollapse"
+            :default-active="routePath"
+            router
+            @select="handleSelect"
+          >
+            <el-submenu
+              :index="(item.id).toString()"
+              v-for="(item) in menulist"
+              :key="item.id"
+              class="menuOut"
+            >
+              <template slot="title">
+                <i :class="item.icon"></i>
+                <span>{{item.name}}</span>
+              </template>
+              <el-menu-item-group v-for="(itemChildren) in item.children" :key="itemChildren.id">
+                <el-menu-item :index="itemChildren.enname" :class="$route.path=='/'+itemChildren.enname?'is-active':''">{{itemChildren.name}}</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+          </el-menu>
+        </aside>
+        <el-main class="mainback">
+          <div class="mainBox">
+            <Slide ref="slider" :path="path"></Slide>
+            <transition
+              name="fade"
+              mode="out-in"
+              enter-active-class="animated fadeInLeft"
+              leave-active-class="animated fadeOutRight"
+              :duration="200"
+            >
+              <router-view></router-view>
+            </transition>
+          </div>
+        </el-main>
+      </el-container>
+    </el-container>
+  </div>
 </template>
 
 <script>
-	import Slide from "@/components/module/Slider.vue";
-	import {
-		has,
-		del,
-		check,
-		online,
-		push
-	} from "@/components/common/btnPermissions";
-	export default {
-		data() {
-			return {
-				isCollapse: false,
-				path: ""
-			};
-		},
-		components: {
-			Slide
-		},
-		computed: {
-			username() {
-				let username = sessionStorage.getItem("ms_username");
-				return username ? username : "";
-			},
-			menulist() {
-				let menulist = JSON.parse(sessionStorage.getItem("menuList"));
-				console.log(menulist)
-				return menulist ? menulist : "";
-			}
-		},
-		methods: {
-			handleSelect(path, pathName) {
-				let cardName = "";
-				this.menulist.forEach(item => {
-					if (item.id == pathName[0]) {
-						item.children.forEach(item2 => {
-							if (item2.enname == pathName[1]) {
-								cardName = item2.name;
-							}
-						});
-					}
-				});
-				this.$refs.slider.addTab(path, cardName);
-			},
-			logout() {
-				this.$axios.get("/management/admin/public!loginOut.action").then(res => {
-					if (res.status == 200) {
-						sessionStorage.removeItem("ms_username");
-						sessionStorage.removeItem("menuList");
-						sessionStorage.removeItem("btnPermissions");
-						this.$router.push("/login");
-					}
-				});
-			}
-		}
-	};
+import Slide from "@/components/module/Slider.vue";
+import {
+  has,
+  del,
+  check,
+  online,
+  push
+} from "@/components/common/btnPermissions";
+export default {
+  data() {
+    return {
+      isCollapse: false,
+      path: ""
+    };
+  },
+  components: {
+    Slide
+  },
+  computed: {
+    username() {
+      let username = sessionStorage.getItem("ms_username");
+      return username ? username : "";
+    },
+    menulist() {
+      let menulist = JSON.parse(sessionStorage.getItem("menuList"));
+      return menulist ? menulist : "";
+    },
+    routePath() {
+      let routePath = this.$route.path.substring(1)
+      return routePath
+    }
+  },
+  mounted() {
+    this.$refs.slider.addTab(this.$route.path, this.$route.name);
+  },
+  methods: {
+    isopen(){
+    },
+    handleSelect(path, pathName) {
+      let cardName = "";
+      this.menulist.forEach(item => {
+        if (item.id == pathName[0]) {
+          item.children.forEach(item2 => {
+            if (item2.enname == pathName[1]) {
+              cardName = item2.name;
+            }
+          });
+        }
+      });
+      this.$refs.slider.addTab(path, cardName);
+    },
+    logout() {
+      this.$axios.get("/management/admin/public!loginOut.action").then(res => {
+        if (res.status == 200) {
+          sessionStorage.removeItem("ms_username");
+          sessionStorage.removeItem("menuList");
+          sessionStorage.removeItem("btnPermissions");
+          this.$router.push("/login");
+        }
+      });
+    }
+  }
+};
 </script>
 
 <style lang="scss">
@@ -375,4 +400,5 @@
 			border-radius: 0;
 			background: rgba(0, 0, 0, 0.2);
 		}
+
 </style>
