@@ -7,10 +7,7 @@ import App from './App'
 import router from './router'
 import axios from 'axios'
 import qs from 'qs'
-<<<<<<< HEAD
-=======
 import multiCascader from "multi-cascader";
->>>>>>> yb
 import './assets/icon/iconfont.css'
 import {
   has,

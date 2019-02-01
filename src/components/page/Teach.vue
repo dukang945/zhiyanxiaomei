@@ -12,22 +12,6 @@
 							<el-form-item label="名称">
 								<el-input v-model="formLabelAdd.name"></el-input>
 							</el-form-item>
-<<<<<<< HEAD
-							<!-- <el-form-item label="化妆目的">
-								<el-select v-model="formLabelAdd.purposeId" multiple placeholder="请选择化妆目的" style='width: 100%;'>
-									<el-option v-for="item in purposeOptions" :key="item.id" :label="item.text" :value="item.id">
-									</el-option>
-								</el-select>
-							</el-form-item> -->
-						<!-- 	<el-form-item label="化妆水平">
-								<el-select v-model="formLabelAdd.level" placeholder="请选择水平">
-									<el-option label="初学乍练" value="0"></el-option>
-									<el-option label="略有小成" value="1"></el-option>
-									<el-option label="自成一派" value="2"></el-option>
-								</el-select>
-							</el-form-item> -->
-=======
->>>>>>> yb
 							<el-form-item label="标签">
 								<el-input v-model="formLabelAdd.lableId" @focus=' showTreeBox=true '></el-input>
 								<div class="selectTreeBox" v-show="showTreeBox">
@@ -166,15 +150,8 @@
 				<span class="treeTitle">教程栏目列表</span>
 				<el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
 			</el-col>
-<<<<<<< HEAD
-			<el-col :span='22'>
-				<el-table :data="tableData" border style="width: 100%" class='table'  @select='tableSelect'
-				 v-loading="loading" :row-class-name="tableRowClassName">
-=======
 			<el-col :span='21'>
-				<el-table :data="tableData" border style="width: 100%" class='table' @select='tableSelect' v-loading="loading"
-				 :row-class-name="tableRowClassName">
->>>>>>> yb
+				<el-table :data="tableData" border style="width: 100%" class='table' @select='tableSelect' v-loading="loading" :row-class-name="tableRowClassName">
 					<el-table-column type="selection" width="55" align='center'></el-table-column>
 					<el-table-column type="index" label="序号" width="50" align='center'>
 					</el-table-column>
@@ -219,22 +196,6 @@
 				<el-form-item label="名称">
 					<el-input v-model="editFormData.name"></el-input>
 				</el-form-item>
-<<<<<<< HEAD
-				<!-- <el-form-item label="化妆目的">
-					<el-select v-model="editFormData.purposeId" multiple placeholder="请选择化妆目的" style='width: 100%;'>
-						<el-option v-for="item in purposeOptions" :key="item.id" :label="item.text" :value="item.id">
-						</el-option>
-					</el-select>
-				</el-form-item>
-				<el-form-item label="化妆水平">
-					<el-select v-model="editFormData.level" placeholder="请选择水平">
-						<el-option label="初学乍练" :value="0+0"></el-option>
-						<el-option label="略有小成" :value="1+0"></el-option>
-						<el-option label="自成一派" :value="2+0"></el-option>
-					</el-select>
-				</el-form-item> -->
-=======
->>>>>>> yb
 				<el-form-item label="标签">
 					<el-input v-model="editFormData.labelId" @focus='showTreeBox=true'></el-input>
 					<div class="selectTreeBox" v-show="showTreeBox">
@@ -1176,22 +1137,9 @@
 				}
 				that.$axios.all([formatPurpose(), formatBeautyColor()]).then(that.$axios.spread(function(purposeData, colorData) {
 					tempObj.productColor = [];
-<<<<<<< HEAD
-					that.purposeOptions = purposeData.data;
-					console.log(purposeData)
-					let temp = row.labelId.split(',');
-					let arr = [];
-					for (let i = 0; i < temp.length; i++) {
-						purposeData.data.forEach(item => {
-							if (item.id == temp[i]) {
-								arr.push(item.id)
-							}
-						})
-=======
 					let temp = row.labelId.split(',');
 					if (temp.length > 0) {
 						that.$refs.tree2.setCheckedKeys(temp);
->>>>>>> yb
 					}
 					let productArr = colorData.data.color;
 					if (productArr.length && productArr.length > 0) {
@@ -1611,13 +1559,8 @@
 					params: {
 						page: page,
 						rows: row,
-<<<<<<< HEAD
-						labelId: id ? id : ''
-=======
 						labelId: id ? id : '',
 						q: q ? q : ''
-						// q:this.searchForm.text?encodeURIComponent(this.searchForm.text):''
->>>>>>> yb
 					}
 				}).then(res => {
 					this.totalNum = res.data.total;
@@ -1712,160 +1655,11 @@
 		},
 		mounted() {
 			this.getTableData('/management/admin/beauty-details!list.action', 1, 10);
-<<<<<<< HEAD
-			this.$axios.get('/management/admin/label!getTree.action').then(res=>{
-				console.log(res)
-				this.treeData=res.data
-			})
-			// 获取教程栏目树形控件数据
-			this.$axios.get('/management/admin/label!getTreeGrid.action').then(res => {
-				let tempList = res.data.map(item => {
-					return {
-						id: item.id,
-						name: item.name,
-						text: item.text,
-						state: item.state,
-						children: []
-					}
-				})
-				for (let i = 0; i < tempList.length; i++) {
-					if (tempList[i].state == 'closed') {
-						this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${tempList[i].id}`).then(res2 => {
-							if (res2.data) {
-								var children2 = res2.data.map(item => {
-									return {
-										id: item.id,
-										name: item.name,
-										text: item.text,
-										state: item.state,
-										children: []
-									}
-								})
-								tempList[i].children = children2;
-								for (let j = 0; j < children2.length; j++) {
-									if (children2[j].state == 'closed') {
-										this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${children2[j].id}`).then(res3 => {
-											if (res3.data) {
-												var children3 = res3.data.map(item => {
-													return {
-														id: item.id,
-														name: item.name,
-														text: item.text,
-														state: item.state,
-														children: []
-													}
-												})
-												tempList[i].children[j].children = children3;
-												for (let k = 0; k < children3.length; k++) {
-													if (children3[k].state == 'closed') {
-														this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${children3[k].id}`).then(res4 => {
-															if (res4.data) {
-																var children4 = res4.data.map(item => {
-																	return {
-																		id: item.id,
-																		name: item.name,
-																		text: item.text,
-																		state: item.state,
-																		children: []
-																	}
-																})
-																tempList[i].children[j].children[k].children = children4;
-															}
-														})
-													}
-												}
-											}
-										})
-									}
-								}
-							}
-						})
-					}
-				}
-				this.treeData = tempList;
-=======
 			this.$axios.get('/management/admin/label!getTree.action').then(res => {
 				console.log(res)
 				this.treeData = res.data;
 				this.tagOptions = res.data;
->>>>>>> yb
 			})
-			// 获取教程栏目树形控件数据
-			// 			this.$axios.get('/management/admin/label!getTreeGrid.action').then(res => {
-			// 				let tempList = res.data.map(item => {
-			// 					return {
-			// 						id: item.id,
-			// 						label: item.text,
-			// 						value: item.id,
-			// 						name: item.name,
-			// 						text: item.text,
-			// 						state: item.state,
-			// 						checked: false
-			// 					}
-			// 				})
-			// 				for (let i = 0; i < tempList.length; i++) {
-			// 					if (tempList[i].state == 'closed') {
-			// 						this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${tempList[i].id}`).then(res2 => {
-			// 							if (res2.data) {
-			// 								var children2 = res2.data.map(item => {
-			// 									return {
-			// 										id: item.id,
-			// 										name: item.name,
-			// 										label: item.text,
-			// 										value: item.id,
-			// 										text: item.text,
-			// 										state: item.state,
-			// 										checked: false
-			// 									}
-			// 								})
-			// 								tempList[i].children = children2;
-			// 								for (let j = 0; j < children2.length; j++) {
-			// 									if (children2[j].state == 'closed') {
-			// 										this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${children2[j].id}`).then(res3 => {
-			// 											if (res3.data) {
-			// 												var children3 = res3.data.map(item => {
-			// 													return {
-			// 														id: item.id,
-			// 														name: item.name,
-			// 														text: item.text,
-			// 														value: item.id,
-			// 														label: item.text,
-			// 														state: item.state,
-			// 														checked: false
-			// 													}
-			// 												})
-			// 												tempList[i].children[j].children = children3;
-			// 												for (let k = 0; k < children3.length; k++) {
-			// 													if (children3[k].state == 'closed') {
-			// 														this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${children3[k].id}`).then(res4 => {
-			// 															if (res4.data) {
-			// 																var children4 = res4.data.map(item => {
-			// 																	return {
-			// 																		id: item.id,
-			// 																		name: item.name,
-			// 																		text: item.text,
-			// 																		value: item.id,
-			// 																		label: item.text,
-			// 																		state: item.state,
-			// 																		checked: false
-			// 																	}
-			// 																})
-			// 																tempList[i].children[j].children[k].children = children4;
-			// 															}
-			// 														})
-			// 													}
-			// 												}
-			// 											}
-			// 										})
-			// 									}
-			// 								}
-			// 							}
-			// 						})
-			// 					}
-			// 				}
-			// 				this.treeData = tempList;
-			// 				this.tagOptions = tempList;
-			// 			})
 		}
 	}
 </script>
@@ -1989,22 +1783,6 @@
 	.el-upload-list__item {
 		/* transition: none; */
 	}
-<<<<<<< HEAD
-	
-	.el-table--scrollable-x .el-table__body-wrapper::-webkit-scrollbar{/*滚动条整体样式*/
-	    width: 4px;     /*高宽分别对应横竖滚动条的尺寸*/
-	    height: 10px;
-	}
-	.el-table--scrollable-x .el-table__body-wrapper::-webkit-scrollbar-thumb{/*滚动条里面小方块*/
-	    border-radius: 5px;
-	    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
-	    background: rgba(0,0,0,0.2);
-	}
-	.el-table--scrollable-x .el-table__body-wrapper::-webkit-scrollbar-track{/*滚动条里面轨道*/
-	    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
-	    border-radius: 0;
-	    background: rgba(0,0,0,0.1);
-=======
 
 	.el-table--scrollable-x .el-table__body-wrapper::-webkit-scrollbar {
 		/*滚动条整体样式*/
@@ -2029,6 +1807,5 @@
 
 	.table.el-table td {
 		padding: 10px 0;
->>>>>>> yb
 	}
 </style>
