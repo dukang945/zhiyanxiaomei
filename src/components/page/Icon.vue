@@ -28,17 +28,17 @@
 			</el-dialog>
 		</div>
 		<el-table :data="tableData" border style="width: 100%">
-			<el-table-column type="index" label="序号" width="50">
+			<el-table-column type="index" label="序号" width="50" align='center'>
 			</el-table-column>
-			<el-table-column prop="id" label="ID" width="180">
+			<el-table-column prop="id" label="ID" width="180" align='center'>
 			</el-table-column>
-			<el-table-column prop="name" label="名称">
+			<el-table-column prop="name" label="名称" align='center'>
 			</el-table-column>
-			<el-table-column prop="type" label="对应type值">
+			<el-table-column prop="type" label="对应type值" align='center'>
 			</el-table-column>
-			<el-table-column prop="sort" label="排序号">
+			<el-table-column prop="sort" label="排序号" align='center'>
 			</el-table-column>
-			<el-table-column label="操作" width="200">
+			<el-table-column label="操作" width="200" align='center'>
 				<template slot-scope="scope">
 					<el-button @click.native.prevent="deleteRow(scope.$index, tableData)" size='small' type="danger" class="el-icon-delete">删除</el-button>
 					<el-button type="primary" size='small' @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -291,9 +291,6 @@
 </script>
 
 <style scoped>
-	.handle-box {
-		margin-bottom: 20px
-	}
 </style>
 <style>
 	.el-upload-list__item {

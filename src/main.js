@@ -7,15 +7,17 @@ import App from './App'
 import router from './router'
 import axios from 'axios'
 import qs from 'qs'
-import '@/assets/icon/iconfont.css'
+import multiCascader from "multi-cascader";
+import './assets/icon/iconfont.css'
 import {
   has,
   del,
   check,
   online,
   push
-} from '@/components/common/btnPermissions';
+} from './components/common/btnPermissions';
 Vue.use(ElementUI)
+Vue.use(multiCascader);
 Vue.prototype.$axios = axios;
 Vue.prototype.$qs = qs;
 axios.defaults.withCredentials = true;

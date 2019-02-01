@@ -28,7 +28,7 @@
 			</el-table-column>
 			<el-table-column prop="time" label="时间" align='center' :formatter='timestampToTime'>
 			</el-table-column>
-			<el-table-column label="操作" width="200" align='center'>
+			<el-table-column label="操作" width="200">
 				<template slot-scope="scope">
 					<el-button @click.native.prevent="deleteRow(scope.$index, tableData)" size='small' type="danger" class="el-icon-delete">删除</el-button>
 					<el-button type="primary" size='small' @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -62,7 +62,7 @@
 </template>
 
 <script>
-	import Pagination from '../module/pagination.vue'
+	import Pagination from '@/components/module/Pagination.vue'
 	export default {
 		data() {
 			return {
@@ -392,7 +392,4 @@
 </script>
 
 <style scoped>
-	.handle-box {
-		margin-bottom: 20px
-	}
 </style>

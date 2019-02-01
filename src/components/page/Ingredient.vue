@@ -21,13 +21,13 @@
       </el-dialog>
     </div>
     <el-table :data="ingredientList" border style="width: 90%">
-      <el-table-column label="id" width="120">
-        <template slot-scope="scope">{{ scope.row.id }}</template>
+      <el-table-column label="id" width="120" align="center">
+        <template slot-scope="scope" align="center">{{ scope.row.id }}</template>
       </el-table-column>
-      <el-table-column prop="name" label="成分名称"></el-table-column>
+      <el-table-column prop="name" label="成分名称" align="center"></el-table-column>
 
-      <el-table-column prop="effect" label="功效作用"></el-table-column>
-      <el-table-column label="操作">
+      <el-table-column prop="effect" label="功效作用" align="center"></el-table-column>
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, ingredientList)"
@@ -111,6 +111,7 @@ export default {
     // 编辑
     handleEdit(index, row) {
       this.idx = row.id;
+      this.dialogVisible = true;
       this.$axios
         .get(`/management/admin/element!input.action?id=${this.idx}`)
 
@@ -214,7 +215,4 @@ export default {
 </script>
 
 <style scoped>
-.handle-box{
-  padding-bottom: 20px
-}
 </style>

@@ -40,6 +40,8 @@ import Teach from '@/components/page/Teach'
 import Temperament from '@/components/page/Temperament'
 import User from '@/components/page/User'
 import VipMsg from '@/components/page/VipMsg'
+import Beautyknowledge from '@/components/page/Beautyknowledge'
+import Hotsearch from '@/components/page/Hotsearch'
 
 
 Vue.use(Router)
@@ -237,7 +239,17 @@ export default new Router({
           path: '/vipMsg',
 					name:'会员信息管理',
           component: VipMsg
-        }
+        },
+				{
+					path:'/beautyknowledge',
+					name:'美妆知识',
+					component: Beautyknowledge
+				},
+				{
+					path:'/hotsearch',
+					name:'美妆知识',
+					component: Hotsearch
+				}
       ]
     },
     {

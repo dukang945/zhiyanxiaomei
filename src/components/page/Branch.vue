@@ -49,29 +49,27 @@
         :key="item.name"
       >
         <el-table :data="branchList" border style="width: 90%">
-          <el-table-column label="id" width="120">
+          <el-table-column label="id" width="120" align="center">
             <template slot-scope="scope">{{ scope.row.id }}</template>
           </el-table-column>
-          <el-table-column prop="categoryName" label="产品分类"></el-table-column>
-          <el-table-column prop="orderNumber" label="步骤数"></el-table-column>
-          <el-table-column label="操作" width="120">
+          <el-table-column prop="categoryName" label="产品分类" align="center"></el-table-column>
+          <el-table-column prop="orderNumber" label="步骤数" align="center"></el-table-column>
+          <el-table-column label="操作" align="center">
             <template slot-scope="scope">
               <el-button
                 @click.native.prevent="deleteRow(scope.$index, branchList)"
                 type="danger"
                 size="small"
-                circle
                 class="el-icon-delete"
                 v-del
-              ></el-button>
+              >删除</el-button>
               <el-button
                 size="small"
                 type="primary"
                 icon="el-icon-edit"
-                circle
                 @click="handleEdit(scope.$index, scope.row)"
                 v-has
-              ></el-button>
+              >编辑</el-button>
               <el-dialog
                 title="编辑"
                 :visible.sync="dialogVisible"
@@ -336,7 +334,4 @@ export default {
 </script>
 
 <style scoped>
-.handle-box {
-  padding-bottom: 20px;
-}
 </style>

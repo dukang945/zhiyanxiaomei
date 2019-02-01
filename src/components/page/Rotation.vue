@@ -29,7 +29,7 @@
           <el-form-item label="图片">
             <el-upload
               class="upload-demo"
-              action="management/admin/kcupload!uploadImage.action"
+              action="/management/admin/kcupload!uploadImage.action"
               :data="imgData1"
               :on-preview="handlePreview"
               :on-remove="handleRemove1"
@@ -49,23 +49,23 @@
       </el-dialog>
     </div>
     <el-table :data="bannerList" border style="width: 90%" current-row-key>
-      <el-table-column label="名称">
+      <el-table-column label="名称" align="center">
         <template slot-scope="scope">{{ scope.row.name }}</template>
       </el-table-column>
-      <el-table-column label="链接类型">
+      <el-table-column label="链接类型" align="center">
         <template slot-scope="scope">
           <span v-if="scope.row.type ==0">妆容教程</span>
           <span v-else-if="scope.row.type ==1">妆容测评</span>
           <span v-else-if="scope.row.type ==2">其他</span>
         </template>
       </el-table-column>
-      <el-table-column label="审核状态" width="80">
+      <el-table-column label="审核状态" width="80" align="center">
         <template slot-scope="scope">
           <el-tag type="success" v-if="scope.row.online==0">上线</el-tag>
           <el-tag type="danger" v-else>下线</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, bannerList)"
@@ -129,7 +129,7 @@
           <el-form-item label="图片">
             <el-upload
               class="upload-demo"
-              action="management/admin/kcupload!uploadImage.action"
+              action="/management/admin/kcupload!uploadImage.action"
               :data="imgData"
               :on-preview="handlePreview"
               :on-remove="handleRemove"
@@ -399,9 +399,6 @@ export default {
 </script>
 
 <style scoped>
-.handle-box {
-  margin: 20px;
-}
 .el-table {
   margin-left: 20px;
 }

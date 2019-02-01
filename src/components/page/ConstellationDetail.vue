@@ -4,8 +4,8 @@
 			<el-button type="primary" @click="AddVisible = true" size='small'>新增</el-button>
 			<el-dialog title="新增" :visible.sync="AddVisible" width="50%" :before-close="handleClose">
 				<el-form :label-position="labelPosition" label-width="150px" :rules="rules" ref="formLabelAdd" :model="formLabelAdd">
-					<el-form-item label="星座名称(日期-日期)" prop='constellationId'>
-						<el-select v-model="formLabelAdd.constellationId" placeholder="请选择">
+					<el-form-item label="星座名称(日期-日期)" prop='constellation'>
+						<el-select v-model="formLabelAdd.constellation" placeholder="请选择">
 							<el-option v-for="item in constellationList" :key="item.id" :label="item.text" :value="item.id">
 							</el-option>
 						</el-select>
@@ -63,8 +63,8 @@
 					<el-button type="primary" size='small' @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
 					<el-dialog title="编辑" :visible.sync="dialogVisible" width="50%" :before-close="handleClose">
 						<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAlign" label-width="150px" :model="formLabelAlign">
-							<el-form-item label="星座名称(日期-日期)" prop='constellationId'>
-								<el-select v-model="formLabelAlign.constellationId" placeholder="请选择">
+							<el-form-item label="星座名称(日期-日期)" prop='constellation'>
+								<el-select v-model="formLabelAlign.constellation" placeholder="请选择">
 									<el-option v-for="item in constellationList" :key="item.id" :label="item.text" :value="item.id">
 									</el-option>
 								</el-select>
@@ -110,7 +110,7 @@
 </template>
 
 <script>
-	import Pagination from '../module/pagination.vue'
+	import Pagination from '@/components/module/Pagination.vue'
 	export default {
 		data() {
 			return {
@@ -121,7 +121,7 @@
 				idx: -1,
 				formLabelAlign: {
 					date: '',
-					constellationId: '',
+					constellation: '',
 					luckScore: '',
 					details: '',
 					lableId: ['', '', ''],
@@ -129,14 +129,14 @@
 				},
 				formLabelAdd: {
 					date: '',
-					constellationId: '',
+					constellation: '',
 					luckScore: '',
 					details: '',
 					lableId: ['', '', ''],
 					message: ['', '', '']
 				},
 				rules: {
-					constellationId: [{
+					constellation: [{
 						required: true,
 						message: '请选择星座',
 						trigger: 'change'
@@ -163,9 +163,8 @@
 				this.idx = index;
 				const item = this.tableData[index];
 				this.formLabelAlign = {
-					id:item.id,
 					date: item.date,
-					constellationId: item.constellationId,
+					constellation: item.constellation,
 					luckScore: item.luckScore,
 					details: item.details,
 					lableId: item.lableId,
@@ -177,25 +176,18 @@
 			saveEdit() {
 				this.$refs['formLabelAlign'].validate((valid) => {
 					if (valid) {
-						let tempObj={};
-						let lableIdString='';
-						let messageString='';
-						tempObj.constellationId=this.formLabelAlign.constellationId;
-						tempObj.luckScore=this.formLabelAlign.luckScore;
-						tempObj.details=this.formLabelAlign.details;
-						tempObj.date=this.formLabelAlign.date;
-						if(this.formLabelAlign.lableId.length>0){
-							for(var i=0;i<this.formLabelAlign.lableId.length;i++){
-								lableIdString +=`&lableId=${this.formLabelAlign.lableId[i]}`
-							}
-						}
-						if(this.formLabelAlign.message.length>0){
-							for(var i=0;i<this.formLabelAlign.message.length;i++){
-								messageString +=`&message=${this.formLabelAlign.message[i]}`
-							}
-						}
-						let paramsString=this.$qs.stringify(tempObj)+lableIdString+messageString
-						this.$axios.post(`/management/admin/constellation-details!save.action?id=${this.formLabelAlign.id}`, paramsString).then(res => {
+						this.$axios.post(`/management/admin/constellation-details!save.action?id=${this.formLabelAlign.id}`, this.$qs.stringify({
+							constellationId: this.formLabelAlign.constellation,
+							luckScore: this.formLabelAlign.luckScore,
+							details: this.formLabelAlign.details,
+							date: this.formLabelAlign.date,
+							lableId: this.formLabelAlign.lableId[0],
+							message: this.formLabelAlign.message[0],
+							lableId: this.formLabelAlign.lableId[1],
+							message: this.formLabelAlign.message[1],
+							lableId: this.formLabelAlign.lableId[2],
+							message: this.formLabelAlign.message[2]
+						})).then(res => {
 							this.getData(this.page, this.row)
 							this.$message.success(`修改第 ${this.idx + 1} 行成功`);
 						}).catch(e => {
@@ -225,39 +217,31 @@
 			handleAdd() {
 				this.$refs['formLabelAdd'].validate((valid) => {
 					if (valid) {
-						let tempObj={};
-						let lableIdString='';
-						let messageString='';
-						tempObj.constellationId=this.formLabelAdd.constellationId;
-						tempObj.luckScore=this.formLabelAdd.luckScore;
-						tempObj.details=this.formLabelAdd.details;
-						tempObj.date=this.formLabelAdd.date;
-						if(this.formLabelAdd.lableId.length>0){
-							for(var i=0;i<this.formLabelAdd.lableId.length;i++){
-								lableIdString +=`&lableId=${this.formLabelAdd.lableId[i]}`
+						this.$axios.post('/management/admin/constellation-details!save.action', this.$qs.stringify({
+							constellationId: this.formLabelAdd.constellation,
+							luckScore: this.formLabelAdd.luckScore,
+							details: this.formLabelAdd.details,
+							date: this.formLabelAdd.date,
+							lableId: this.formLabelAdd.lableId[0],
+							message: this.formLabelAdd.message[0],
+							lableId: this.formLabelAdd.lableId[1],
+							message: this.formLabelAdd.message[1],
+							lableId: this.formLabelAdd.lableId[2],
+							message: this.formLabelAdd.message[2]
+						})).then(res => {
+							this.getData(this.page, this.row)
+							this.formLabelAdd = {
+								date: '',
+								constellation: '',
+								luckScore: '',
+								details: '',
+								lableId: ['', '', ''],
+								message: ['', '', '']
 							}
-						}
-						if(this.formLabelAdd.message.length>0){
-							for(var i=0;i<this.formLabelAdd.message.length;i++){
-								messageString +=`&message=${this.formLabelAdd.message[i]}`
-							}
-						}
-						let paramsString=this.$qs.stringify(tempObj)+lableIdString+messageString
-						//此接口有问题
-// 						this.$axios.post('/management/admin/constellation-details!save.action', paramsString).then(res => {
-// 							this.getData(this.page, this.row)
-// 							this.formLabelAdd = {
-// 								date: '',
-// 								constellation: '',
-// 								luckScore: '',
-// 								details: '',
-// 								lableId: ['', '', ''],
-// 								message: ['', '', '']
-// 							}
-// 							this.$message.success(`添加成功`);
-// 						}).catch(e => {
-// 							this.$message.error(`出了点问题-.-!`);
-// 						})
+							this.$message.success(`添加成功`);
+						}).catch(e => {
+							this.$message.error(`出了点问题-.-!`);
+						})
 						this.AddVisible = false;
 					} else {
 						console.log('error submit!!');
@@ -309,7 +293,4 @@
 </script>
 
 <style scoped>
-	.handle-box {
-		margin-bottom: 20px
-	}
 </style>

@@ -27,13 +27,13 @@
       </el-dialog>
     </div>
     <el-table :data="brandList" border style="width: 90%" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column label="id" width="120">
+      <el-table-column type="selection" width="55" align="center"></el-table-column>
+      <el-table-column label="id" width="120" align="center">
         <template slot-scope="scope">{{ scope.row.id }}</template>
       </el-table-column>
-      <el-table-column prop="name" label="品牌名称"></el-table-column>
-      <el-table-column prop="theMain" label="主打"></el-table-column>
-      <el-table-column label="操作">
+      <el-table-column prop="name" label="品牌名称" align="center"></el-table-column>
+      <el-table-column prop="theMain" label="主打" align="center"></el-table-column>
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, brandList)"
@@ -255,7 +255,4 @@ export default {
 </script>
 
 <style scoped>
-.handle-box {
-  padding-bottom: 20px;
-}
 </style>

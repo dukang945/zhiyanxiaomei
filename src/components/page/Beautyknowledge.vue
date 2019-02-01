@@ -7,7 +7,7 @@
 					<el-button type="primary" size='small' @click="batchOnline">批量上线</el-button>
 					<el-button type="primary" size='small' @click="batchOffline">批量下线</el-button>
 					<el-button type="primary" size='small' @click="batchDelete">批量删除</el-button>
-					<el-dialog title="新增测评" :visible="AddVisible" width="80%" @close='AddVisible=false'>
+					<el-dialog title="新增美妆知识" :visible="AddVisible" width="80%" @close='AddVisible=false'>
 						<el-form :label-position="labelPosition" label-width="120px" :model="formLabelAdd">
 							<el-form-item label="标题">
 								<el-input v-model="formLabelAdd.name"></el-input>
@@ -184,7 +184,7 @@
 		</el-row>
 		<el-row :gutter="10">
 			<el-col :span='3' class='treeBox'>
-				<span class="treeTitle">测评分类列表</span>
+				<span class="treeTitle">所属分类列表</span>
 				<el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
 			</el-col>
 			<el-col :span='21'>
@@ -350,7 +350,7 @@
 				</el-table-column>
 				<el-table-column prop="id" label="编号" width="100" align='center'>
 				</el-table-column>
-				<el-table-column prop="beautyAppraisalId" label="测评ID" width='100' align='center'>
+				<el-table-column prop="beautyAppraisalId" label="知识ID" width='100' align='center'>
 				</el-table-column>
 				<el-table-column prop="productId[0]" label="产品ID" width='100' align='center'>
 				</el-table-column>
@@ -809,8 +809,8 @@
 				testObj.text = CKEDITOR.instances.editorAdd.getData();
 				let paramsStr = this.$qs.stringify(testObj) + labelIdString;
 				console.log(testObj)
-				this.$axios.post('/management/admin/beauty-appraisal!save.action', paramsStr).then(res => {
-					this.getTableData('/management/admin/beauty-appraisal!list.action', this.page, this.row);
+				this.$axios.post('/management/admin/beauty-knowledge!save.action', paramsStr).then(res => {
+					this.getTableData('/management/admin/beauty-knowledge!list.action', this.page, this.row);
 					this.AddVisible = false;
 					this.tempListImgUrl = '';
 					this.tempBannerImgUrl = '';
@@ -842,10 +842,10 @@
 			// 批量上线
 			batchOnline() {
 				if (this.checkedRowId) {
-					this.$axios.post(`/management/admin/beauty-appraisal!batchOnLine.action?ids=${this.checkedRowId}&online=0`).then(
+					this.$axios.post(`/management/admin/beauty-knowledge!batchOnLine.action?ids=${this.checkedRowId}&online=0`).then(
 						res => {
 							this.$message.success('批量上线成功')
-							this.getTableData(`/management/admin/beauty-appraisal!list.action`, this.page, this.row, this.tempId)
+							this.getTableData(`/management/admin/beauty-knowledge!list.action`, this.page, this.row, this.tempId)
 						})
 
 				} else {
@@ -854,12 +854,12 @@
 			},
 			// 批量下线
 			batchOffline() {
-				// /management/admin/beauty-appraisal!batchOffLine.action?ids=231,230&online=1
+				// /management/admin/beauty-knowledge!batchOffLine.action?ids=231,230&online=1
 				if (this.checkedRowId) {
-					this.$axios.post(`/management/admin/beauty-appraisal!batchOffLine.action?ids=${this.checkedRowId}&online=1`).then(
+					this.$axios.post(`/management/admin/beauty-knowledge!batchOffLine.action?ids=${this.checkedRowId}&online=1`).then(
 						res => {
 							this.$message.success('批量下线成功')
-							this.getTableData(`/management/admin/beauty-appraisal!list.action`, this.page, this.row, this.tempId)
+							this.getTableData(`/management/admin/beauty-knowledge!list.action`, this.page, this.row, this.tempId)
 						})
 				} else {
 					this.$message.error('没有选中的行')
@@ -869,9 +869,9 @@
 			batchDelete() {
 				this.$confirm('确定要进行批量删除么？').then(res => {
 					if (this.checkedRowId) {
-						this.$axios.post(`/management/admin/beauty-appraisal!batchDelete.action?ids=${this.checkedRowId}`).then(res => {
+						this.$axios.post(`/management/admin/beauty-knowledge!batchDelete.action?ids=${this.checkedRowId}`).then(res => {
 							this.$message.success('批量删除成功')
-							this.getTableData(`/management/admin/beauty-appraisal!list.action`, this.page, this.row, this.tempId)
+							this.getTableData(`/management/admin/beauty-knowledge!list.action`, this.page, this.row, this.tempId)
 						})
 					} else {
 						this.$message.error('没有选中的行')
@@ -880,7 +880,7 @@
 			},
 			// 提交搜索
 			onSubmitSearch() {
-				this.getTableData('/management/admin/beauty-appraisal!list.action', this.page, this.row, '', this.searchForm.text)
+				this.getTableData('/management/admin/beauty-knowledge!list.action', this.page, this.row, '', this.searchForm.text)
 			},
 			// 复制H5页面路径
 			copyH5Url(row) {
@@ -906,7 +906,7 @@
 			// 树形控件操作
 			handleNodeClick(a, b, c) {
 				this.tempId = a.id;
-				this.getTableData(`/management/admin/beauty-appraisal!list.action`, 1, 10, a.id)
+				this.getTableData(`/management/admin/beauty-knowledge!list.action`, 1, 10, a.id)
 			},
 			// 上传操作
 			handlePictureCardPreview(file) {
@@ -1026,8 +1026,8 @@
 				}
 				let paramsStr = this.$qs.stringify(testObj) + labelIdString
 				console.log(testObj)
-				this.$axios.post(`/management/admin/beauty-appraisal!save.action?id=${this.editFormData.id}`, paramsStr).then(res => {
-					this.getTableData('/management/admin/beauty-appraisal!list.action', this.page, this.row);
+				this.$axios.post(`/management/admin/beauty-knowledge!save.action?id=${this.editFormData.id}`, paramsStr).then(res => {
+					this.getTableData('/management/admin/beauty-knowledge!list.action', this.page, this.row);
 					this.editDialogVisible = false;
 					this.$message.success('修改数据成功')
 					this.textData = '';
@@ -1043,9 +1043,9 @@
 			deleteRow(index, row) {
 				this.$confirm("确认删除？")
 					.then(_ => {
-						this.$axios.get(`/management/admin/beauty-appraisal!delete.action?id=${row.id}`).then(res => {
+						this.$axios.get(`/management/admin/beauty-knowledge!delete.action?id=${row.id}`).then(res => {
 							this.$message.success('删除成功！')
-							this.getTableData(`/management/admin/beauty-appraisal!list.action`, this.page, this.row, this.tempId)
+							this.getTableData(`/management/admin/beauty-knowledge!list.action`, this.page, this.row, this.tempId)
 						})
 					})
 					.catch(_ => {});
@@ -1053,30 +1053,30 @@
 			// 切换状态
 			switchOnline(index) {
 				let status = this.tableData[index].online == 0 ? 1 : 0;
-				this.$axios.post(`/management/admin/beauty-appraisal!online.action?id=${this.tableData[index].id}&online=${status}`)
+				this.$axios.post(`/management/admin/beauty-knowledge!online.action?id=${this.tableData[index].id}&online=${status}`)
 					.then(
 						res => {
 							this.$message.success('切换上下线状态成功')
-							this.getTableData(`/management/admin/beauty-appraisal!list.action`, this.page, this.row, this.tempId)
+							this.getTableData(`/management/admin/beauty-knowledge!list.action`, this.page, this.row, this.tempId)
 						})
 			},
 			// 切换置顶状态
 			switchTop(index) {
 				let status = this.tableData[index].sticky == 0 ? 1 : 0;
-				this.$axios.post(`/management/admin/beauty-appraisal!sticky.action?id=${this.tableData[index].id}&sticky=${status}`)
+				this.$axios.post(`/management/admin/beauty-knowledge!sticky.action?id=${this.tableData[index].id}&sticky=${status}`)
 					.then(
 						res => {
 							this.$message.success('切换置顶状态成功')
-							this.getTableData(`/management/admin/beauty-appraisal!list.action`, this.page, this.row, this.tempId)
+							this.getTableData(`/management/admin/beauty-knowledge!list.action`, this.page, this.row, this.tempId)
 						})
 			},
 			// 创建H5页面
 			creatH5(index, row) {
-				this.$axios.post(`/management/admin/beauty-appraisal!saveHtml.action?id=${row.id}`).then(
+				this.$axios.post(`/management/admin/beauty-knowledge!saveHtml.action?id=${row.id}`).then(
 					res => {
 						if (res.status == 200) {
 							this.$message.success('H5页面创建成功');
-							this.getTableData(`/management/admin/beauty-appraisal!list.action`, this.page, this.row, this.tempId)
+							this.getTableData(`/management/admin/beauty-knowledge!list.action`, this.page, this.row, this.tempId)
 						} else {
 							this.$message.error('好像出了点问题-.-！')
 						}
@@ -1084,7 +1084,7 @@
 			},
 			// 更新排序
 			updataSort(index, row) {
-				this.$axios.post(`/management/admin/beauty-appraisal!updateTime.action?id=${row.id}`).then(
+				this.$axios.post(`/management/admin/beauty-knowledge!updateTime.action?id=${row.id}`).then(
 					res => {
 						if (res.status == 200) {
 							this.$message.success('排序更新成功')
@@ -1161,7 +1161,7 @@
 
 			},
 			handleEditProduct() {
-				// /management/admin/beauty-appraisal-product-relation!delete.action?id=${row.id}&beautyAppraisalId=${this.productRowId}
+				// /management/admin/beauty-knowledge-product-relation!delete.action?id=${row.id}&beautyAppraisalId=${this.productRowId}
 				console.log(this.editProductForm)
 				let tempObj = {};
 				tempObj.colorName = this.editProductForm.name;
@@ -1250,11 +1250,11 @@
 			// 分页
 			changePage(val) {
 				this.page = val;
-				this.getTableData(`/management/admin/beauty-appraisal!list.action`, val, this.row, this.tempId)
+				this.getTableData(`/management/admin/beauty-knowledge!list.action`, val, this.row, this.tempId)
 			},
 			changeSize(val) {
 				this.row = val;
-				this.getTableData(`/management/admin/beauty-appraisal!list.action`, this.page, val, this.tempId)
+				this.getTableData(`/management/admin/beauty-knowledge!list.action`, this.page, val, this.tempId)
 			},
 			// 用户分页
 			changeUserPage(val) {
@@ -1308,7 +1308,7 @@
 			},
 			// 列表数据
 			getTableData(url, page, row, id, q) {
-				// /management/admin/beauty-appraisal!list.action?labelId=773
+				// /management/admin/beauty-knowledge!list.action?labelId=773
 				this.loading = true;
 				this.$axios.get(url, {
 					params: {
@@ -1386,7 +1386,7 @@
 		},
 		mounted() {
 			var _this = this;
-			_this.getTableData('/management/admin/beauty-appraisal!list.action', 1, 10);
+			_this.getTableData('/management/admin/beauty-knowledge!list.action', 1, 10);
 			// 获取教程栏目树形控件数据
 			this.$axios.get('/management/admin/label!getTree.action').then(res => {
 				_this.treeData = res.data;

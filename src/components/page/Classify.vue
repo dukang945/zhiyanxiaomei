@@ -46,7 +46,7 @@
 </template>
 
 <script>
-	import TableTree from '../module/table-tree.vue'
+	import TableTree from '@/components/module/table-tree.vue'
 	export default {
 		data() {
 			return {
@@ -202,7 +202,4 @@
 </script>
 
 <style scoped>
-	.handle-box {
-		margin-bottom: 20px
-	}
 </style>

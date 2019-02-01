@@ -18,9 +18,10 @@
 									</a>
 								</div>
 							</td>
-							<td class="td3">{{model.lableName}}</td>
-							<td class="td4">
-
+							<td class="td4">{{model.type}}</td>
+							<td class="td5">{{model.sta}}</td>
+							<td class="td6">{{model.labelIsShow}}</td>
+							<td class="td7">
 								<a class="reset" href="javascript:;" @click="actionFunc(model)">编辑</a>
 								<i class="line"></i>
 								<a class="delete" href="javascript:;" @click="deleteFunc(model)">删除</a>

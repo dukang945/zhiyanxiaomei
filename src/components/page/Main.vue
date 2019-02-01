@@ -21,11 +21,11 @@
       </el-dialog>
     </div>
     <el-table :data="mainList" border style="width: 90%">
-      <el-table-column label="编号" width="120">
+      <el-table-column label="编号" width="120" align="center">
         <template slot-scope="scope">{{ scope.row.id }}</template>
       </el-table-column>
-      <el-table-column prop="name" label="名称"></el-table-column>
-      <el-table-column label="操作">
+      <el-table-column prop="name" label="名称" align="center"></el-table-column>
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="deleteRow(scope.$index, mainList)"
@@ -198,7 +198,4 @@ export default {
 </script>
 
 <style scoped>
-.handle-box {
-  padding-bottom: 20px;
-}
 </style>

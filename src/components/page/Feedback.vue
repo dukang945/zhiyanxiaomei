@@ -11,7 +11,7 @@
 			</el-table-column>
 			<el-table-column prop="text" label="评论内容" :show-overflow-tooltip="true">
 			</el-table-column>
-			<el-table-column label="操作" width="120">
+			<el-table-column label="操作" width="120" align='center'>
 				<template slot-scope="scope">
 					<el-button size="small" type="primary" @click="handleEdit(scope.$index, scope.row)">查看</el-button>
 					<el-dialog title="查看" :visible.sync="dialogVisible" width="30%">
@@ -104,8 +104,4 @@
 </script>
 
 <style scoped>
-	.feedBackContent {
-		padding: 10px 20px;
-		box-sizing: border-box;
-	}
 </style>
