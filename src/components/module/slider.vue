@@ -19,13 +19,13 @@
 		props: ['path'],
 		watch: {
 			path(val) {
-				console.log(val)
 			}
 		},
 		methods: {
 			clickTab(val) {
 				let path = val.name;
 				this.$router.push(path);
+				this.$emit('showPath',path)
 			},
 			addTab(path, pathName) {
 				let tempArr = this.editableTabs2.map(item => {
