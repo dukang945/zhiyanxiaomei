@@ -2,7 +2,7 @@
   <div>
     <div class="handle-box">
       <el-button type="primary" @click="AddVisible = true" size="small" v-has>新增</el-button>
-      <el-input v-model="user_Search" placeholder="请输入搜索类容" style="width: 30%">
+      <el-input v-model="user_Search" size='small' placeholder="请输入搜索类容" style='width:10%'>
         <el-button slot="append" icon="el-icon-search" @click="userSearch"></el-button>
       </el-input>
       <el-dialog title="新增" :visible.sync="AddVisible" :before-close="handleClose">
@@ -75,7 +75,7 @@
         </span>
       </el-dialog>
     </div>
-    <el-table :data="userList" border style="width: 90%">
+    <el-table :data="userList" border style="width: 100%">
       <el-table-column prop="id" label="编号" align="center"></el-table-column>
       <el-table-column prop="userName" label="用户名" align="center"></el-table-column>
       <el-table-column label="地区" align="center"></el-table-column>

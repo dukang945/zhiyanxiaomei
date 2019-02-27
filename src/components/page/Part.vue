@@ -31,7 +31,7 @@
         </span>
       </el-dialog>
     </div>
-    <el-table :data="partList" border style="width: 90%">
+    <el-table :data="partList" border style="width: 100%">
       <el-table-column label="角色名称" width="120" align="center">
         <template slot-scope="scope">{{ scope.row.name }}</template>
       </el-table-column>

@@ -112,7 +112,7 @@ export default {
   methods: {
     getlabelCountList(page1, row1) {
       this.$axios
-        .get("/management/admin/label-count-all!list.action", {
+        .get("/management/admin/beauty-makeup-data-all!list.action", {
           params: { page: page1, row: row1 }
         })
         .then(res => {
@@ -128,7 +128,7 @@ export default {
       this.idx = row.labelId;
       this.$axios
         .get(
-          `/management/admin/label-count-day!list.action?labelId=${this.idx}`
+          `/management/admin/beauty-makeup-data!list.action?docId=${this.idx}`
         )
         .then(res => {
           console.log(res.status == 200);

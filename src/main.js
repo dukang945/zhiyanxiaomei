@@ -8,6 +8,7 @@ import router from './router'
 import axios from 'axios'
 import qs from 'qs'
 import multiCascader from "multi-cascader";
+import VueDND from 'awe-dnd'
 import './assets/icon/iconfont.css'
 import {
   has,
@@ -18,6 +19,7 @@ import {
 } from './components/common/btnPermissions';
 Vue.use(ElementUI)
 Vue.use(multiCascader);
+Vue.use(VueDND)
 Vue.prototype.$axios = axios;
 Vue.prototype.$qs = qs;
 axios.defaults.withCredentials = true;
@@ -48,11 +50,11 @@ router.beforeEach((to, from, next) => {
 // http response 拦截器
 axios.interceptors.response.use(
   response => {
-    if(typeof(response.data)=="string"){
-      router.replace({
-        path: 'login'
-    })
-    }
+//     if(typeof(response.data)=="string"){
+//       router.replace({
+//         path: 'login'
+//     })
+//     }
       return response;
   },
   error => {

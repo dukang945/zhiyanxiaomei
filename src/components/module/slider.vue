@@ -47,10 +47,14 @@
 			},
 			removeTab(targetName) {
 				let tabs = this.editableTabs2;
+				console.log(tabs)
 				let activeName = this.editableTabsValue2;
 				if (tabs.length == 1) {
-					this.$router.push('/welcome');
-					this.editableTabs2=[]
+					this.$router.push('/workspace');
+					this.editableTabs2=[{
+						title: '工作台',
+						name: 'workspace'
+					}];
 					return
 				}
 				var tempIndex = -1;
@@ -73,8 +77,6 @@
 					tabs.splice(tempIndex, 1);
 					this.editableTabs2 = tabs;
 				}
-
-
 			}
 		}
 	}

@@ -1,54 +1,69 @@
 <template>
 	<div class="tagContent">
 		<div class="handle-box">
-			<el-button type="primary" @click="AddVisible = true" size='small'>新增</el-button>
-			<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
-				<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAdd" label-width="100px" :model="formLabelAdd">
-					<el-form-item label="标签名称" prop='name'>
-						<el-input v-model="formLabelAdd.name"></el-input>
-					</el-form-item>
-					<el-form-item label="上级目录">
-						<el-input v-model="formLabelAdd.lableName" readonly></el-input>
-					</el-form-item>
-					<el-form-item label="排序号">
-						<el-input v-model="formLabelAdd.sort"></el-input>
-					</el-form-item>
-					<el-form-item label="类型">
-						<el-select v-model="formLabelAdd.type" placeholder="请选择类型">
-							<el-option label="教程类型" value="1"></el-option>
-							<el-option label="测评类型" value="2"></el-option>
-							<el-option label="化妆水平" value="3"></el-option>
-							<el-option label="目的类型" value="4"></el-option>
-							<el-option label="专题类型" value="5"></el-option>
-							<el-option label="品牌+品类" value="6"></el-option>
-							<el-option label="初学乍练" value="7"></el-option>
-						</el-select>
-					</el-form-item>
-					<el-form-item label="客户端显示">
-						<el-select v-model="formLabelAdd.sta" placeholder="请选择是否显示">
-							<el-option label="显示" :value="0-0"></el-option>
-							<el-option label="不显示" :value="1-0"></el-option>
-						</el-select>
-					</el-form-item>
-					<el-form-item label="当做标签显示">
-						<el-select v-model="formLabelAdd.labelIsShow" placeholder="请选择是否显示">
-							<el-option label="显示" :value="0-0"></el-option>
-							<el-option label="不显示" :value="1-0"></el-option>
-						</el-select>
-					</el-form-item>
-					<el-form-item label="图片">
-						<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData' :before-upload='beforeUpload'
-						 :on-success="uploadSuccess" :on-remove="handleRemove" list-type="picture">
-							<el-button size="small" type="primary">点击上传</el-button>
-							<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-						</el-upload>
-					</el-form-item>
-				</el-form>
-				<span slot="footer" class="dialog-footer">
-					<el-button @click="AddVisible = false;formLabelAdd={}">取 消</el-button>
-					<el-button type="primary" @click="handleAdd">确 定</el-button>
-				</span>
-			</el-dialog>
+			<el-row>
+				<el-col :span='6'>
+					<el-button type="primary" @click="AddVisible = true" size='small'>新增</el-button>
+					<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
+						<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAdd" label-width="100px" :model="formLabelAdd">
+							<el-form-item label="标签名称" prop='name'>
+								<el-input v-model="formLabelAdd.name"></el-input>
+							</el-form-item>
+							<el-form-item label="上级目录">
+								<el-input v-model="formLabelAdd.lableName" readonly></el-input>
+							</el-form-item>
+							<el-form-item label="排序号">
+								<el-input v-model="formLabelAdd.sort"></el-input>
+							</el-form-item>
+							<el-form-item label="类型">
+								<el-select v-model="formLabelAdd.type" placeholder="请选择类型">
+									<el-option label="教程类型" value="1"></el-option>
+									<el-option label="测评类型" value="2"></el-option>
+									<el-option label="化妆水平" value="3"></el-option>
+									<el-option label="目的类型" value="4"></el-option>
+									<el-option label="专题类型" value="5"></el-option>
+									<el-option label="品牌+品类" value="6"></el-option>
+									<el-option label="初学乍练" value="7"></el-option>
+								</el-select>
+							</el-form-item>
+							<el-form-item label="客户端显示">
+								<el-select v-model="formLabelAdd.sta" placeholder="请选择是否显示">
+									<el-option label="显示" :value="0-0"></el-option>
+									<el-option label="不显示" :value="1-0"></el-option>
+								</el-select>
+							</el-form-item>
+							<el-form-item label="当做标签显示">
+								<el-select v-model="formLabelAdd.labelIsShow" placeholder="请选择是否显示">
+									<el-option label="显示" :value="0-0"></el-option>
+									<el-option label="不显示" :value="1-0"></el-option>
+								</el-select>
+							</el-form-item>
+							<el-form-item label="图片">
+								<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
+								 :before-upload='beforeUpload' :on-success="uploadSuccess" :on-remove="handleRemove" list-type="picture">
+									<el-button size="small" type="primary">点击上传</el-button>
+									<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+								</el-upload>
+							</el-form-item>
+						</el-form>
+						<span slot="footer" class="dialog-footer">
+							<el-button @click="AddVisible = false;formLabelAdd={}">取 消</el-button>
+							<el-button type="primary" @click="handleAdd">确 定</el-button>
+						</span>
+					</el-dialog>
+				</el-col>
+				<el-col :span='18'>
+					<el-form :inline="true" :model="searchForm" class="right-search">
+						<el-form-item>
+							<el-input v-model="searchForm.text" size='small' placeholder="请输入标签名"></el-input>
+						</el-form-item>
+						<el-form-item>
+							<el-button type="primary" size='small' @click="onSubmitSearch" icon="el-icon-search">搜索</el-button>
+						</el-form-item>
+					</el-form>
+				</el-col>
+			</el-row>
+
 		</div>
 		<div class="tableBox">
 			<TableTree ref="recTree" :list.sync="treeData" :headList.sync="headList" @actionFunc="actionFunc" @deleteFunc="deleteFunc"
@@ -131,13 +146,63 @@
 					imgFile: null
 				},
 				tempImgUrl: '',
-				markIndex: []
+				markIndex: [],
+				searchForm: {
+					text: ''
+				},
+				tempArr: []
 			}
 		},
 		components: {
 			TableTree
 		},
 		methods: {
+			// 递归检索
+			getLabelId(data, q) {
+				if (data.length && data.length > 0) {
+					for (let i = 0; i < data.length; i++) {
+						if ((data[i].text).indexOf(q) > -1) {
+							if (data[i].parentId) {
+								this.tempArr.push(data[i].parentId)
+							}
+						}
+						if (data[i].children.length > 0) {
+							this.getLabelId(data[i].children, q)
+						}
+					}
+					this.tempArr = Array.from(new Set(this.tempArr))
+				}
+			},
+			// 依据ID展开标签
+			openLabel(data, id) {
+				for (let i = 0; i < data.length; i++) {
+					if (data[i].id == id) {
+						// 展开标签
+						console.log(data[i])
+					}
+					if (data[i].children.length > 0) {
+						this.openLabel(data[i].children, id)
+					}
+				}
+			},
+			// 检索标签
+			onSubmitSearch() {
+				this.tempArr = [];
+				let q = this.searchForm.text;
+				if (!q) {
+					return
+				}
+				let tempData = JSON.parse(JSON.stringify(this.treeData));
+				this.getLabelId(tempData, q);
+				console.log(this.tempArr)
+				if (this.tempArr.length > 0) {
+					for (let i = 0; i < this.tempArr.length; i++) {
+						this.openLabel(this.treeData, this.tempArr[i])
+					}
+				} else {
+					this.$message.error(`找不到匹配的标签`);
+				}
+			},
 			clickRow(m) {
 				this.formLabelAdd.lableId = m.id;
 				this.formLabelAdd.lableName = m.name
@@ -156,6 +221,7 @@
 				// 提交删除请求
 			},
 			handlerExpand(m) {
+				console.log(m)
 				m.isExpand = !m.isExpand;
 			},
 			// 编辑
@@ -314,6 +380,7 @@
 							children: []
 						}
 					})
+					this.treeData = tempList;
 					for (let i = 0; i < tempList.length; i++) {
 						if (tempList[i].state == 'closed') {
 							this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${tempList[i].id}`).then(res2 => {
@@ -327,7 +394,8 @@
 											labelIsShow: this.formatLabelShow(item.labelIsShow),
 											sta: this.formatStaShow(item.sta),
 											state: item.state,
-											children: []
+											children: [],
+											parentId: tempList[i].id
 										}
 									})
 									tempList[i].children = children2;
@@ -344,7 +412,8 @@
 															labelIsShow: this.formatLabelShow(item.labelIsShow),
 															sta: this.formatStaShow(item.sta),
 															state: item.state,
-															children: []
+															children: [],
+															parentId: children2[j].id
 														}
 													})
 													tempList[i].children[j].children = children3;
@@ -361,7 +430,8 @@
 																			labelIsShow: this.formatLabelShow(item.labelIsShow),
 																			sta: this.formatStaShow(item.sta),
 																			state: item.state,
-																			children: []
+																			children: [],
+																			parentId: children3[k].id
 																		}
 																	})
 																	tempList[i].children[j].children[k].children = children4;
@@ -391,5 +461,9 @@
 <style scoped>
 	.tableBox {
 		background-color: #fff;
+	}
+
+	.right-search {
+		text-align: right;
 	}
 </style>

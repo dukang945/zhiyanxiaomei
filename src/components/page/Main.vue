@@ -20,7 +20,7 @@
         </span>
       </el-dialog>
     </div>
-    <el-table :data="mainList" border style="width: 90%">
+    <el-table :data="mainList" border style="width: 100%">
       <el-table-column label="编号" width="120" align="center">
         <template slot-scope="scope">{{ scope.row.id }}</template>
       </el-table-column>

@@ -8,37 +8,43 @@
 					<el-button type="primary" size='small' @click="batchOffline">批量下线</el-button>
 					<el-button type="primary" size='small' @click="batchDelete">批量删除</el-button>
 					<el-dialog title="新增教程" :visible.sync="AddVisible" width="50%" :before-close="handleClose">
-						<el-form :label-position="labelPosition" label-width="120px" :model="formLabelAdd">
+						<el-form label-position="right" ref='addForm' label-width="120px" :model="formLabelAdd">
 							<el-form-item label="名称">
 								<el-input v-model="formLabelAdd.name"></el-input>
 							</el-form-item>
-							<el-form-item label="标签">
-								<el-input v-model="formLabelAdd.lableId" @focus=' showTreeBox=true '></el-input>
-								<div class="selectTreeBox" v-show="showTreeBox">
-									<el-tree :data="tagOptions" ref="tree" class='selectItem' show-checkbox node-key="id" :props="defaultProps">
-									</el-tree>
-									<div class="selectTreeBtn">
-										<el-button type='primary' size='small' plain @click='choosedLabel'>选好了</el-button>
-										<el-button type='primary' size='small' plain @click='resetLabel'>重置</el-button>
-									</div>
+							<el-form-item label="搜索标签">
+								<el-input v-model='searchLabel' @change='getLabelList'></el-input>
+								<el-table :data="labelTableData" @row-click='selectLabel' border style="width: 100%" v-loading="loading" v-if='searchLabel'
+								 class='labelTable'>
+									<el-table-column prop="id" label="id" width="50" align='center'>
+									</el-table-column>
+									<el-table-column prop="name" label="标题" align='center'>
+									</el-table-column>
+									<el-table-column prop="labelName" label="上级标签" align='center'>
+									</el-table-column>
+								</el-table>
+								<!-- <el-select v-model="searchLabel" filterable remote reserve-keyword placeholder="请输入标签名称" :remote-method="remoteMethod"
+								 :loading="loading" @change='selectLabel'>
+									<el-option v-for="item in labelList" :key="item.id" :label="item.name" :value="item.id">
+										<span style="float: left">{{ item.name }}</span>
+										<span style="float: right; color: #8492a6; font-size: 13px">{{item.id}}</span>
+									</el-option>
+								</el-select> -->
+								<div class="labelChoosed">
+									已选标签：<span v-for="(item,key) in choosedLabelList" v-dragging="{ list: choosedLabelList, item: item, group: 'name' }">{{item.name}}
+										<i class="el-icon-error" @click="deleteLabel(key)"></i></span>
 								</div>
 							</el-form-item>
 							<el-form-item label="点赞次数">
 								<el-input v-model="formLabelAdd.greatNumber"></el-input>
 							</el-form-item>
-							<el-form-item label="点击次数">
-								<el-input v-model="formLabelAdd.clickNumber"></el-input>
-							</el-form-item>
 							<el-form-item label="浏览量">
 								<el-input v-model="formLabelAdd.pageView"></el-input>
 							</el-form-item>
-							<el-form-item label="化妆预估时间">
-								<el-input v-model="formLabelAdd.minute"></el-input>
-							</el-form-item>
-							<el-button size='small' type='primary' class="el-icon-plus addColor" @click='addNewColor'> 新增色号</el-button>
+							<!-- <el-button size='small' type='primary' class="el-icon-plus addColor" @click='addNewColor'> 新增色号</el-button> -->
 
 							<!-- 新增色号弹框 -->
-							<el-dialog title="新增色号" :visible.sync="addColorDialogVisible" width="30%" append-to-body>
+							<!-- <el-dialog title="新增色号" :visible.sync="addColorDialogVisible" width="30%" append-to-body>
 								<el-form :label-position="labelPosition" label-width="120px" :model="addColorFormData">
 									<el-form-item label="产品">
 										<el-select v-model="addColorFormData.productId" placeholder="请选择产品" filterable :filter-method='(q)=>{
@@ -78,7 +84,7 @@
 										<el-button type="primary" @click="addColor">确 定</el-button>
 									</el-form-item>
 								</el-form>
-							</el-dialog>
+							</el-dialog> -->
 
 
 							<el-form-item label='选择色号'>
@@ -126,9 +132,54 @@
 									<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
 								</el-upload>
 							</el-form-item>
+							<el-form-item label='化妆步骤'>
+								<el-tabs v-model="teachStepValue" type="border-card" closable @tab-remove="removeTab">
+									<el-tab-pane v-for="(item, index) in stepList" :key="item.id" :label="item.name" :name="item.name">
+										<el-form :model="formLabelAdd.step[index]" class='stepBox'>
+											<el-form-item label="教程步骤名">
+												<el-select v-model="formLabelAdd.step[index].stepName" placeholder="请选择">
+													<el-option v-for="item in stepNameOptions" :key="item.id" :label="item.text" :value="item.text">
+													</el-option>
+												</el-select>
+											</el-form-item>
+											<el-form-item label="主步骤说明">
+												<el-input type="textarea" autosize v-model="formLabelAdd.step[index].stepDis" style='width: 80%;'
+												 placeholder='如有多个子部骤,主步骤说明和图片可不填'></el-input>
+											</el-form-item>
+											<el-form-item label="主步骤图片">
+												<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
+												 :before-upload='beforeUpload' :on-success="uploadSuccess" :on-remove="handleRemove" :on-preview="handlePictureCardPreview"
+												 list-type="picture">
+													<el-button size="small" type="primary">点击上传</el-button>
+													<span slot="tip" class="el-upload__tip" style="margin-left: 20px;">只能上传jpg/png文件，且不超过500kb</span>
+												</el-upload>
+											</el-form-item>
+											<el-button size='small' type='primary' icon='el-icon-plus' @click='addMiniStep(index)' plain>增加子步骤</el-button>
+											<transition-group tag="div" name="el-zoom-in-top">
+												<div v-for='(val,key) in formLabelAdd.step[index].miniStep' v-if='formLabelAdd.step[index].miniStep.length>0'
+												 class="miniStepBox" :key='val.id'>
+													<p>小步骤序号：{{key+1}} <span class="deleteMiniStep" @click="deleteMiniStep(index,key)"><i class="el-icon-close"></i></span></p>
+													<el-form-item label="小步骤说明">
+														<el-input type="textarea" style='width: 80%;' autosize v-model="formLabelAdd.step[index].miniStep[key].miniStepDis"></el-input>
+													</el-form-item>
+													<el-form-item label="小步骤图片">
+														<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
+														 :before-upload='beforeUpload' :on-success="uploadSuccess" :on-remove="handleRemove" :on-preview="handlePictureCardPreview"
+														 list-type="picture">
+															<el-button size="small" type="primary">点击上传</el-button>
+															<span slot="tip" class="el-upload__tip" style="margin-left: 20px;">只能上传jpg/png文件，且不超过500kb</span>
+														</el-upload>
+													</el-form-item>
+												</div>
+											</transition-group>
+										</el-form>
+									</el-tab-pane>
+								</el-tabs>
+								<el-button type='primary' plain @click='addMainStep'>增加主步骤</el-button>
+							</el-form-item>
 						</el-form>
 						<span slot="footer" class="dialog-footer">
-							<el-button @click="cancelAdd">取 消</el-button>
+							<el-button @click="cancelAdd('formLabelAdd')">取 消</el-button>
 							<el-button type="primary" @click="handleAdd">确 定</el-button>
 						</span>
 					</el-dialog>
@@ -137,7 +188,7 @@
 			<el-col :span="6">
 				<el-form :inline="true" :model="searchForm" class="right-search">
 					<el-form-item>
-						<el-input v-model="searchForm.text" placeholder="请输入搜索内容"></el-input>
+						<el-input v-model="searchForm.text" size='small' placeholder="请输入搜索内容"></el-input>
 					</el-form-item>
 					<el-form-item>
 						<el-button type="primary" size='small' @click="onSubmitSearch" icon="el-icon-search">搜索</el-button>
@@ -146,12 +197,13 @@
 			</el-col>
 		</el-row>
 		<el-row :gutter="10">
-			<el-col :span='3' class='treeBox'>
+			<!-- <el-col :span='3' class='treeBox'>
 				<span class="treeTitle">教程栏目列表</span>
 				<el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
-			</el-col>
-			<el-col :span='21'>
-				<el-table :data="tableData" border style="width: 100%" class='table' @select='tableSelect' v-loading="loading" :row-class-name="tableRowClassName">
+			</el-col> -->
+			<el-col :span='24'>
+				<el-table :data="tableData" border style="width: 100%" class='table' @select='tableSelect' v-loading="loading"
+				 :row-class-name="tableRowClassName">
 					<el-table-column type="selection" width="55" align='center'></el-table-column>
 					<el-table-column type="index" label="序号" width="50" align='center'>
 					</el-table-column>
@@ -562,7 +614,50 @@
 				searchForm: {
 					text: ''
 				}, //搜索框
-
+				labelTableData: [], //标签表格数据
+				labelList: [], //标签列表
+				searchLabel: '', //搜索标签
+				choosedLabelList: [], //已选中标签
+				stepList: [{
+					id: 1,
+					name: '步骤1'
+				}], //教程步骤数组
+				tabIndex: 1,
+				teachStepValue: '步骤1', //tab栏name值
+				stepNameOptions: [{
+					id: '底妆',
+					text: '底妆'
+				}, {
+					id: '定妆',
+					text: '定妆'
+				}, {
+					id: '眉毛',
+					text: '眉毛'
+				}, {
+					id: '眼影',
+					text: '眼影'
+				}, {
+					id: '眼线',
+					text: '眼线'
+				}, {
+					id: '睫毛',
+					text: '睫毛'
+				}, {
+					id: '修容',
+					text: '修容'
+				}, {
+					id: '高光',
+					text: '高光'
+				}, {
+					id: '腮红',
+					text: '腮红'
+				}, {
+					id: '唇妆',
+					text: '唇妆'
+				}, {
+					id: '点缀',
+					text: '点缀'
+				}], //教程步骤名称
 				formLabelAdd: {
 					name: '',
 					purposeId: [],
@@ -578,7 +673,13 @@
 					moduleId: '',
 					videoUrl: '',
 					about: '',
-					image: ''
+					image: '',
+					step: [{
+						stepName: '',
+						stepDis: '',
+						stepImg: '',
+						miniStep: []
+					}]
 				}, //新增教程表单
 
 
@@ -801,7 +902,7 @@
 				stepId: '',
 				configTips: '',
 				showTreeBox: false, //显示树形结构
-				selectLabel: '',
+				// selectLabel: '',
 				selectId: [],
 				selectIdEdit: [], //编辑表单的选中labelId
 			}
@@ -812,42 +913,42 @@
 		methods: {
 			// 选好标签
 			choosedLabel() {
-				let tempArr = this.$refs.tree.getCheckedNodes();
-				if (tempArr.length > 0) {
-					let tempId = [];
-					let tempLabel = [];
-					for (let i = 0; i < tempArr.length; i++) {
-						tempId.push(tempArr[i].id)
-						tempLabel.push(tempArr[i].text)
-					}
-					this.formLabelAdd.lableId = tempLabel.join(',')
-					this.selectId = tempId;
-				}
-				this.showTreeBox = false
+				// 				let tempArr = this.$refs.tree.getCheckedNodes();
+				// 				if (tempArr.length > 0) {
+				// 					let tempId = [];
+				// 					let tempLabel = [];
+				// 					for (let i = 0; i < tempArr.length; i++) {
+				// 						tempId.push(tempArr[i].id)
+				// 						tempLabel.push(tempArr[i].text)
+				// 					}
+				// 					this.formLabelAdd.lableId = tempLabel.join(',')
+				// 					this.selectId = tempId;
+				// 				}
+				// 				this.showTreeBox = false
 			},
 			// 重置选中标签
 			resetLabel() {
-				this.$refs.tree.setCheckedKeys([]);
-				this.formLabelAdd.lableId = '';
+				// 				this.$refs.tree.setCheckedKeys([]);
+				// 				this.formLabelAdd.lableId = '';
 			},
 			choosedLabel2() {
-				let tempArr = this.$refs.tree2.getCheckedNodes();
-				if (tempArr.length > 0) {
-					let tempId = [];
-					let tempLabel = [];
-					for (let i = 0; i < tempArr.length; i++) {
-						tempId.push(tempArr[i].id)
-						tempLabel.push(tempArr[i].text)
-					}
-					this.editFormData.labelId = tempLabel.join(',')
-					this.selectIdEdit = tempId;
-				}
-				this.showTreeBox = false
+				// 				let tempArr = this.$refs.tree2.getCheckedNodes();
+				// 				if (tempArr.length > 0) {
+				// 					let tempId = [];
+				// 					let tempLabel = [];
+				// 					for (let i = 0; i < tempArr.length; i++) {
+				// 						tempId.push(tempArr[i].id)
+				// 						tempLabel.push(tempArr[i].text)
+				// 					}
+				// 					this.editFormData.labelId = tempLabel.join(',')
+				// 					this.selectIdEdit = tempId;
+				// 				}
+				// 				this.showTreeBox = false
 			},
 			// 重置选中标签
 			resetLabel2() {
-				this.$refs.tree2.setCheckedKeys([]);
-				this.editFormData.labelId = '';
+				// 				this.$refs.tree2.setCheckedKeys([]);
+				// 				this.editFormData.labelId = '';
 			},
 			tableRowClassName({
 				row,
@@ -917,7 +1018,13 @@
 						moduleId: '',
 						videoUrl: '',
 						about: '',
-						image: ''
+						image: '',
+						step: [{
+							stepName: '',
+							stepDis: '',
+							stepImg: '',
+							miniStep: []
+						}]
 					};
 					this.addFileList = []
 					this.resetLabel()
@@ -939,11 +1046,17 @@
 					moduleId: '',
 					videoUrl: '',
 					about: '',
-					image: ''
+					image: '',
+					step: [{
+						stepName: '',
+						stepDis: '',
+						stepImg: '',
+						miniStep: []
+					}]
 				}
 				this.addFileList = []
 				this.tempImgUrl = '';
-				this.resetLabel()
+				// this.resetLabel()
 			},
 			// 点击新增色号
 			addNewColor() {
@@ -1141,6 +1254,7 @@
 					if (temp.length > 0) {
 						that.$refs.tree2.setCheckedKeys(temp);
 					}
+
 					let productArr = colorData.data.color;
 					if (productArr.length && productArr.length > 0) {
 						productArr.forEach(item => {
@@ -1652,6 +1766,72 @@
 				this.selectGroups = val;
 				this.configTips = `已选择${val.length}个分组`;
 			},
+			// 标签操作
+			// 获取标签列表
+			getLabelList(val) {
+				this.$axios.post('/management/admin/label!list.action', this.$qs.stringify({
+					page: 1,
+					rows: 50,
+					q: val
+				})).then(res => {
+					console.log(res.data)
+					this.labelTableData = res.data.rows
+				})
+			},
+			// 删除标签
+			deleteLabel(key) {
+				console.log(key)
+				this.choosedLabelList.splice(key, 1)
+			},
+			// 点击单选
+			selectLabel(row) {
+				console.log(row);
+				this.choosedLabelList.push(row);
+				// 选中一个之后清空
+				this.searchLabel = ''
+			},
+			// 步骤操作
+			removeTab(targetName) {
+				let tabs = this.stepList;
+				let activeName = this.teachStepValue;
+				if (activeName === targetName) {
+					tabs.forEach((tab, index) => {
+						if (tab.name === targetName) {
+							let nextTab = tabs[index + 1] || tabs[index - 1];
+							if (nextTab) {
+								activeName = nextTab.name;
+							}
+						}
+					});
+				}
+
+				this.teachStepValue = activeName;
+				this.stepList = tabs.filter(tab => tab.name !== targetName);
+			},
+			addMainStep() {
+				let newTabName = this.stepList.length + 1 + '';
+				this.stepList.push({
+					id: this.stepList.length + 1,
+					name: '步骤' + newTabName
+				});
+				this.teachStepValue = this.stepList[this.stepList.length-1].name;
+				this.formLabelAdd.step.push({
+					stepName: '',
+					stepDis: '',
+					stepImg: '',
+					miniStep: []
+				})
+			},
+			addMiniStep(index) {
+				this.formLabelAdd.step[index].miniStep.push({
+					id: this.formLabelAdd.step[index].miniStep.length + 1,
+					miniStepDis: '',
+					miniStepImg: ''
+				})
+			},
+			deleteMiniStep(index1, index2) {
+				this.formLabelAdd.step[index1].miniStep.splice(index2, 1)
+			}
 		},
 		mounted() {
 			this.getTableData('/management/admin/beauty-details!list.action', 1, 10);
@@ -1773,6 +1953,62 @@
 		justify-content: space-around;
 	}
 
+	/* 标签选择器 */
+	.labelChoosed span {
+		display: inline-block;
+		padding: 5px 10px;
+		border-radius: 5px;
+		margin-top: 15px;
+		margin-right: 10px;
+		cursor: pointer;
+		transition: all 0.5s;
+		line-height: 20px;
+		border: 1px solid #ccc;
+	}
+
+	.labelChoosed span:hover {
+		background: #eeeeee;
+	}
+
+	.labelTable {
+		max-height: 250px;
+		overflow-y: auto;
+	}
+
+	/* 步骤选择器 */
+	.stepBox>.el-form-item {
+		margin: 10px 0;
+	}
+
+	.miniStepBox {
+		margin: 10px auto;
+		border: 1px solid #eee;
+		border-radius: 5px;
+		width: 100%;
+		padding: 0 20px;
+		box-sizing: border-box;
+		transition: all .5s;
+	}
+
+	.miniStepBox>p {
+		line-height: 30px;
+		margin: 10px 0;
+		position: relative;
+	}
+
+	.miniStepBox>p .deleteMiniStep {
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		font-size: 20px;
+		color: #333;
+		width: 30px;
+		height: 30px;
+	}
+
+	.miniStepBox .el-form-item {
+		margin: 10px 0;
+	}
 </style>
 <style>
 	.el-table__body tr.online {
@@ -1805,7 +2041,32 @@
 		background: rgba(0, 0, 0, 0.1);
 	}
 
+	.labelTable::-webkit-scrollbar {
+		/*滚动条整体样式*/
+		width: 6px;
+		/*高宽分别对应横竖滚动条的尺寸*/
+		height: 4px;
+	}
+
+	.labelTable::-webkit-scrollbar-thumb {
+		/*滚动条里面小方块*/
+		border-radius: 5px;
+		-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+		background: rgba(0, 0, 0, 0.4);
+	}
+
+	.labelTable::-webkit-scrollbar-track {
+		/*滚动条里面轨道*/
+		-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+		border-radius: 0;
+		background: rgba(0, 0, 0, 0.2);
+	}
+
 	.table.el-table td {
 		padding: 10px 0;
+	}
+
+	.labelTable.el-table td {
+		padding: 5px 0;
 	}
 </style>

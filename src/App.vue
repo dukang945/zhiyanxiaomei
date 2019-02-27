@@ -12,7 +12,6 @@
 
 <style>
 	@import '~@/assets/icon/iconfont.css'
-
 	* {
 		margin: 0;
 		padding: 0;
@@ -23,6 +22,7 @@
 	body {
 		margin: 0;
 		height: 100%;
+		color: #666;
 	}
 
 	.el-upload-list__item {
@@ -38,10 +38,11 @@
 	}
 
 	.el-dialog {
-		text-align-last: left;
+		/* text-align-last: left; */
 	}
 
 	.el-table td {
 		padding: 10px 0;
 	}
+	
 </style>

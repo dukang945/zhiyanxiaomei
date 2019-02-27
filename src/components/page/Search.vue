@@ -9,9 +9,9 @@
 					</el-form-item>
 					<el-form-item label="类型" prop='type'>
 						<el-select v-model="formLabelAdd.type" placeholder="请选择类型">
-							<el-option label="全部" value="0"></el-option>
-							<el-option label="教程" value="1"></el-option>
-							<el-option label="评测" value="2"></el-option>
+							<el-option label="全部" :value="0+0"></el-option>
+							<el-option label="教程" :value="1+0"></el-option>
+							<el-option label="评测" :value="2+0"></el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="排序号" prop='sort'>
@@ -50,9 +50,9 @@
 				</el-form-item>
 				<el-form-item label="类型" prop='type'>
 					<el-select v-model="formLabelAlign.type" placeholder="请选择类型">
-						<el-option label="全部" value="0"></el-option>
-						<el-option label="教程" value="1"></el-option>
-						<el-option label="评测" value="2"></el-option>
+						<el-option label="全部" :value="0+0"></el-option>
+						<el-option label="教程" :value="1+0"></el-option>
+						<el-option label="评测" :value="2+0"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="排序号" prop='sort'>
@@ -128,13 +128,13 @@
 			handleEdit(index, row) {
 				this.idx = index;
 				const item = this.tableData[index];
-				if (item.type == 0) {
-					item.type = '全部'
-				} else if (item.type == 1) {
-					item.type = '教程'
-				} else if (item.type == 2) {
-					item.type = '评测'
-				}
+// 				if (item.type == 0) {
+// 					item.type = '全部'
+// 				} else if (item.type == 1) {
+// 					item.type = '教程'
+// 				} else if (item.type == 2) {
+// 					item.type = '评测'
+// 				}
 				this.formLabelAlign = {
 					id: item.id,
 					sort: item.sort,
@@ -160,13 +160,6 @@
 			saveEdit() {
 				this.$refs['formLabelAlign'].validate((valid) => {
 					if (valid) {
-						if (this.formLabelAlign.type == '全部') {
-							this.formLabelAlign.type = 0
-						} else if (this.formLabelAlign.type == '教程') {
-							this.formLabelAlign.type = 1
-						} else if (this.formLabelAlign.type == '评测') {
-							this.formLabelAlign.type = 2
-						}
 						this.$axios.post(`/management/admin/hot-bot!save.action?id=${this.formLabelAlign.id}`, this.$qs.stringify({
 							name: this.formLabelAlign.name,
 							sort: this.formLabelAlign.sort,
