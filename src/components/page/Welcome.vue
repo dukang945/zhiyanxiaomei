@@ -1,9 +1,11 @@
 <template>
 	<div style="height: 100%">
-		<el-container style="height: 100%;background-color: #f2f8f9;">
+		<el-container style="height: 100%;background-color: #E5E5E5;">
 			<el-header>
 				<img src="../../images/icons/logo_home.png" alt>
-				<span class="menuBtn"><i class="el-icon-menu" @click="isCollapse=!isCollapse"></i></span>
+				<span class="menuBtn">
+					<i class="el-icon-menu" @click="isCollapse=!isCollapse"></i>
+				</span>
 				<div class="container-right">
 					<div class="close" @click="logout">
 						<span></span>
@@ -16,23 +18,22 @@
 
 			<el-container style="width: 100%;">
 				<aside class="el-aside">
-					<el-menu class="el-menu-vertical-demo" text-color="#666" active-text-color="#409EFF" :collapse="isCollapse" router
-					 @select="handleSelect">
+					<el-menu class="el-menu-vertical-demo" text-color="#333" active-text-color="#409EFF" :collapse="isCollapse"
+					 :default-active="routePath" router @select="handleSelect" unique-opened>
 						<el-submenu :index="(item.id).toString()" v-for="(item) in menulist" :key="item.id" class="menuOut">
 							<template slot="title">
 								<i :class="item.icon"></i>
 								<span>{{item.name}}</span>
 							</template>
-							<el-menu-item-group v-for="(itemChildren) in item.children" :key="itemChildren.id" >
-							<!-- <el-menu-item-group v-for="(itemChildren) in item.children" :key="itemChildren.id" v-if='itemChildren.enname'> -->
-								<el-menu-item :index="itemChildren.enname">{{itemChildren.name}}</el-menu-item>
+							<el-menu-item-group v-for="(itemChildren) in item.children" :key="itemChildren.id">
+								<el-menu-item :index="itemChildren.enname" :class="$route.path=='/'+itemChildren.enname?'is-active':''">{{itemChildren.name}}</el-menu-item>
 							</el-menu-item-group>
 						</el-submenu>
 					</el-menu>
 				</aside>
 				<el-main class="mainback">
 					<div class="mainBox">
-						<Slide ref="slider" :path="path"></Slide>
+						<Slide ref="slider" :path="path" @showPath='getPath'></Slide>
 						<transition name="fade" mode="out-in" enter-active-class="animated fadeInLeft" leave-active-class="animated fadeOutRight"
 						 :duration="200">
 							<router-view></router-view>
@@ -40,7 +41,6 @@
 					</div>
 				</el-main>
 			</el-container>
-
 		</el-container>
 	</div>
 </template>
@@ -58,7 +58,8 @@
 		data() {
 			return {
 				isCollapse: false,
-				path: ""
+				path: "",
+				isWelcome: false,
 			};
 		},
 		components: {
@@ -71,12 +72,26 @@
 			},
 			menulist() {
 				let menulist = JSON.parse(sessionStorage.getItem("menuList"));
-				console.log(menulist)
 				return menulist ? menulist : "";
+			},
+			routePath() {
+				let routePath = this.$route.path.substring(1)
+				return routePath
 			}
 		},
+		mounted() {
+			var _this = this;
+			this.$refs.slider.addTab(this.$route.path, this.$route.name);
+		},
 		methods: {
+			getPath(path) {
+				var _this = this;
+				if (path == 'welcome') {
+					this.$route.push('/workspace')
+				}
+			},
 			handleSelect(path, pathName) {
+				this.isWelcome = false
 				let cardName = "";
 				this.menulist.forEach(item => {
 					if (item.id == pathName[0]) {
@@ -161,16 +176,21 @@
 		padding: 20px;
 		padding-bottom: 0;
 		box-sizing: border-box;
-		color: #333;
+		color: #666;
 		// overflow: hidden;
 	}
-	.mainback .mainBox{
+
+	.mainback .mainBox {
+		margin-bottom: 20px;
 		width: 100%;
 		background: #fff;
 		padding: 20px;
 		padding-bottom: 10px;
 		box-sizing: border-box;
+		border-radius: 3px;
+		box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
 	}
+
 	body>.el-container {
 		margin-bottom: 40px;
 	}
@@ -321,58 +341,77 @@
 		box-shadow: -3px 0 15px 3px rgba(0, 0, 0, 0.1);
 		z-index: 10;
 	}
+
 	// 滚动条样式
-        .el-aside::-webkit-scrollbar ,.el-menu--vertical::-webkit-scrollbar{/*滚动条整体样式*/
-            width: 4px;     /*高宽分别对应横竖滚动条的尺寸*/
-            height: 4px;
-        }
-        .el-aside::-webkit-scrollbar-thumb ,.el-menu--vertical::-webkit-scrollbar-thumb{/*滚动条里面小方块*/
-            border-radius: 5px;
-            -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
-            background: rgba(0,0,0,0.2);
-        }
-        .el-aside::-webkit-scrollbar-track .el-menu--vertical::-webkit-scrollbar-track{/*滚动条里面轨道*/
-            -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
-            border-radius: 0;
-            background: rgba(0,0,0,0.1);
-        }
-		.mainback::-webkit-scrollbar {/*滚动条整体样式*/
-		    width: 6px;     /*高宽分别对应横竖滚动条的尺寸*/
-		    height: 4px;
-		}
-		.mainback::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
-		    border-radius: 5px;
-		    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
-		    background: rgba(0,0,0,0.4);
-		}
-		.mainback::-webkit-scrollbar-track {/*滚动条里面轨道*/
-		    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
-		    border-radius: 0;
-		    background: rgba(0,0,0,0.2);
-		}
-		.el-menu--vertical{
-			max-height: 100%;
-			overflow-y: auto;
-		}
-		
-		.treeBox::-webkit-scrollbar {
-			/*滚动条整体样式*/
-			width: 6px;
-			/*高宽分别对应横竖滚动条的尺寸*/
-			height: 4px;
-		}
-		
-		.treeBox::-webkit-scrollbar-thumb {
-			/*滚动条里面小方块*/
-			border-radius: 5px;
-			-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-			background: rgba(0, 0, 0, 0.4);
-		}
-		
-		.treeBox::-webkit-scrollbar-track {
-			/*滚动条里面轨道*/
-			-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-			border-radius: 0;
-			background: rgba(0, 0, 0, 0.2);
-		}
+	.el-aside::-webkit-scrollbar,
+	.el-menu--vertical::-webkit-scrollbar {
+		/*滚动条整体样式*/
+		width: 4px;
+		/*高宽分别对应横竖滚动条的尺寸*/
+		height: 4px;
+	}
+
+	.el-aside::-webkit-scrollbar-thumb,
+	.el-menu--vertical::-webkit-scrollbar-thumb {
+		/*滚动条里面小方块*/
+		border-radius: 5px;
+		-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+		background: rgba(0, 0, 0, 0.2);
+	}
+
+	.el-aside::-webkit-scrollbar-track .el-menu--vertical::-webkit-scrollbar-track {
+		/*滚动条里面轨道*/
+		-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+		border-radius: 0;
+		background: rgba(0, 0, 0, 0.1);
+	}
+
+	.mainback::-webkit-scrollbar {
+		/*滚动条整体样式*/
+		width: 6px;
+		/*高宽分别对应横竖滚动条的尺寸*/
+		height: 4px;
+	}
+
+	.mainback::-webkit-scrollbar-thumb {
+		/*滚动条里面小方块*/
+		border-radius: 5px;
+		-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+		background: rgba(0, 0, 0, 0.4);
+	}
+
+	.mainback::-webkit-scrollbar-track {
+		/*滚动条里面轨道*/
+		-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+		border-radius: 0;
+		background: rgba(0, 0, 0, 0.2);
+	}
+
+	.el-menu--vertical {
+		max-height: 100%;
+		overflow-y: auto;
+	}
+
+	.treeBox::-webkit-scrollbar {
+		/*滚动条整体样式*/
+		width: 6px;
+		/*高宽分别对应横竖滚动条的尺寸*/
+		height: 4px;
+	}
+
+	.treeBox::-webkit-scrollbar-thumb {
+		/*滚动条里面小方块*/
+		border-radius: 5px;
+		-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+		background: rgba(0, 0, 0, 0.4);
+	}
+
+	.treeBox::-webkit-scrollbar-track {
+		/*滚动条里面轨道*/
+		-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+		border-radius: 0;
+		background: rgba(0, 0, 0, 0.2);
+	}
+
+
 </style>

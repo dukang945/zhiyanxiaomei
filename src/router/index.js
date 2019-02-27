@@ -42,7 +42,10 @@ import User from '@/components/page/User'
 import VipMsg from '@/components/page/VipMsg'
 import Beautyknowledge from '@/components/page/Beautyknowledge'
 import Hotsearch from '@/components/page/Hotsearch'
-
+import LabelCountAll from '@/components/page/LabelCountAll'
+import Registered from '@/components/page/Registered'
+import BeautyMakeupDataAll from '@/components/page/BeautyMakeupDataAll'
+import Workspace from '@/components/page/Workspace'
 
 Vue.use(Router)
 
@@ -50,6 +53,8 @@ export default new Router({
   routes: [{
       path: '/Welcome',
       component: Welcome,
+      name:'首页',
+			redirect:'/workspace',
       children: [{
           path: '/skillColumn',
 					name:'技能栏目管理',
@@ -236,6 +241,21 @@ export default new Router({
           component: User,
         },
         {
+          path: '/labelCountAll',
+					name:'标签数据统计',
+          component: LabelCountAll,
+        },
+        {
+          path: '/registeredUser',
+					name:'用户基础数据',
+          component: Registered,
+        },
+				{
+					path: '/beautyMakeupDataAll',
+					name:'文章数据统计',
+					component: BeautyMakeupDataAll,
+				},
+        {
           path: '/vipMsg',
 					name:'会员信息管理',
           component: VipMsg
@@ -249,6 +269,11 @@ export default new Router({
 					path:'/hotsearch',
 					name:'美妆知识',
 					component: Hotsearch
+				},
+				{
+					path:'/workspace',
+					name:'工作台',
+					component: Workspace
 				}
       ]
     },

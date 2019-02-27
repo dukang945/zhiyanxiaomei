@@ -34,7 +34,7 @@
         </span>
       </el-dialog>
     </div>
-    <el-table :data="vipList" border style="width: 90%" current-row-key v-loading="loading">
+    <el-table :data="vipList" border style="width: 100%" current-row-key v-loading="loading">
       <el-table-column type="selection" width="55" align="center"></el-table-column>
       <el-table-column label="名称" align="center">
         <template slot-scope="scope">{{ scope.row.nickName }}</template>
@@ -55,10 +55,10 @@
       <el-table-column label="第三方token" align="center">
         <template slot-scope="scope">{{ scope.row.token }}</template>
       </el-table-column>
-      <el-table-column label="注册时间" align="center">
+      <el-table-column label="注册时间" width='200' align="center">
         <template slot-scope="scope">{{ scope.row.createTime | formatTime('YMDHMS') }}</template>
       </el-table-column>
-      <el-table-column label="最后登录时间" align="center">
+      <el-table-column label="最后登录时间" width='200' align="center">
         <template slot-scope="scope">{{ scope.row.loginTime | formatTime('YMDHMS')}}</template>
       </el-table-column>
       <el-table-column label="操作" align="center">

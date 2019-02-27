@@ -9,15 +9,15 @@
 			<el-col :span="18">
 				<el-form :inline="true" :model="form" class="right-search">
 					<el-form-item label="操作人">
-						<el-input v-model="form.user" placeholder="操作人"></el-input>
+						<el-input v-model="form.user" size='small' placeholder="操作人"></el-input>
 					</el-form-item>
 					<el-form-item label="时间段">
 						<el-col :span="11">
-							<el-date-picker type="date" placeholder="选择日期" v-model="form.date1" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+							<el-date-picker type="date" size='small' placeholder="选择日期" v-model="form.date1" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
 						</el-col>
 						<el-col class="line" :span="2" style='text-align: center;'>--</el-col>
 						<el-col :span="11">
-							<el-date-picker type="date" placeholder="选择日期" v-model="form.date2" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+							<el-date-picker type="date" size='small' placeholder="选择日期" v-model="form.date2" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
 						</el-col>
 					</el-form-item>
 					<el-form-item>

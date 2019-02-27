@@ -1769,6 +1769,7 @@
 		padding: 0 1rem;
 		font-weight: 900;
 		font-size: 1.7rem;
+		margin: 0.5rem auto;
 	}
 
 	.subtitle span {

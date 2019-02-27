@@ -36,7 +36,7 @@
 			</el-table-column>
 		</el-table>
 		<el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
-			<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAlign"  label-width="120px" :model="formLabelAlign">
+			<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAlign" label-width="120px" :model="formLabelAlign">
 				<el-form-item label="化妆建议内容" prop='text'>
 					<el-input type="textarea" autosize v-model="formLabelAlign.text"></el-input>
 				</el-form-item>
@@ -104,7 +104,7 @@
 				console.log(item)
 				this.formLabelAlign = {
 					id: item.id,
-					type: item.type==1?'第一次颜值与第二次颜值比较文案':'第一次颜值与第二次颜值比较文案',
+					type: item.type == 1 ? '第一次颜值与第二次颜值比较文案' : '第一次颜值与第二次颜值比较文案',
 					text: item.text
 				};
 				this.dialogVisible = true;
@@ -113,10 +113,10 @@
 			saveEdit() {
 				this.$refs['formLabelAlign'].validate((valid) => {
 					if (valid) {
-						if(this.formLabelAlign.type=='第一次颜值与第二次颜值比较文案'){
-							this.formLabelAlign.type=1
-						}else if(this.formLabelAlign.type=='第一次颜值与第二次颜值比较文案'){
-							this.formLabelAlign.type=2
+						if (this.formLabelAlign.type == '第一次颜值与第二次颜值比较文案') {
+							this.formLabelAlign.type = 1
+						} else if (this.formLabelAlign.type == '第一次颜值与第二次颜值比较文案') {
+							this.formLabelAlign.type = 2
 						}
 						this.$axios.post(`/management/admin/makeup-look!save.action?id=${this.formLabelAlign.id}`, this.$qs.stringify({
 							text: this.formLabelAlign.text,

@@ -45,7 +45,7 @@
         </span>
       </el-dialog>
     </div>
-    <el-table :data="menuList" border style="width: 90%">
+    <el-table :data="menuList" border style="width: 100%">
       <el-table-column prop="name" label="资源名称" align="center"></el-table-column>
       <el-table-column prop="enname" label="英文名称" align="center"></el-table-column>
       <el-table-column prop="parentName" label="上级资源" align="center"></el-table-column>
