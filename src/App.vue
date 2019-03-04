@@ -12,7 +12,7 @@
 
 <style>
 	@import '~@/assets/icon/iconfont.css'
-	* {
+	*{
 		margin: 0;
 		padding: 0;
 	}
@@ -38,7 +38,7 @@
 	}
 
 	.el-dialog {
-		/* text-align-last: left; */
+		text-align: left;
 	}
 
 	.el-table td {

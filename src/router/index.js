@@ -45,7 +45,9 @@ import Hotsearch from '@/components/page/Hotsearch'
 import LabelCountAll from '@/components/page/LabelCountAll'
 import Registered from '@/components/page/Registered'
 import BeautyMakeupDataAll from '@/components/page/BeautyMakeupDataAll'
+import UserInterested from '@/components/page/UserInterested'
 import Workspace from '@/components/page/Workspace'
+import Eye from '@/components/page/Eye'
 
 Vue.use(Router)
 
@@ -129,6 +131,11 @@ export default new Router({
           path: '/evaluation',
 					name:'',
           component: Evaluation
+        },
+        {
+          path: '/eye',
+					name:'眼部管理',
+          component: Eye
         },
         {
           path: '/face',
@@ -239,6 +246,11 @@ export default new Router({
           path: '/user',
 					name:'',
           component: User,
+        },
+        {
+          path: '/userInterested',
+					name:'用户星座和感兴趣标签',
+          component: UserInterested,
         },
         {
           path: '/labelCountAll',
