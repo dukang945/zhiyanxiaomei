@@ -61,30 +61,31 @@
 							.then(function(res) {
 								if (res.status == 200) {
 									console.log(res)
-									let menuList = [];
-									res.data.menu.forEach(item => {
-										if (item.parentId == 2 || item.parentId == 3 || item.parentId == 4 || item.parentId == 5) {
-											menuList.push({
-												id: item.id,
-												name: item.name,
-												enname: item.enname,
-												icon: item.icon,
-												children: []
-											})
-										}
-									})
-									menuList.forEach(item => {
-										let pId = item.id
-										res.data.menu.forEach(item2 => {
-											if (item2.parentId == pId) {
-												item.children.push({
-													id: item2.id,
-													name: item2.name,
-													enname: item2.enname
-												})
-											}
-										})
-									})
+									let menuList = res.data.menu;
+									
+// 									res.data.menu.forEach(item => {
+// 										if (item.parentId == 2 || item.parentId == 3 || item.parentId == 4 || item.parentId == 5) {
+// 											menuList.push({
+// 												id: item.id,
+// 												name: item.name,
+// 												enname: item.enname,
+// 												icon: item.icon,
+// 												children: []
+// 											})
+// 										}
+// 									})
+// 									menuList.forEach(item => {
+// 										let pId = item.id
+// 										res.data.menu.forEach(item2 => {
+// 											if (item2.parentId == pId) {
+// 												item.children.push({
+// 													id: item2.id,
+// 													name: item2.name,
+// 													enname: item2.enname
+// 												})
+// 											}
+// 										})
+// 									})
 									that.$router.push('/welcome');
 									sessionStorage.setItem("ms_username", that.ruleForm.username);
 									sessionStorage.setItem("menuList", JSON.stringify(menuList))
