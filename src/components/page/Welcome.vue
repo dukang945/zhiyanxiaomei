@@ -20,14 +20,23 @@
 				<aside class="el-aside">
 					<el-menu class="el-menu-vertical-demo" text-color="#333" active-text-color="#409EFF" :collapse="isCollapse"
 					 :default-active="routePath" router @select="handleSelect" unique-opened>
-						<el-submenu :index="(item.id).toString()" v-for="(item) in menulist" :key="item.id" class="menuOut">
+						<el-submenu :index="(item.menuid).toString()" v-for="(item) in menulist" :key="item.menuid" class="menuOut">
 							<template slot="title">
 								<i :class="item.icon"></i>
-								<span>{{item.name}}</span>
+								<span>{{item.menuname}}</span>
 							</template>
-							<el-menu-item-group v-for="(itemChildren) in item.children" :key="itemChildren.id">
-								<el-menu-item :index="itemChildren.enname" :class="$route.path=='/'+itemChildren.enname?'is-active':''">{{itemChildren.name}}</el-menu-item>
-							</el-menu-item-group>
+							<!-- <el-menu-item :index="(itemMenu.menuid).toString()" v-for='(itemMenu) in item.menus.filter((val)=>{return val.menus.length == 0})' :key='itemMenu.menuid' :class="$route.path=='/'+itemMenu.enname?'is-active':''">{{itemMenu.menuname}}</el-menu-item> -->
+							<el-menu-item :index="itemMenu.enname" v-for='(itemMenu) in item.menus.filter((val)=>{return val.menus.length == 0})' :key='itemMenu.menuid' :class="$route.path=='/'+itemMenu.enname?'is-active':''">{{itemMenu.menuname}}</el-menu-item>
+							<el-submenu :index="(itemMenu2.menuid).toString()"  v-for='(itemMenu2) in item.menus.filter((val)=>{return val.menus.length > 0})' :key='itemMenu2.menuid'>
+								<template slot="title">
+									<!-- <i :class="itemMenu.icon"></i> -->
+									<span>{{itemMenu2.menuname}}</span>
+								</template>
+								
+								<el-menu-item :index="k.enname" v-for='(k) in itemMenu2.menus' :key='k.menuid' :class="$route.path=='/'+k.enname?'is-active':''">{{k.menuname}}</el-menu-item>
+								<!-- <el-menu-item :index="(k.menuid).toString()" v-for='(k) in itemMenu2.menus' :key='k.menuid' :class="$route.path=='/'+k.enname?'is-active':''">{{k.menuname}}</el-menu-item> -->
+								
+							</el-submenu>
 						</el-submenu>
 					</el-menu>
 				</aside>
@@ -92,16 +101,32 @@
 			},
 			handleSelect(path, pathName) {
 				this.isWelcome = false
-				let cardName = "";
-				this.menulist.forEach(item => {
-					if (item.id == pathName[0]) {
-						item.children.forEach(item2 => {
-							if (item2.enname == pathName[1]) {
-								cardName = item2.name;
-							}
-						});
-					}
-				});
+				var cardName = "";
+				if(pathName.length==2){
+					this.menulist.forEach(item=>{
+						if(item.menuid == pathName[0]){
+							item.menus.forEach(item2=>{
+								if (item2.enname == pathName[1]) {
+									cardName = item2.menuname;
+								}
+							})
+						}
+					})
+				}else if(pathName.length == 3){
+					this.menulist.forEach(item=>{
+						if(item.menuid == pathName[0]){
+							item.menus.forEach(item2=>{
+								if (item2.menuid == pathName[1]) {
+									item2.menus.forEach(item3=>{
+										if (item3.enname == pathName[2]) {
+											cardName = item3.menuname;
+										}
+									})
+								}
+							})
+						}
+					})
+				}
 				this.$refs.slider.addTab(path, cardName);
 			},
 			logout() {
@@ -412,6 +437,4 @@
 		border-radius: 0;
 		background: rgba(0, 0, 0, 0.2);
 	}
-
-
 </style>

@@ -275,5 +275,6 @@ function textReplace(editor) {
     } else {
         data = mySelection.getNative();
     }
+	console.log(data)
     return data;
 }

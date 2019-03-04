@@ -613,8 +613,22 @@
 					shiftEnterMode: CKEDITOR.ENTER_P
 				});
 			},
+			// 判断是否有选中
+			edtorHasSelsct() {
+				var data;
+				var mySelection = CKEDITOR.instances.editorAdd.getSelection();
+				if (CKEDITOR.env.ie) {
+				    mySelection.unlock(true);
+				    data = mySelection.getNative().createRange().text;
+				} else {
+				    data = mySelection.getNative();
+				}
+				return data;
+			},
 			// 增加模板
 			addProductNameModel1() {
+				let selectText=this.edtorHasSelsct();
+				console.log(selectText)
 				CKEDITOR.instances.editorAdd.insertHtml(
 					`<div class="question">
 						<p>产品名1</p>
@@ -1390,83 +1404,83 @@
 			// 获取教程栏目树形控件数据
 			this.$axios.get('/management/admin/label!getTree.action').then(res => {
 				_this.treeData = res.data;
-				this.tagOptions=res.data
+				this.tagOptions = res.data
 			})
-// 			_this.$axios.get('/management/admin/label!getTreeGrid.action').then(res => {
-// 				let tempList = res.data.map(item => {
-// 					return {
-// 						id: item.id,
-// 						label: item.text,
-// 						value: item.id,
-// 						name: item.name,
-// 						text: item.text,
-// 						state: item.state,
-// 						checked: false
-// 					}
-// 				})
-// 				for (let i = 0; i < tempList.length; i++) {
-// 					if (tempList[i].state == 'closed') {
-// 						_this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${tempList[i].id}`).then(res2 => {
-// 							if (res2.data) {
-// 								var children2 = res2.data.map(item => {
-// 									return {
-// 										id: item.id,
-// 										name: item.name,
-// 										label: item.text,
-// 										value: item.id,
-// 										text: item.text,
-// 										state: item.state,
-// 										checked: false
-// 									}
-// 								})
-// 								tempList[i].children = children2;
-// 								for (let j = 0; j < children2.length; j++) {
-// 									if (children2[j].state == 'closed') {
-// 										_this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${children2[j].id}`).then(res3 => {
-// 											if (res3.data) {
-// 												var children3 = res3.data.map(item => {
-// 													return {
-// 														id: item.id,
-// 														name: item.name,
-// 														text: item.text,
-// 														value: item.id,
-// 														label: item.text,
-// 														state: item.state,
-// 														checked: false
-// 													}
-// 												})
-// 												tempList[i].children[j].children = children3;
-// 												for (let k = 0; k < children3.length; k++) {
-// 													if (children3[k].state == 'closed') {
-// 														_this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${children3[k].id}`).then(res4 => {
-// 															if (res4.data) {
-// 																var children4 = res4.data.map(item => {
-// 																	return {
-// 																		id: item.id,
-// 																		name: item.name,
-// 																		text: item.text,
-// 																		value: item.id,
-// 																		label: item.text,
-// 																		state: item.state,
-// 																		checked: false
-// 																	}
-// 																})
-// 																tempList[i].children[j].children[k].children = children4;
-// 															}
-// 														})
-// 													}
-// 												}
-// 											}
-// 										})
-// 									}
-// 								}
-// 							}
-// 						})
-// 					}
-// 				}
-// 				this.treeData = tempList;
-// 				this.tagOptions = tempList;
-// 			})
+			// 			_this.$axios.get('/management/admin/label!getTreeGrid.action').then(res => {
+			// 				let tempList = res.data.map(item => {
+			// 					return {
+			// 						id: item.id,
+			// 						label: item.text,
+			// 						value: item.id,
+			// 						name: item.name,
+			// 						text: item.text,
+			// 						state: item.state,
+			// 						checked: false
+			// 					}
+			// 				})
+			// 				for (let i = 0; i < tempList.length; i++) {
+			// 					if (tempList[i].state == 'closed') {
+			// 						_this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${tempList[i].id}`).then(res2 => {
+			// 							if (res2.data) {
+			// 								var children2 = res2.data.map(item => {
+			// 									return {
+			// 										id: item.id,
+			// 										name: item.name,
+			// 										label: item.text,
+			// 										value: item.id,
+			// 										text: item.text,
+			// 										state: item.state,
+			// 										checked: false
+			// 									}
+			// 								})
+			// 								tempList[i].children = children2;
+			// 								for (let j = 0; j < children2.length; j++) {
+			// 									if (children2[j].state == 'closed') {
+			// 										_this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${children2[j].id}`).then(res3 => {
+			// 											if (res3.data) {
+			// 												var children3 = res3.data.map(item => {
+			// 													return {
+			// 														id: item.id,
+			// 														name: item.name,
+			// 														text: item.text,
+			// 														value: item.id,
+			// 														label: item.text,
+			// 														state: item.state,
+			// 														checked: false
+			// 													}
+			// 												})
+			// 												tempList[i].children[j].children = children3;
+			// 												for (let k = 0; k < children3.length; k++) {
+			// 													if (children3[k].state == 'closed') {
+			// 														_this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${children3[k].id}`).then(res4 => {
+			// 															if (res4.data) {
+			// 																var children4 = res4.data.map(item => {
+			// 																	return {
+			// 																		id: item.id,
+			// 																		name: item.name,
+			// 																		text: item.text,
+			// 																		value: item.id,
+			// 																		label: item.text,
+			// 																		state: item.state,
+			// 																		checked: false
+			// 																	}
+			// 																})
+			// 																tempList[i].children[j].children[k].children = children4;
+			// 															}
+			// 														})
+			// 													}
+			// 												}
+			// 											}
+			// 										})
+			// 									}
+			// 								}
+			// 							}
+			// 						})
+			// 					}
+			// 				}
+			// 				this.treeData = tempList;
+			// 				this.tagOptions = tempList;
+			// 			})
 		}
 	}
 </script>
@@ -1584,19 +1598,26 @@
 		display: flex;
 		justify-content: space-around;
 	}
-	.treeBox::-webkit-scrollbar {/*滚动条整体样式*/
-	    width: 6px;     /*高宽分别对应横竖滚动条的尺寸*/
-	    height: 4px;
+
+	.treeBox::-webkit-scrollbar {
+		/*滚动条整体样式*/
+		width: 6px;
+		/*高宽分别对应横竖滚动条的尺寸*/
+		height: 4px;
 	}
-	.treeBox::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
-	    border-radius: 5px;
-	    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
-	    background: rgba(0,0,0,0.4);
+
+	.treeBox::-webkit-scrollbar-thumb {
+		/*滚动条里面小方块*/
+		border-radius: 5px;
+		-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+		background: rgba(0, 0, 0, 0.4);
 	}
-	.treeBox::-webkit-scrollbar-track {/*滚动条里面轨道*/
-	    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
-	    border-radius: 0;
-	    background: rgba(0,0,0,0.2);
+
+	.treeBox::-webkit-scrollbar-track {
+		/*滚动条里面轨道*/
+		-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+		border-radius: 0;
+		background: rgba(0, 0, 0, 0.2);
 	}
 </style>
 <style>

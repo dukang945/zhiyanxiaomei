@@ -7,13 +7,16 @@
 					<el-button type="primary" size='small' @click="batchOnline">批量上线</el-button>
 					<el-button type="primary" size='small' @click="batchOffline">批量下线</el-button>
 					<el-button type="primary" size='small' @click="batchDelete">批量删除</el-button>
+					<el-button type="primary" size='small' @click="batchLabel">批量加标签</el-button>
+					<el-button type="primary" size='small' @click="tableToExcel" plain>导出为Excel</el-button>
 					<el-dialog title="新增教程" :visible.sync="AddVisible" width="50%" :before-close="handleClose">
 						<el-form label-position="right" ref='addForm' label-width="120px" :model="formLabelAdd">
 							<el-form-item label="名称">
 								<el-input v-model="formLabelAdd.name"></el-input>
 							</el-form-item>
 							<el-form-item label="搜索标签">
-								<el-input v-model='searchLabel' @change='getLabelList'></el-input>
+
+								<el-input v-model='searchLabel' @change='getLabelList' clearable></el-input>
 								<el-table :data="labelTableData" @row-click='selectLabel' border style="width: 100%" v-loading="loading" v-if='searchLabel'
 								 class='labelTable'>
 									<el-table-column prop="id" label="id" width="50" align='center'>
@@ -22,18 +25,12 @@
 									</el-table-column>
 									<el-table-column prop="labelName" label="上级标签" align='center'>
 									</el-table-column>
-								</el-table>
-								<!-- <el-select v-model="searchLabel" filterable remote reserve-keyword placeholder="请输入标签名称" :remote-method="remoteMethod"
-								 :loading="loading" @change='selectLabel'>
-									<el-option v-for="item in labelList" :key="item.id" :label="item.name" :value="item.id">
-										<span style="float: left">{{ item.name }}</span>
-										<span style="float: right; color: #8492a6; font-size: 13px">{{item.id}}</span>
-									</el-option>
-								</el-select> -->
-								<div class="labelChoosed">
-									已选标签：<span v-for="(item,key) in choosedLabelList" v-dragging="{ list: choosedLabelList, item: item, group: 'name' }">{{item.name}}
-										<i class="el-icon-error" @click="deleteLabel(key)"></i></span>
-								</div>
+
+									<div class="labelChoosed">
+										已选标签：<span v-for="(item,key) in choosedLabelList">{{item.name}}
+											<i class="el-icon-error" @click="deleteLabel(key)"></i></span>
+									</div>
+									</el-table>
 							</el-form-item>
 							<el-form-item label="点赞次数">
 								<el-input v-model="formLabelAdd.greatNumber"></el-input>
@@ -41,75 +38,25 @@
 							<el-form-item label="浏览量">
 								<el-input v-model="formLabelAdd.pageView"></el-input>
 							</el-form-item>
-							<!-- <el-button size='small' type='primary' class="el-icon-plus addColor" @click='addNewColor'> 新增色号</el-button> -->
 
-							<!-- 新增色号弹框 -->
-							<!-- <el-dialog title="新增色号" :visible.sync="addColorDialogVisible" width="30%" append-to-body>
-								<el-form :label-position="labelPosition" label-width="120px" :model="addColorFormData">
-									<el-form-item label="产品">
-										<el-select v-model="addColorFormData.productId" placeholder="请选择产品" filterable :filter-method='(q)=>{
-											searchProduct=q;
-											getProductData(productPage,productRow,q)
-										}'
-										 style='width: 100%;'>
-											<div class="productOptionHead">
-												<span class="number">标号</span>
-												<span>产品名称</span>
-											</div>
-											<el-option v-for="item in productOptions" :key="item.id" :label="item.name" :value="item.id">
-												<span class="productOptionItem itemNumber">{{item.id}}</span>
-												<span class="productOptionItem">{{item.name}}</span>
-											</el-option>
-											<div class="noMargin">
-												<Pagination :totalNum='productTotalNum' @change_Page='changeProductPage' @change_Size='changeProductSize'></Pagination>
-											</div>
-										</el-select>
-									</el-form-item>
-									<el-form-item label="产品及色号名称">
-										<el-input v-model="addColorFormData.productName"></el-input>
-									</el-form-item>
-									<el-form-item label="色号名称">
-										<el-input v-model="addColorFormData.colorName"></el-input>
-									</el-form-item>
-									<el-form-item label="对应产品对应色号图片">
-										<el-upload action="/management/admin/kcupload!uploadImage.action?type=beauty_product" :data='imgData'
-										 :before-upload='beforeUpload' :on-success="uploadSuccess" :on-remove="handleRemove" :on-preview="handlePictureCardPreview"
-										 :file-list="fileList" list-type="picture">
-											<el-button size="small" type="primary">点击上传</el-button>
-											<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-										</el-upload>
-									</el-form-item>
-									<el-form-item>
-										<el-button @click="cancelAddColor">取 消</el-button>
-										<el-button type="primary" @click="addColor">确 定</el-button>
-									</el-form-item>
-								</el-form>
-							</el-dialog> -->
-
-
-							<el-form-item label='选择色号'>
-								<el-select v-model="formLabelAdd.productColor" multiple placeholder="请选择色号" filterable :filter-method='(q)=>{
-									searchColor=q;
-									getColorProductData(colorPage,colorRow,q)
-								}'
-								 style='width: 100%;'>
-									<div class="optionHead">
-										<span class="number">标号</span>
-										<span>色号名称</span>
-										<span>商品名称</span>
-									</div>
-									<el-option v-for="item in productColorOptions" :key="item.id" :label="item.productName" :value="item.id">
-										<span class="optionItem itemNumber">{{item.id}}</span>
-										<span class="optionItem">{{item.name}}</span>
-										<span class="optionItem">{{item.productName}}</span>
-									</el-option>
-									<div class="noMargin">
-										<Pagination :totalNum='colorTotalNum' @change_Page='changeColorPage' @change_Size='changeColorSize'></Pagination>
-									</div>
-								</el-select>
+							<el-form-item label="搜索产品">
+								<el-input v-model='searchBeautiColor' @change='getBeautiColorList' clearable></el-input>
+								<el-table :data="beautiColorTableData" @row-click='selectBeautiColor' border style="width: 100%" v-loading="loading"
+								 v-if='searchBeautiColor' class='labelTable'>
+									<el-table-column prop="id" label="id" width="50" align='center'>
+									</el-table-column>
+									<el-table-column prop="name" label="色号名" align='center'>
+									</el-table-column>
+									<el-table-column prop="productName" label="商品名" align='center'>
+									</el-table-column>
+								</el-table>
+								<div class="labelChoosed">
+									已选产品：<span v-for="(item,key) in choosedBeautiColorList" v-dragging="{ list: choosedBeautiColorList, item: item, group: 'name' }">{{item.name}}
+										<i class="el-icon-error" @click="deleteBeautiColor(key)"></i></span>
+								</div>
 							</el-form-item>
-							<el-form-item label='选择美妆模型图'>
-								<el-select v-model="formLabelAdd.moduleId" placeholder="请选择美妆模型" style='width: 100%;'>
+							<el-form-item label='选择模型图'>
+								<el-select v-model="formLabelAdd.moduleId" placeholder="请选择美妆模型" clearable style='width: 100%;'>
 									<el-option v-for="item in moduleOptions" :key="item.id" :label="item.text" :value="item.id">
 									</el-option>
 								</el-select>
@@ -118,22 +65,22 @@
 								<el-upload action="/management/admin/kcupload!uploadVideo.action?type=makeupvideo_path&dir=media" :data='videoData'
 								 :before-upload='beforeUploadVideo' :on-success="uploadSuccessVideo" :on-remove="handleRemoveVideo">
 									<el-button size="small" type="primary">点击上传</el-button>
-									<div slot="tip" class="el-upload__tip">只能上传mp4或flv格式文件，为保证速度，请尽量压缩文件</div>
+									<span slot="tip" class="el-upload__tip" style="margin-left: 20px;">只能上传mp4或flv格式文件，为保证速度，请尽量压缩文件</span>
 								</el-upload>
 							</el-form-item>
-							<el-form-item label="简介">
+							<el-form-item label="教程简介">
 								<el-input type="textarea" autosize v-model="formLabelAdd.about"></el-input>
 							</el-form-item>
 							<el-form-item label="图片">
 								<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
 								 :before-upload='beforeUpload' :on-success="uploadSuccess" :on-remove="handleRemove" :on-preview="handlePictureCardPreview"
 								 :file-list="addFileList" list-type="picture">
-									<el-button size="small" type="primary">点击上传</el-button>
-									<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+									<el-button size="small" type="primary" @click='uploadName("addImg")'>点击上传</el-button>
+									<span slot="tip" class="el-upload__tip" style="margin-left: 20px;">只能上传jpg/png文件，且不超过500kb</span>
 								</el-upload>
 							</el-form-item>
 							<el-form-item label='化妆步骤'>
-								<el-tabs v-model="teachStepValue" type="border-card" closable @tab-remove="removeTab">
+								<el-tabs v-model="teachStepValue" type="border-card" editable @tab-remove="removeTab" @tab-add='addMainStep'>
 									<el-tab-pane v-for="(item, index) in stepList" :key="item.id" :label="item.name" :name="item.name">
 										<el-form :model="formLabelAdd.step[index]" class='stepBox'>
 											<el-form-item label="教程步骤名">
@@ -150,11 +97,10 @@
 												<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
 												 :before-upload='beforeUpload' :on-success="uploadSuccess" :on-remove="handleRemove" :on-preview="handlePictureCardPreview"
 												 list-type="picture">
-													<el-button size="small" type="primary">点击上传</el-button>
+													<el-button size="small" type="primary" @click='uploadName("addStep-"+index)'>点击上传</el-button>
 													<span slot="tip" class="el-upload__tip" style="margin-left: 20px;">只能上传jpg/png文件，且不超过500kb</span>
 												</el-upload>
 											</el-form-item>
-											<el-button size='small' type='primary' icon='el-icon-plus' @click='addMiniStep(index)' plain>增加子步骤</el-button>
 											<transition-group tag="div" name="el-zoom-in-top">
 												<div v-for='(val,key) in formLabelAdd.step[index].miniStep' v-if='formLabelAdd.step[index].miniStep.length>0'
 												 class="miniStepBox" :key='val.id'>
@@ -166,21 +112,23 @@
 														<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
 														 :before-upload='beforeUpload' :on-success="uploadSuccess" :on-remove="handleRemove" :on-preview="handlePictureCardPreview"
 														 list-type="picture">
-															<el-button size="small" type="primary">点击上传</el-button>
+
+															<el-button size="small" type="primary" @click='uploadName("addMiniStep-"+index+"-"+key)'>点击上传</el-button>
 															<span slot="tip" class="el-upload__tip" style="margin-left: 20px;">只能上传jpg/png文件，且不超过500kb</span>
 														</el-upload>
 													</el-form-item>
 												</div>
 											</transition-group>
+											<el-button size='small' type='primary' icon='el-icon-plus' @click='addMiniStep(index)' plain>增加子步骤</el-button>
 										</el-form>
 									</el-tab-pane>
 								</el-tabs>
-								<el-button type='primary' plain @click='addMainStep'>增加主步骤</el-button>
 							</el-form-item>
 						</el-form>
 						<span slot="footer" class="dialog-footer">
-							<el-button @click="cancelAdd('formLabelAdd')">取 消</el-button>
-							<el-button type="primary" @click="handleAdd">确 定</el-button>
+							<el-button @click="cancelAdd">取 消</el-button>
+							<el-button type="primary" plain @click="saveDraft">保存草稿</el-button>
+							<el-button type="primary" @click="handleAdd">提交审核</el-button>
 						</span>
 					</el-dialog>
 				</div>
@@ -196,45 +144,42 @@
 				</el-form>
 			</el-col>
 		</el-row>
-		<el-row :gutter="10">
-			<!-- <el-col :span='3' class='treeBox'>
+		<el-row :gutter="5">
+			<el-col :span='2' class='treeBox'>
 				<span class="treeTitle">教程栏目列表</span>
 				<el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
-			</el-col> -->
-			<el-col :span='24'>
-				<el-table :data="tableData" border style="width: 100%" class='table' @select='tableSelect' v-loading="loading"
-				 :row-class-name="tableRowClassName">
+			</el-col>
+			<el-col :span='22'>
+				<!-- <el-table :data="tableData" border style="width: 100%" class='table' @select='tableSelect' v-loading="loading" :row-class-name="tableRowClassName"> -->
+				<el-table :data="tableData" border style="width: 100%" class='table' @select='tableSelect' v-loading="loading">
 					<el-table-column type="selection" width="55" align='center'></el-table-column>
-					<el-table-column type="index" label="序号" width="50" align='center'>
-					</el-table-column>
+					<!-- <el-table-column type="index" label="序号" width="50" align='center'>
+					</el-table-column> -->
 					<el-table-column prop="id" label="id" width="50" align='center'>
 					</el-table-column>
-					<el-table-column prop="name" label="标题" width="200" align='center' :show-overflow-tooltip="true">
+					<el-table-column prop="name" label="标题" align='center' :show-overflow-tooltip="true">
 					</el-table-column>
-					<el-table-column prop="labelName" label="标签" width="300" align='center' :show-overflow-tooltip="true">
+					<el-table-column prop="labelName" label="标签" width="150" align='center' :show-overflow-tooltip="true">
 					</el-table-column>
-					<el-table-column label="H5地址" width="100" align='center'>
-						<template slot-scope="scope">
-							<el-button class='copyBtn' size="small" @click='copyH5Url(scope.row)' type="primary">复制</el-button>
-						</template>
+					<el-table-column prop="creatUser" label="创建人" width="100" align='center' :filters="userList" :filter-method="filterUser"
+					 filter-placement="bottom-end">
 					</el-table-column>
-					<el-table-column prop="creatUser" label="创建人" width="100" align='center'>
+					<el-table-column prop="online" label="审核状态" width="100" align='center' :formatter='getStatus' :filters="satusList"
+					 :filter-method="filterStatus" filter-placement="bottom-end">
 					</el-table-column>
 					<el-table-column prop="collectNumber" label="点赞次数" width="100" align='center'>
 					</el-table-column>
-					<el-table-column prop="createTime" label="创建时间" width="150" align='center' :formatter='getTime'>
+					<el-table-column prop="createTime" label="创建时间" width="100" align='center' :formatter='getTime'
+					 :show-overflow-tooltip="true">
 					</el-table-column>
-					<el-table-column prop="online" label="审核状态" width="100" align='center' :formatter='getStatus'>
-					</el-table-column>
-					<el-table-column label="操作" fixed="right" align='center' width='750'>
+					<el-table-column label="操作" fixed="right" align='center' width='620'>
 						<template slot-scope="scope">
 							<el-button @click.native.prevent="deleteRow(scope.$index, scope.row)" size='small' type="danger" class="el-icon-delete">删除</el-button>
 							<el-button size="small" type="primary" @click="edit(scope.$index, scope.row)" icon='el-icon-edit'>编辑</el-button>
 							<el-button size="small" type="primary" @click="switchOnline(scope.$index, scope.row)" class="el-icon-sort">{{tableData[scope.$index].online==0?'下线':'上线'}}</el-button>
-							<el-button size="small" type="primary" @click="creatH5(scope.$index, scope.row)" icon='el-icon-edit-outline'>生成H5</el-button>
 							<el-button size="small" type="primary" @click="updataSort(scope.$index, scope.row)" icon='el-icon-sort'>更新排序</el-button>
 							<el-button size="small" type="primary" @click="push(scope.$index, scope.row)">推送</el-button>
-							<el-button size="small" type="primary" @click="checkStep(scope.$index, scope.row)">步骤管理</el-button>
+							<el-button size="small" type="primary" @click="checkH5(scope.$index, scope.row)">预览H5</el-button>
 							<el-button size="small" type="primary" @click="checkComment(scope.$index, scope.row)">评论管理</el-button>
 						</template>
 					</el-table-column>
@@ -248,94 +193,44 @@
 				<el-form-item label="名称">
 					<el-input v-model="editFormData.name"></el-input>
 				</el-form-item>
-				<el-form-item label="标签">
-					<el-input v-model="editFormData.labelId" @focus='showTreeBox=true'></el-input>
-					<div class="selectTreeBox" v-show="showTreeBox">
-						<el-tree :data="tagOptions" ref="tree2" class='selectItem' show-checkbox node-key="id" :props="defaultProps">
-						</el-tree>
-						<div class="selectTreeBtn">
-							<el-button type='primary' size='small' plain @click='choosedLabel2'>选好了</el-button>
-							<el-button type='primary' size='small' plain @click='resetLabel2'>重置</el-button>
-						</div>
+				<el-form-item label="搜索标签">
+					<el-input v-model='searchLabel' @change='getLabelList' clearable></el-input>
+					<el-table :data="labelTableData" @row-click='selectLabel' border style="width: 100%" v-loading="loading" v-if='searchLabel'
+					 class='labelTable'>
+						<el-table-column prop="id" label="id" width="50" align='center'>
+						</el-table-column>
+						<el-table-column prop="name" label="标题" align='center'>
+						</el-table-column>
+						<el-table-column prop="labelName" label="上级标签" align='center'>
+						</el-table-column>
+					</el-table>
+					<div class="labelChoosed">
+						已选标签：<span v-for="(item,key) in choosedLabelList">{{item.name}}
+							<i class="el-icon-error" @click="deleteLabel(key)"></i></span>
 					</div>
 				</el-form-item>
 				<el-form-item label="点赞次数">
 					<el-input v-model="editFormData.greatNumber"></el-input>
 				</el-form-item>
-				<el-form-item label="点击次数">
-					<el-input v-model="editFormData.clickNumber"></el-input>
-				</el-form-item>
 				<el-form-item label="浏览量">
 					<el-input v-model="editFormData.pageView"></el-input>
 				</el-form-item>
-				<el-form-item label="化妆预估时间">
-					<el-input v-model="editFormData.minute"></el-input>
-				</el-form-item>
-				<el-button size='small' type='primary' class="el-icon-plus addColor" @click='addNewColor'> 新增色号</el-button>
-				<!-- 新增色号弹框 -->
-				<el-dialog title="新增色号" :visible.sync="addColorDialogVisible" width="30%" append-to-body>
-					<el-form :label-position="labelPosition" label-width="120px" :model="addColorFormData">
-						<el-form-item label="产品">
-							<el-select v-model="addColorFormData.productId" placeholder="请选择产品" filterable :filter-method='(q)=>{
-								searchProduct=q;
-								getProductData(productPage,productRow,q)
-							}'
-							 style='width: 100%;'>
-								<div class="productOptionHead">
-									<span class="number">标号</span>
-									<span>产品名称</span>
-								</div>
-								<el-option v-for="item in productOptions" :key="item.id" :label="item.name" :value="item.id">
-									<span class="productOptionItem itemNumber">{{item.id}}</span>
-									<span class="productOptionItem">{{item.name}}</span>
-								</el-option>
-								<div class="noMargin">
-									<Pagination :totalNum='productTotalNum' @change_Page='changeProductPage' @change_Size='changeProductSize'></Pagination>
-								</div>
-							</el-select>
-						</el-form-item>
-						<el-form-item label="产品及色号名称">
-							<el-input v-model="addColorFormData.productName"></el-input>
-						</el-form-item>
-						<el-form-item label="色号名称">
-							<el-input v-model="addColorFormData.colorName"></el-input>
-						</el-form-item>
-						<el-form-item label="对应产品对应色号图片">
-							<el-upload action="/management/admin/kcupload!uploadImage.action?type=beauty_product" :data='imgData'
-							 :before-upload='beforeUpload' :on-success="uploadSuccess" :on-remove="handleRemove" :file-list="fileList"
-							 list-type="picture">
-								<el-button size="small" type="primary">点击上传</el-button>
-								<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-							</el-upload>
-						</el-form-item>
-						<el-form-item>
-							<el-button @click="cancelAddColor">取 消</el-button>
-							<el-button type="primary" @click="addColor">确 定</el-button>
-						</el-form-item>
-					</el-form>
-				</el-dialog>
 
-
-				<el-form-item label='选择色号'>
-					<el-select v-model="editFormData.productColor" multiple placeholder="请选择色号" filterable :filter-method='(q)=>{
-																	searchColor=q;
-																	getColorProductData(colorPage,colorRow,q)
-																}'
-					 style='width: 100%;'>
-						<div class="optionHead">
-							<span class="number">标号</span>
-							<span>色号名称</span>
-							<span>商品名称</span>
-						</div>
-						<el-option v-for="item in productColorOptions" :key="item.id" :label="item.productName" :value="item.id">
-							<span class="optionItem itemNumber">{{item.id}}</span>
-							<span class="optionItem">{{item.name}}</span>
-							<span class="optionItem">{{item.productName}}</span>
-						</el-option>
-						<div class="noMargin">
-							<Pagination :totalNum='colorTotalNum' @change_Page='changeColorPage' @change_Size='changeColorSize'></Pagination>
-						</div>
-					</el-select>
+				<el-form-item label="搜索产品">
+					<el-input v-model='searchBeautiColor' @change='getBeautiColorList' clearable></el-input>
+					<el-table :data="beautiColorTableData" @row-click='selectBeautiColor' border style="width: 100%" v-loading="loading"
+					 v-if='searchBeautiColor' class='labelTable'>
+						<el-table-column prop="id" label="id" width="50" align='center'>
+						</el-table-column>
+						<el-table-column prop="name" label="色号名" align='center'>
+						</el-table-column>
+						<el-table-column prop="productName" label="商品名" align='center'>
+						</el-table-column>
+					</el-table>
+					<div class="labelChoosed">
+						已选产品：<span v-for="(item,key) in choosedBeautiColorList" v-dragging="{ list: choosedBeautiColorList, item: item, group: 'name' }">{{item.name}}
+							<i class="el-icon-error" @click="deleteBeautiColor(key)"></i></span>
+					</div>
 				</el-form-item>
 				<el-form-item label='选择美妆模型图'>
 					<el-select v-model="editFormData.moduleId" placeholder="请选择美妆模型" style='width: 100%;'>
@@ -500,107 +395,73 @@
 			</el-table>
 			<Pagination :totalNum='commentTotalNum' @change_Page='changeCommentPage' @change_Size='changeCommentSize'></Pagination>
 		</el-dialog>
-		<!-- 步骤管理弹框 -->
-		<el-dialog title="教程步骤管理" :visible.sync="teachStepDialogVisible" width="80%">
-			<el-button type="primary" @click="addStep" size='small' style='margin-bottom: 20px;'>新增步骤</el-button>
-			<el-table :data="stepTableData" border style="width: 100%">
-				<el-table-column prop="id" label="编号" width="100" align='center'>
-				</el-table-column>
-				<el-table-column prop="procedureName" label="步骤名称" width='100' align='center'>
-				</el-table-column>
-				<el-table-column prop="procedureSort" label="步骤排序" width="100" align='center'>
-				</el-table-column>
-				<el-table-column prop="procedureDes" label="步骤描述" align='center' :show-overflow-tooltip="true">
-				</el-table-column>
-				<el-table-column prop="desSort" label="描述排序" width="100" align='center'>
-				</el-table-column>
-				<el-table-column label="操作" width="200" align='center'>
-					<template slot-scope="scope">
-						<el-button @click.native.prevent="deleteStep(scope.$index, scope.row)" size='small' type="danger" class="el-icon-delete">删除</el-button>
-						<el-button type="primary" size='small' @click="editStep(scope.$index, scope.row)" icon='el-icon-edit'>编辑</el-button>
-					</template>
-				</el-table-column>
-			</el-table>
-			<Pagination :totalNum='stepTotalNum' @change_Page='changeStepPage' @change_Size='changeStepSize'></Pagination>
+		<!-- 预览H5页面弹框 -->
+		<el-dialog :visible.sync="H5PageDialogVisible" width="50%" top='20px' @close='colseViewPage'>
+			<div class="content">
+				<img class="phoneBorder" src="../../images/viewPage.png" alt="">
+				<div class="pageContent">
+					<div id="title">
+						<p>{{viewPageData.name}}</p>
+					</div>
+					<div style="clear: both;"></div>
+					<div id="time"><span>{{getTime(1,1,viewPageData.createTime)}}</span><span>视频来源：{{viewPageData.original==0?'网络':'原创'}}</span></div>
+					<div class="rate">
+						<p>难度</p>
+						<ul>
+							<li><img src="img/allStar.png"></li>
+						</ul>
+					</div>
+					<div style="clear: both;"></div>
+					<div id="about">{{viewPageData.about}}</div>
+					<hr style="border:0.5px dashed #E8E8E8;margin-top:13px;" />
+					<div id="label">
+						<div id="labelLeft" v-for="(item) in (viewPageData.labelName?viewPageData.labelName.split(','):[])"><a href="javascript:void(0);">{{item}}</a></div>
+					</div>
+					<div style="clear: both;"></div>
+					<div v-for='(item) in viewStepList'>
+						<div>
+							<div class="angled stripes"></div>
+							<div class="column">
+								<p class="wordart">{{item.procedureSort}}</p>
+								<p class="abbreviation">st</p>
+								<p class="columnName">{{item.procedureName}}</p><img src='img/dizhuang.png'>
+							</div>
+						</div>
+						<div class="intro">
+							<!-- <div class="sequence">
+								<div class="sequence1"></div><span>01</span>
+							</div> -->
+							<p>{{item.procedureDes}}</p>
+							<img :src='getImgUrl(item.procedureImg)'>
+						</div>
+					</div>
+				</div>
+			</div>
 		</el-dialog>
-		<!-- 新增步骤弹框 -->
-		<el-dialog title="新增步骤" :visible.sync="addStepDialogVisible" width="50%" append-to-body>
-			<el-form :label-position="labelPosition" label-width="100px" :model="addStepForm">
-				<el-form-item label="教程步骤名称">
-					<el-select v-model="addStepForm.procedureName" placeholder="请选择步骤名称">
-						<el-option v-for="item in stepProcedureOptions" :key="item.id" :label="item.text" :value="item.id">
-						</el-option>
-					</el-select>
-				</el-form-item>
-				<el-form-item label="教程步骤排序">
-					<el-select v-model="addStepForm.procedureSort" placeholder="请选择步骤排序">
-						<el-option v-for="item in stepProcedureSortOptions" :key="item.id" :label="item.text" :value="item.id">
-						</el-option>
-					</el-select>
-				</el-form-item>
-				<el-form-item label="步骤描述">
-					<el-input type="textarea" autosize v-model="addStepForm.procedureDes" placeholder='请输入步骤描述'></el-input>
-				</el-form-item>
-				<el-form-item label="描述排序">
-					<el-select v-model="addStepForm.desSort" placeholder="请选择描述排序">
-						<el-option v-for="item in stepDesSortOptions" :key="item.id" :label="item.text" :value="item.id">
-						</el-option>
-					</el-select>
-				</el-form-item>
-
-				<el-form-item label="步骤图片">
-					<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData' :before-upload='beforeUpload'
-					 :on-success="uploadSuccess" :on-remove="handleRemove" :on-preview="handlePictureCardPreview" list-type="picture">
-						<el-button size="small" type="primary">点击上传</el-button>
-						<div slot="tip" class="el-upload__tip">只能上传jpg/png/gif文件</div>
-					</el-upload>
-				</el-form-item>
-
-				<el-form-item>
-					<el-button @click="cancelAddStep">取 消</el-button>
-					<el-button type="primary" @click="handleAddStep">确 定</el-button>
+		<!-- 批量增加标签弹框 -->
+		<el-dialog title="批量增加标签" :visible.sync="batchAddLabelDialogVisible" width="50%">
+			<el-form :label-position="labelPosition" label-width="80px">
+				<el-form-item label="搜索标签">
+					<el-input v-model='searchLabel' @change='getLabelList' clearable></el-input>
+					<el-table :data="labelTableData" @row-click='selectLabel' border style="width: 100%" v-loading="loading" v-if='searchLabel'
+					 class='labelTable'>
+						<el-table-column prop="id" label="id" width="50" align='center'>
+						</el-table-column>
+						<el-table-column prop="name" label="标题" align='center'>
+						</el-table-column>
+						<el-table-column prop="labelName" label="上级标签" align='center'>
+						</el-table-column>
+					</el-table>
+					<div class="labelChoosed">
+						已选标签：<span v-for="(item,key) in choosedLabelList">{{item.name}}
+							<i class="el-icon-error" @click="deleteLabel(key)"></i></span>
+					</div>
 				</el-form-item>
 			</el-form>
-		</el-dialog>
-		<!-- 编辑步骤弹框 -->
-		<el-dialog title="编辑步骤" :visible.sync="editStepDialogVisible" width="50%" append-to-body>
-			<el-form :label-position="labelPosition" label-width="100px" :model="editStepForm">
-				<el-form-item label="教程步骤名称">
-					<el-select v-model="editStepForm.procedureName" placeholder="请选择步骤名称">
-						<el-option v-for="item in stepProcedureOptions" :key="item.id" :label="item.text" :value="item.id">
-						</el-option>
-					</el-select>
-				</el-form-item>
-				<el-form-item label="教程步骤排序">
-					<el-select v-model="editStepForm.procedureSort" placeholder="请选择步骤排序">
-						<el-option v-for="item in stepProcedureSortOptions" :key="item.id" :label="item.text" :value="item.id">
-						</el-option>
-					</el-select>
-				</el-form-item>
-				<el-form-item label="步骤描述">
-					<el-input type="textarea" autosize v-model="editStepForm.procedureDes" placeholder='请输入步骤描述'></el-input>
-				</el-form-item>
-				<el-form-item label="描述排序">
-					<el-select v-model="editStepForm.desSort" placeholder="请选择描述排序">
-						<el-option v-for="item in stepDesSortOptions" :key="item.id" :label="item.text" :value="item.id">
-						</el-option>
-					</el-select>
-				</el-form-item>
-
-				<el-form-item label="步骤图片">
-					<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData' :before-upload='beforeUpload'
-					 :on-success="uploadSuccess" :on-remove="handleRemove" :on-preview="handlePictureCardPreview" :file-list="editStepfileList"
-					 list-type="picture">
-						<el-button size="small" type="primary">点击上传</el-button>
-						<div slot="tip" class="el-upload__tip">只能上传jpg/png/gif文件</div>
-					</el-upload>
-				</el-form-item>
-
-				<el-form-item>
-					<el-button @click="cancelEditStep">取 消</el-button>
-					<el-button type="primary" @click="handleEditStep">确 定</el-button>
-				</el-form-item>
-			</el-form>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="cancelAddLabel">取消</el-button>
+				<el-button type="primary" @click="addLabel">确定</el-button>
+			</span>
 		</el-dialog>
 	</div>
 </template>
@@ -615,9 +476,11 @@
 					text: ''
 				}, //搜索框
 				labelTableData: [], //标签表格数据
-				labelList: [], //标签列表
-				searchLabel: '', //搜索标签
-				choosedLabelList: [], //已选中标签
+				searchLabel: '', //搜索标签输入框
+				choosedLabelList: [], //已选中标签列表
+				beautiColorTableData: [], //色号表格数据
+				searchBeautiColor: '', //搜索色号输入框
+				choosedBeautiColorList: [], //已选中色号列表
 				stepList: [{
 					id: 1,
 					name: '步骤1'
@@ -660,18 +523,14 @@
 				}], //教程步骤名称
 				formLabelAdd: {
 					name: '',
-					purposeId: [],
-					level: '',
 					lableId: '',
-					// lableId: [],
+					labelName: '',
 					greatNumber: '',
-					clickNumber: '',
 					pageView: '',
-					minute: '',
-					selectName: '',
 					productColor: [],
 					moduleId: '',
 					videoUrl: '',
+					star: '',
 					about: '',
 					image: '',
 					step: [{
@@ -687,169 +546,22 @@
 
 				}, //编辑表单
 
-				addColorFormData: {
-					productId: '',
-					productName: '',
-					colorName: '',
-					image: ''
-				}, //新增色号表单
 				pushForm: {}, //推送表单
 				addCommentForm: {}, //新增评论表单
-				addStepForm: {}, //新增步骤表单
-				editStepForm: {}, //编辑步骤表单
-				purposeOptions: [], //化妆目的
-				tagOptions: [], //标签
-				productColorOptions: [], //色号产品列表
 				searchColor: '', //色号搜索内容
-				searchProduct: '', //新增色号产品搜索内容
-				productOptions: [], //新增色号产品列表
 				moduleOptions: [], //美妆模型图列表
 				userOptions: [], //用户列表
-				stepProcedureOptions: [{
-					id: '底妆',
-					text: '底妆'
-				}, {
-					id: '定妆',
-					text: '定妆'
-				}, {
-					id: '眉毛',
-					text: '眉毛'
-				}, {
-					id: '眼影',
-					text: '眼影'
-				}, {
-					id: '眼线',
-					text: '眼线'
-				}, {
-					id: '睫毛',
-					text: '睫毛'
-				}, {
-					id: '修容',
-					text: '修容'
-				}, {
-					id: '高光',
-					text: '高光'
-				}, {
-					id: '腮红',
-					text: '腮红'
-				}, {
-					id: '唇妆',
-					text: '唇妆'
-				}, {
-					id: '点缀',
-					text: '点缀'
-				}], //步骤名称列表
-				stepProcedureSortOptions: [{
-					id: '1',
-					text: '1'
-				}, {
-					id: '2',
-					text: '2'
-				}, {
-					id: '3',
-					text: '3'
-				}, {
-					id: '4',
-					text: '4'
-				}, {
-					id: '5',
-					text: '5'
-				}, {
-					id: '6',
-					text: '6'
-				}, {
-					id: '7',
-					text: '7'
-				}, {
-					id: '8',
-					text: '8'
-				}, {
-					id: '9',
-					text: '9'
-				}, {
-					id: '10',
-					text: '10'
-				}, {
-					id: '11',
-					text: '11'
-				}, {
-					id: '12',
-					text: '12'
-				}, {
-					id: '13',
-					text: '13'
-				}, {
-					id: '14',
-					text: '14'
-				}, {
-					id: '15',
-					text: '15'
-				}, {
-					id: '16',
-					text: '16'
-				}, {
-					id: '17',
-					text: '17'
-				}, {
-					id: '18',
-					text: '18'
-				}, {
-					id: '19',
-					text: '19'
-				}, {
-					id: '20',
-					text: '20'
-				}], //步骤排序列表
-				stepDesSortOptions: [{
-					id: '1',
-					text: '1'
-				}, {
-					id: '2',
-					text: '2'
-				}, {
-					id: '3',
-					text: '3'
-				}, {
-					id: '4',
-					text: '4'
-				}, {
-					id: '5',
-					text: '5'
-				}, {
-					id: '6',
-					text: '6'
-				}, {
-					id: '7',
-					text: '7'
-				}, {
-					id: '8',
-					text: '8'
-				}, {
-					id: '9',
-					text: '9'
-				}, {
-					id: '10',
-					text: '10'
-				}, {
-					id: '98',
-					text: '98'
-				}, {
-					id: '99',
-					text: '99'
-				}], //描述排序列表
 				rules: {
 
 				},
 				labelPosition: 'left',
 				AddVisible: false,
-				addColorDialogVisible: false,
 				editDialogVisible: false,
 				pushDialogVisible: false,
 				addCommentDialogVisible: false,
 				checkCommentDialogVisible: false,
-				teachStepDialogVisible: false,
-				addStepDialogVisible: false,
-				editStepDialogVisible: false,
+				H5PageDialogVisible: false,
+				batchAddLabelDialogVisible: false,
 				totalNum: 10,
 				colorTotalNum: 10,
 				productTotalNum: 10,
@@ -858,7 +570,6 @@
 				stepTotalNum: 10,
 				tableData: [],
 				commentTableData: [], //评论表格数据
-				stepTableData: [], //步骤表格数据
 				page: 1,
 				row: 10,
 				colorRow: 10,
@@ -869,8 +580,6 @@
 				userPage: 1,
 				commentPage: 1,
 				commentRow: 10,
-				stepPage: 1,
-				stepRow: 10,
 				// 左侧树形控件
 				treeData: [],
 				defaultProps: {
@@ -883,6 +592,7 @@
 					FileName: '',
 					imgFile: null
 				},
+				imgPlace: '', //点击上传的位置
 				videoData: {},
 				tempImgUrl: '',
 				tempRowId: '',
@@ -898,58 +608,59 @@
 				commentId: '',
 				teachId: '', //点击评论管理行id
 				checkedRowId: '',
-				stepTeachId: '', // 点击步骤管理行id
-				stepId: '',
 				configTips: '',
 				showTreeBox: false, //显示树形结构
 				// selectLabel: '',
 				selectId: [],
 				selectIdEdit: [], //编辑表单的选中labelId
+				viewPageData: {
+					name: '',
+					lableId: '',
+					labelName: '',
+					greatNumber: '',
+					pageView: '',
+					productColor: [],
+					moduleId: '',
+					videoUrl: '',
+					star: '',
+					about: '',
+					image: '',
+				}, //预览页面数据
+				viewPageColorList: [], // 预览页面色号数据
+				viewStepList: [], // 预览页面步骤数据
+				userList: [], // 用户列表（用于筛选）
+				satusList: [{
+					value: 0,
+					text: "上线"
+				}, {
+					value: 1,
+					text: "下线"
+				}, {
+					value: 2,
+					text: "草稿"
+				}, {
+					value: 3,
+					text: "待审核"
+				}, {
+					value: 4,
+					text: "已审核"
+				}, {
+					value: 5,
+					text: "审核驳回"
+				}, ], // 状态列表（用于筛选）
 			}
 		},
 		components: {
 			Pagination
 		},
 		methods: {
-			// 选好标签
-			choosedLabel() {
-				// 				let tempArr = this.$refs.tree.getCheckedNodes();
-				// 				if (tempArr.length > 0) {
-				// 					let tempId = [];
-				// 					let tempLabel = [];
-				// 					for (let i = 0; i < tempArr.length; i++) {
-				// 						tempId.push(tempArr[i].id)
-				// 						tempLabel.push(tempArr[i].text)
-				// 					}
-				// 					this.formLabelAdd.lableId = tempLabel.join(',')
-				// 					this.selectId = tempId;
-				// 				}
-				// 				this.showTreeBox = false
+			getImgUrl(str) {
+				let testExp = /http.*?(\.png|\.jpg|\.gif)/gi;
+				if (str) {
+					return str.match(testExp)[0]
+				}
 			},
-			// 重置选中标签
-			resetLabel() {
-				// 				this.$refs.tree.setCheckedKeys([]);
-				// 				this.formLabelAdd.lableId = '';
-			},
-			choosedLabel2() {
-				// 				let tempArr = this.$refs.tree2.getCheckedNodes();
-				// 				if (tempArr.length > 0) {
-				// 					let tempId = [];
-				// 					let tempLabel = [];
-				// 					for (let i = 0; i < tempArr.length; i++) {
-				// 						tempId.push(tempArr[i].id)
-				// 						tempLabel.push(tempArr[i].text)
-				// 					}
-				// 					this.editFormData.labelId = tempLabel.join(',')
-				// 					this.selectIdEdit = tempId;
-				// 				}
-				// 				this.showTreeBox = false
-			},
-			// 重置选中标签
-			resetLabel2() {
-				// 				this.$refs.tree2.setCheckedKeys([]);
-				// 				this.editFormData.labelId = '';
-			},
+
 			tableRowClassName({
 				row,
 				index
@@ -970,11 +681,20 @@
 			// 新增
 			add() {
 				this.AddVisible = true;
-				this.getPurposeData();
 				// 获取色号产品数据
 				this.getColorProductData(1, 10)
 				//获取模型数据
 				this.getModuleData();
+				console.log(this.formLabelAdd)
+			},
+			// 保存为草稿
+			saveDraft() {
+				console.log('这是选中的标签数组')
+				console.log(this.choosedLabelList)
+				console.log('这是选中的色号数组')
+				console.log(this.choosedBeautiColorList)
+				console.log('这是新增表单')
+				console.log(this.formLabelAdd)
 			},
 			// 确认新增
 			handleAdd() {
@@ -1007,17 +727,14 @@
 					this.tempImgUrl = '';
 					this.formLabelAdd = {
 						name: '',
-						level: '',
 						lableId: '',
 						greatNumber: '',
-						clickNumber: '',
 						pageView: '',
-						minute: '',
-						selectName: '',
 						productColor: [],
 						moduleId: '',
 						videoUrl: '',
 						about: '',
+						star: '',
 						image: '',
 						step: [{
 							stepName: '',
@@ -1027,21 +744,16 @@
 						}]
 					};
 					this.addFileList = []
-					this.resetLabel()
 				})
 			},
 			// 取消新增
 			cancelAdd() {
-				this.AddVisible = false;
+				console.log(this.formLabelAdd)
 				this.formLabelAdd = {
 					name: '',
-					level: '',
 					lableId: '',
 					greatNumber: '',
-					clickNumber: '',
 					pageView: '',
-					minute: '',
-					selectName: '',
 					productColor: [],
 					moduleId: '',
 					videoUrl: '',
@@ -1054,51 +766,16 @@
 						miniStep: []
 					}]
 				}
+				this.stepList = [{
+					id: 1,
+					name: '步骤1'
+				}];
+				this.teachStepValue = '步骤1'
 				this.addFileList = []
 				this.tempImgUrl = '';
-				// this.resetLabel()
-			},
-			// 点击新增色号
-			addNewColor() {
-				this.addColorDialogVisible = true;
-				this.getProductData(1, 10)
-			},
-			// 提交新增色号
-			addColor() {
-				//提交新增请求
-				this.$axios.post('/management/admin/beauty-color!save.action', this.$qs.stringify({
-					productId: this.addColorFormData.productId,
-					productName: this.addColorFormData.productName,
-					colorName: this.addColorFormData.colorName,
-					image: this.tempImgUrl ? `<img src="${this.tempImgUrl}" alt="" />` : ''
-				})).then(res => {
-					this.getColorProductData(this.colorPage, this.colorRow)
-					this.addColorFormData = {
-						productId: '',
-						productName: '',
-						colorName: '',
-						image: ''
-					}
-					this.tempImgUrl = '';
-					this.$message.success(`新增色号成功`);
-					this.addColorDialogVisible = false;
-				}).catch(e => {
-					this.$message.error(`出了点问题-.-!`);
-					this.addColorDialogVisible = false;
-				})
-				this.fileList = [];
-			},
-			// 取消新增色号
-			cancelAddColor() {
-				this.addColorFormData = {
-					productId: '',
-					productName: '',
-					colorName: '',
-					image: ''
-				}
-				this.tempImgUrl = '';
-				this.fileList = [];
-				this.addColorDialogVisible = false
+				console.log('----------')
+				console.log(this.formLabelAdd)
+				this.AddVisible = false;
 			},
 			// 表格多选框change
 			tableSelect(selection) {
@@ -1117,9 +794,9 @@
 				if (this.checkedRowId) {
 					this.$axios.post(`/management/admin/beauty-details!batchOnLine.action?ids=${this.checkedRowId}&online=0`).then(res => {
 						this.$message.success('批量上线成功')
+						console.log(res)
 						this.getTableData(`/management/admin/beauty-details!list.action`, this.page, this.row, this.tempId)
 					})
-
 				} else {
 					this.$message.error('没有选中的行')
 				}
@@ -1138,40 +815,67 @@
 			},
 			// 批量删除
 			batchDelete() {
-				// /management/admin/beauty-details!batchDelete.action?ids=391
-				this.$confirm('确定要进行批量删除么？').then(res => {
-					if (this.checkedRowId) {
+				if (this.checkedRowId) {
+					this.$confirm('确定要进行批量删除么？').then(res => {
 						this.$axios.post(`/management/admin/beauty-details!batchDelete.action?ids=${this.checkedRowId}`).then(res => {
 							this.$message.success('批量删除成功')
 							this.getTableData(`/management/admin/beauty-details!list.action`, this.page, this.row, this.tempId)
 						})
-					} else {
-						this.$message.error('没有选中的行')
+					})
+				} else {
+					this.$message.error('没有选中的行')
+				}
+			},
+			// 导出为Excel
+			tableToExcel() {
+
+			},
+			// 批量增加标签
+			batchLabel() {
+				if (this.checkedRowId) {
+					this.batchAddLabelDialogVisible = true
+				} else {
+					this.$message.error('没有选中的行')
+				}
+			},
+			// 提交增加标签
+			addLabel() {
+				if (this.choosedLabelList.length > 0) {
+					console.log(this.choosedLabelList)
+					var idString = '';
+					for (let i = 0; i < this.choosedLabelList.length; i++) {
+						if (i === (this.choosedLabelList.length - 1)) {
+							idString += `labelId=${this.choosedLabelList[i].id}`
+						} else {
+							idString += `labelId=${this.choosedLabelList[i].id}&`
+						}
 					}
-				})
+					console.log(idString)
+					this.$axios.post(`/management/admin/beauty-details!batchAddLabel.action?ids=${this.checkedRowId}`, idString).then(
+						res => {
+							if (res.status === 200) {
+								this.choosedLabelList = [];
+								this.searchLabel = '';
+								this.batchAddLabelDialogVisible = false;
+							} else {
+								this.batchAddLabelDialogVisible = false;
+								this.$message.error('出了点问题-.-！')
+							}
+						})
+				} else {
+					this.$message.error('没有选中的标签')
+				}
+			},
+			// 取消增加标签
+			cancelAddLabel() {
+				this.batchAddLabelDialogVisible = false;
+				this.choosedLabelList = [];
+				this.searchLabel = '';
 			},
 			// 提交搜索
 			onSubmitSearch() {
-				console.log('提交搜索项目');
 				this.loading = true;
 				this.getTableData('/management/admin/beauty-details!list.action', this.page, this.row, '', this.searchForm.text)
-			},
-			// 复制H5页面路径
-			copyH5Url(row) {
-				var Url = row.url;
-				var clipboard = new Clipboard('.copyBtn', {
-					text: function() {
-						return Url;
-					}
-				});
-				clipboard.on('success', e => {
-					this.$message.success('复制成功')
-					clipboard.destroy()
-				})
-				clipboard.on('error', e => {
-					this.$message.error('浏览器不支持复制')
-					clipboard.destroy()
-				})
 			},
 			// 树形控件操作
 			handleNodeClick(a, b, c) {
@@ -1179,6 +883,11 @@
 				this.getTableData(`/management/admin/beauty-details!list.action`, 1, 10, a.id)
 			},
 			// 上传操作
+			// 判断上传位置
+			uploadName(val) {
+				console.log(val);
+				this.imgPlace = val
+			},
 			handlePictureCardPreview(file) {
 				this.dialogImageUrl = file.url;
 				this.imgDialogVisible = true;
@@ -1192,6 +901,15 @@
 			},
 			uploadSuccess(res, file, fileList) {
 				this.tempImgUrl = res.url;
+				// 判断图片保存位置
+				if (this.imgPlace.indexOf('addImg') > -1) {
+					this.formLabelAdd.image = `<img src="${res.url}" alt="" />`
+				} else if (this.imgPlace.indexOf('addStep') > -1) {
+					this.formLabelAdd.step[(this.imgPlace.split('-')[1])].stepImg = `<img src="${res.url}" alt="" />`;
+				} else if (this.imgPlace.indexOf('addMiniStep') > -1) {
+					this.formLabelAdd.step[(this.imgPlace.split('-')[1])].miniStep[(this.imgPlace.split('-')[2])].miniStepImg =
+						`<img src="${res.url}" alt="" />`;
+				}
 				// 清空上传图片参数
 				this.imgData = {
 					FileName: '',
@@ -1221,49 +939,36 @@
 			// 表格操作
 			// 编辑
 			edit(index, row) {
-				console.log(row)
+				// 获取输入框数据
 				var that = this;
 				that.editDialogVisible = true;
-				// 获取色号产品数据
-				that.getColorProductData(1, 10)
-				//获取模型数据
 				that.getModuleData();
 				var tempObj = {};
 				tempObj.id = row.id;
 				tempObj.name = row.name;
 				tempObj.greatNumber = row.greatNumber;
 				tempObj.pageView = row.pageView;
-				tempObj.minute = row.minute;
 				tempObj.star = row.star;
 				tempObj.moduleId = row.moduleId;
 				tempObj.videoUrl = row.videoUrl;
 				tempObj.about = row.about;
 				tempObj.image = row.image;
-				tempObj.labelId = row.labelName;
-
-				function formatPurpose() {
-					return that.$axios.get('/management/admin/purpose!getList.action')
-				}
-
-				function formatBeautyColor() {
-					return that.$axios.get(`/management/admin/beauty-color!getSelectDetail.action?id=${row.id}`)
-				}
-				that.$axios.all([formatPurpose(), formatBeautyColor()]).then(that.$axios.spread(function(purposeData, colorData) {
-					tempObj.productColor = [];
-					let temp = row.labelId.split(',');
-					if (temp.length > 0) {
-						that.$refs.tree2.setCheckedKeys(temp);
-					}
-
-					let productArr = colorData.data.color;
-					if (productArr.length && productArr.length > 0) {
-						productArr.forEach(item => {
-							tempObj.productColor.push(item.id)
+				this.editFormData = tempObj
+				// 格式化标签数据并填充
+				if (row.labelId) {
+					let tempIdArr = row.labelId.split(',');
+					let tempNameArr = row.labelName.split(',');
+					for (let i = 0; i < tempIdArr.length; i++) {
+						this.choosedLabelList.push({
+							id: tempIdArr[i],
+							name: tempNameArr[i]
 						})
 					}
-					console.log(that.editFormData)
-					that.editFormData = tempObj
-				}));
+				}
+				// 格式化产品色号数据并填充
+				that.$axios.get(`/management/admin/beauty-color!getSelectDetail.action?id=${row.id}`).then(res => {
+					this.choosedBeautiColorList = [...res.data.color]
+				})
 				// 显示图片
 				let testExp = /http.*?(\.png|\.jpg)/gi;
 				if (row.image) {
@@ -1294,7 +999,6 @@
 				}
 				this.tempImgUrl = '';
 				this.editFileList = [];
-				this.resetLabel2()
 			},
 			// 提交编辑
 			handleEdit() {
@@ -1341,7 +1045,6 @@
 						image: ''
 					};
 					this.editFileList = []
-					this.resetLabel2()
 				})
 			},
 			// 删除
@@ -1364,16 +1067,25 @@
 						this.getTableData(`/management/admin/beauty-details!list.action`, this.page, this.row, this.tempId)
 					})
 			},
-			// 创建H5页面
-			creatH5(index, row) {
-				this.$axios.post(`/management/admin/beauty-details!saveHtml.action?id=${row.id}`).then(
-					res => {
-						if (res.status == 200) {
-							this.$message.success('H5页面创建成功')
-						} else {
-							this.$message.error('好像出了点问题-.-！')
-						}
-					})
+			// 预览H5页面
+			checkH5(index, row) {
+				console.log(row)
+				this.H5PageDialogVisible = true;
+				this.viewPageData = row;
+				// 标签数据
+				this.$axios.get(`/management/admin/beauty-color!getSelectDetail.action?id=${row.id}`).then(res => {
+					if (Object.keys(res.data).length != 0) {
+						this.viewPageColorList = [...res.data.color]
+					}
+				})
+				// 步骤数据
+				this.$axios.get(`/management/admin/beauty-details-relation!list.action?beautyDetailsId=${row.id}`).then(res => {
+					console.log(res.data);
+					this.viewStepList = res.data.rows
+				})
+			},
+			colseViewPage() {
+				this.viewStepList = []
 			},
 			// 更新排序
 			updataSort(index, row) {
@@ -1416,105 +1128,6 @@
 				if (this.pushForm.date) {
 					tempObj.pushTime = this.pushForm.date + ' ' + this.pushForm.time
 				}
-				// 接口有问题 暂时不调用推送
-				// 				this.$axios.post(`/management/admin/push!push.action?id=${this.pushForm.id}&type=beauty_details`,this.$qs.stringify(tempObj)).then(res=>{
-				// 					console.log(res)
-				// 				}).catch(e=>{
-				// 					this.$message.error('好像出了点问题-.-！')
-				// 				})
-			},
-
-			// 教程步骤管理
-			checkStep(index, row) {
-				this.teachStepDialogVisible = true;
-				this.getStepData(1, 10, row.id);
-				this.stepTeachId = row.id
-			},
-			// 新增步骤
-			addStep() {
-				this.addStepDialogVisible = true;
-			},
-			// 取消新增步骤
-			cancelAddStep() {
-				this.addStepDialogVisible = false;
-				this.addStepForm = {};
-				this.tempImgUrl = '';
-			},
-			// 提交新增步骤
-			handleAddStep() {
-				console.log(this.addStepForm)
-				console.log(this.stepTeachId)
-				console.log(this.tempImgUrl)
-				if (this.tempImgUrl) {
-					this.addStepForm.procedureImg = `<img src="${this.tempImgUrl}" alt="" />`
-				}
-				this.$axios.post(`/management/admin/beauty-details-relation!save.action?beautyDetailsId=${this.stepTeachId}`, this.$qs
-						.stringify(this.addStepForm))
-					.then(res => {
-						this.$message.success('新增成功！')
-						this.getStepData(this.stepPage, this.stepRow, this.stepTeachId);
-						this.addStepDialogVisible = false;
-						this.addStepForm = {};
-						this.tempImgUrl = '';
-					})
-			},
-			// 删除步骤
-			deleteStep(index, row) {
-				console.log(index)
-				console.log(row)
-				this.$confirm('确定删除步骤么？').then(res => {
-					this.$axios.get(
-						`/management/admin/beauty-details-relation!delete.action?id=${row.id}&&beautyDetailsId=${this.stepTeachId}`).then(
-						_ => {
-							this.$message.success('删除成功');
-							this.getStepData(this.stepPage, this.stepRow, this.stepTeachId);
-						}).catch(e => {
-						this.$message.error('好像出了点问题！-.-！')
-					})
-				})
-			},
-			// 编辑步骤
-			editStep(index, row) {
-				this.editStepDialogVisible = true;
-				this.stepId = row.id;
-				this.editStepForm = {
-					procedureName: row.procedureName,
-					procedureSort: row.procedureSort,
-					procedureDes: row.procedureDes,
-					desSort: row.desSort,
-					procedureImg: row.procedureImg
-				};
-				let testExp = /http.*?(\.png|\.jpg|\.gif)/gi;
-				if (row.procedureImg) {
-					this.editStepfileList = [{
-						name: '步骤图片',
-						url: row.procedureImg.match(testExp)[0]
-					}]
-				}
-			},
-			//取消编辑步骤
-			cancelEditStep() {
-				this.editStepForm = {};
-				this.editStepDialogVisible = false;
-				this.tempImgUrl = ''
-			},
-			//提交编辑步骤
-			handleEditStep() {
-				this.editStepDialogVisible = false;
-				if (this.tempImgUrl) {
-					this.editStepForm.procedureImg = `<img src="${this.tempImgUrl}" alt="" />`
-				}
-				this.$axios.post(
-					`/management/admin/beauty-details-relation!save.action?id=${this.stepId}&beautyDetailsId=${this.stepTeachId}`,
-					this.$qs.stringify(
-						this.editStepForm)).then(
-					res => {
-						this.$message.success('编辑成功！')
-						this.getStepData(this.stepPage, this.stepRow, this.stepTeachId);
-						this.editStepForm = {}
-					}).catch(e => {
-					this.$message.error('出了点问题-.-！')
-				})
 			},
 			// 管理评论
 			checkComment(index, row) {
@@ -1666,6 +1279,14 @@
 			getStatus(row, column, statusNum) {
 				return statusNum == 0 ? '上线' : '下线'
 			},
+			// 筛选审核状态
+			filterStatus(value, row) {
+				return row.online === value;
+			},
+			// 筛选创建用户
+			filterUser(value, row) {
+				return row.creatUser === value;
+			},
 			// 列表数据
 			getTableData(url, page, row, id, q) {
 				this.loading = true;
@@ -1682,37 +1303,15 @@
 					this.loading = false
 				})
 			},
-			// 化妆目的数据 /management/admin/purpose!getList.action
-			getPurposeData() {
-				this.$axios.get('/management/admin/purpose!getList.action').then(res => {
-					this.purposeOptions = res.data;
-				})
-			},
-			// 标签数据
 			// 色号数据
 			getColorProductData(page, row, text) {
-				this.$axios.get('/management/admin/beauty-color!comboGridlist.action', {
-					params: {
-						page: page,
-						rows: row,
-						q: text
-					}
-				}).then(res => {
+				this.$axios.post('/management/admin/beauty-color!comboGridlist.action', this.$qs.stringify({
+					page: page,
+					rows: row,
+					q: text
+				})).then(res => {
 					this.colorTotalNum = res.data.total
 					this.productColorOptions = res.data.rows
-				})
-			},
-			// 新增色号产品数据
-			getProductData(page, row, text) {
-				this.$axios.get('/management/admin/beauty-product!comboGridlist.action', {
-					params: {
-						page: page,
-						rows: row,
-						q: text
-					}
-				}).then(res => {
-					this.productTotalNum = res.data.total
-					this.productOptions = res.data.rows
 				})
 			},
 			// 模型图数据
@@ -1762,11 +1361,8 @@
 					this.stepTotalNum = res.data.total
 				})
 			},
-			getSelected(val) {
-				this.selectGroups = val;
-				this.configTips = `已选择${val.length}个分组`;
-			},
 			// 标签操作
+
 			// 获取标签列表
 			getLabelList(val) {
 				this.$axios.post('/management/admin/label!list.action', this.$qs.stringify({
@@ -1787,9 +1383,28 @@
 			selectLabel(row) {
 				console.log(row);
 				this.choosedLabelList.push(row);
-				// 选中一个之后清空
-				this.searchLabel = ''
 			},
+			// 色号操作
+
+			// 获取色号列表
+			getBeautiColorList(val) {
+				this.$axios.post('/management/admin/beauty-color!comboGridlist.action', this.$qs.stringify({
+					page: 1,
+					rows: 50,
+					q: val
+				})).then(res => {
+					this.beautiColorTableData = res.data.rows
+				})
+			},
+			// 删除色号
+			deleteBeautiColor(key) {
+				this.choosedBeautiColorList.splice(key, 1)
+			},
+			// 点击单选
+			selectBeautiColor(row) {
+				this.choosedBeautiColorList.push(row);
+			},
+
 			// 步骤操作
 			removeTab(targetName) {
 				let tabs = this.stepList;
@@ -1804,7 +1419,6 @@
 						}
 					});
 				}
-
 				this.teachStepValue = activeName;
 				this.stepList = tabs.filter(tab => tab.name !== targetName);
 			},
@@ -1814,7 +1428,7 @@
 					id: this.stepList.length + 1,
 					name: '步骤' + newTabName
 				});
-				this.teachStepValue = this.stepList[this.stepList.length-1].name;
+				this.teachStepValue = this.stepList[this.stepList.length - 1].name;
 				this.formLabelAdd.step.push({
 					stepName: '',
 					stepDis: '',
@@ -1830,15 +1444,29 @@
 				})
 			},
 			deleteMiniStep(index1, index2) {
-				this.formLabelAdd.step[index1].miniStep.splice(index2, 1)
+				this.formLabelAdd.step[index1].miniStep.splice(index2, 1);
 			}
 		},
 		mounted() {
 			this.getTableData('/management/admin/beauty-details!list.action', 1, 10);
 			this.$axios.get('/management/admin/label!getTree.action').then(res => {
-				console.log(res)
 				this.treeData = res.data;
 				this.tagOptions = res.data;
+			})
+			// 获取用户列表
+			this.$axios.get('/management/admin/user!list.action', this.$qs.stringify({
+				page: 1,
+				row: 20,
+				deptId: 1
+			})).then(res => {
+				let tempArr = [];
+				res.data.rows.forEach(item => {
+					tempArr.push({
+						value: item.loginName,
+						text: item.userName
+					})
+				})
+				this.userList = tempArr
 			})
 		}
 	}
@@ -2009,6 +1637,368 @@
 	.miniStepBox .el-form-item {
 		margin: 10px 0;
 	}
+
+	/* 预览页面样式 */
+	a {
+		text-decoration: none;
+		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	}
+
+	a:focus {
+		outline: none;
+	}
+
+	a:link {
+		text-decoration: none;
+	}
+
+	a:visited {
+		text-decoration: none;
+	}
+
+	a:hover {
+		text-decoration: none;
+	}
+
+	a:active {
+		text-decoration: none;
+	}
+
+
+	img,
+	object {
+		-moz-background-size: contain;
+		-webkit-background-size: contain;
+		-o-background-size: contain;
+		background-size: contain;
+		width: 100%;
+		height: auto;
+	}
+
+	.content {
+		width: 100%;
+		position: relative;
+	}
+
+	.content .phoneBorder {
+		width: 378px;
+		height: auto;
+		display: block;
+		margin: 0 auto;
+	}
+
+	.content .pageContent {
+		position: absolute;
+		height: 585px;
+		width: 330px;
+		top: 90px;
+		left: 50%;
+		margin-left: -165px;
+		overflow-y: auto;
+	}
+
+	.pageContent::-webkit-scrollbar {
+		/*滚动条整体样式*/
+		width: 3px;
+		/*高宽分别对应横竖滚动条的尺寸*/
+		height: 3px;
+	}
+
+	.pageContent::-webkit-scrollbar-thumb {
+		/*滚动条里面小方块*/
+		border-radius: 5px;
+		-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+		background: rgba(255, 255, 255, 0.7);
+	}
+
+	.pageContent::-webkit-scrollbar-track {
+		/*滚动条里面轨道*/
+		-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+		border-radius: 0;
+		background: rgba(0, 0, 0, 0.2);
+	}
+
+
+	#title {
+		font-size: 17.1px !important;
+		color: #333333;
+		line-height: 23.9px;
+		margin: 17.1px 12.8px 0px 12.8px;
+	}
+
+	#time {
+		margin: 3.4px 12.8px 0px 12.8px;
+	}
+
+	#time span {
+		font-size: 10.2px !important;
+		color: #aaaaaa;
+		line-height: 14.5px;
+		margin-right: 8.5px;
+	}
+
+	#time img {
+		width: 10.24px;
+		height: 7.68px;
+		margin-right: 4.27px;
+	}
+
+	#label {
+		margin: 0px 12.8px 0px 12.8px;
+	}
+
+	#labelLeft {
+		font-size: 10.2px !important;
+		float: left;
+	}
+
+	#labelLeft a {
+		display: inline-block;
+		font-size: 10.2px !important;
+		color: #C09CFF;
+		background: #F2EBFF;
+		border-radius: 3.4px;
+		line-height: 14.5px;
+		padding: 4.3px 8.6px;
+		margin: 10.2px 11.96px 0px 0px;
+	}
+
+	.rate {
+		margin: 7.68px 12.8px 0px;
+		opacity: 0.9;
+	}
+
+	.rate p {
+		float: left;
+		font-size: 11.95px;
+		color: #a87bff;
+		lopacity: 0.9;
+		line-height: 18.77px;
+	}
+
+	.rate ul {
+		float: left;
+		list-style: none;
+		margin-top: -2.56px;
+		margin-left: 6.83px;
+	}
+
+	.rate ul li {
+		display: inline;
+		margin-left: 2.56px;
+	}
+
+	.rate ul li img {
+		width: 11.95px;
+		height: 11.95px;
+	}
+
+	#about {
+		font-size: 11.9px !important;
+		color: #999999;
+		line-height: 17.1px;
+		margin: 7.7px 12.8px 0px 12.8px;
+	}
+
+	.stripes {
+		position: relative;
+		height: 27.3px;
+		width: 215px;
+		margin: 41.8px 49.5px 0px 55.5px;
+
+		-webkit-background-size: 4.3px 4.3px;
+		-moz-background-size: 4.3px 4.3px;
+		background-size: 4.3px 4.3px;
+
+		-moz-box-shadow: 0px 0px 0px gray;
+		-webkit-box-shadow: 0px 0px 0px gray;
+		box-shadow: 0px 0px 0px gray;
+	}
+
+	.column {
+		position: absolute;
+		height: 27.3px;
+		width: 215px;
+		background: #F0E6FF;
+		margin: -22.2px 54.6px 0px 50.3px;
+	}
+
+	.column img {
+		height: 35.8px;
+		width: 44.4px;
+		margin: -11.9px 55.5px 4.3px 114.3px;
+	}
+
+	.gifSize {
+		padding: 0 12.8px 0 12.8px;
+	}
+
+	.wordart {
+		position: inherit;
+		font-family: SnellRoundhand;
+		font-style: italic;
+		font-size: 59.7px;
+		line-height: 75.9px;
+		color: #333333;
+		letter-spacing: -1.3px;
+		margin: -36.7px 120.3px -11.9px 1.7px;
+	}
+
+	.wordart1 {
+		margin-left: -17.1px;
+	}
+
+	.abbreviation {
+		position: inherit;
+		line-height: 21.3px;
+		font-family: 'PingFangSC-Regular', sans-serif;
+		font-size: 15.4px;
+		color: #333333;
+		letter-spacing: -0.33px;
+		margin: 3.4px 161.3px 2.6px 36.7px;
+	}
+
+	.columnName {
+		position: inherit;
+		width: 100px;
+		line-height: 21.3px;
+		font-family: 'PingFangSC-Light', sans-serif;
+		font-size: 15.4px;
+		color: #333333;
+		letter-spacing: -0.33px;
+		margin: 3.4px 122px 2.6px 62.3px;
+	}
+
+	.intro {
+		margin: 0px 12.8px 0px 12.8px;
+	}
+
+	.intro p {
+		font-size: 11.9px;
+		color: #333333;
+		letter-spacing: -0.25px;
+		line-height: 20.5px;
+		margin: 34.1px 0px 0px 0px;
+	}
+
+	.intro p:last-child {
+		padding-bottom: 42.67px;
+	}
+
+	.intro img {
+		margin: 17.06px 0px 2.6px 0px;
+	}
+
+	.sequence {
+		float: left;
+		position: relative;
+		height: 13.7px;
+		width: 12.8px;
+		margin-left: 8.5px;
+		margin-right: 4.7px;
+		background-color: #CBA6FF;
+		display: inline;
+	}
+
+	.sequence span {
+		position: absolute;
+		line-height: 11.9px;
+		font-family: 'PingFangSC-Light', sans-serif;
+		font-size: 8.5px;
+		color: #FFFFFF;
+		margin: 0.85px 3.4px 0.85px 0.85px;
+	}
+
+	.sequence1 {
+		position: absolute;
+		z-index: -1;
+		height: 11.9px;
+		width: 12.8px;
+		border: 1px solid #333333;
+		margin: 2.6px 0 0 0.43px;
+
+		-moz-box-shadow: -0.43px 0.43px 0px #B581FF inset, -0.43px 0.43px 0px #B581FF;
+		-webkit-box-shadow: -0.43px 0.43px 0px #B581FF inset, -0.43px 0.43px 0px #B581FF;
+		box-shadow: -0.43px 0.43px 0px #B581FF inset, -0.43px 0.43px 0px #B581FF;
+	}
+
+
+	.angled {
+		background-color: #fff;
+		background-image: -webkit-gradient(linear, 0 100%, 100% 0,
+			color-stop(.25, rgba(153, 153, 153, .2)), color-stop(.25, transparent),
+			color-stop(.5, transparent), color-stop(.5, rgba(153, 153, 153, .2)),
+			color-stop(.75, rgba(153, 153, 153, .2)), color-stop(.75, transparent),
+			to(transparent));
+		background-image: -moz-linear-gradient(45deg, rgba(153, 153, 153, .2) 25%, transparent 25%,
+			transparent 50%, rgba(153, 153, 153, .2) 50%, rgba(153, 153, 153, .2) 75%,
+			transparent 75%, transparent);
+		background-image: -o-linear-gradient(45deg, rgba(153, 153, 153, .2) 25%, transparent 25%,
+			transparent 50%, rgba(153, 153, 153, .2) 50%, rgba(153, 153, 153, .2) 75%,
+			transparent 75%, transparent);
+		background-image: linear-gradient(45deg, rgba(153, 153, 153, .2) 25%, transparent 25%,
+			transparent 50%, rgba(153, 153, 153, .2) 50%, rgba(153, 153, 153, .2) 75%,
+			transparent 75%, transparent);
+	}
+
+	#videoElement {
+		width: 100%;
+		height: auto;
+		margin: 0px;
+		padding: 0px;
+	}
+
+	.download {
+		box-sizing: border-box;
+		height: 60px;
+		width: 100%;
+		color: #fff;
+		font-size: 17px;
+		text-align: center;
+		line-height: 40px;
+		padding: 0px 12px;
+		position: fixed;
+		bottom: 0px;
+		padding-bottom: 10px;
+		padding-top: 10px;
+		background-color: #fff;
+		z-index: 100;
+	}
+
+	.download a {
+		text-decoration: none;
+	}
+
+	.download .btn {
+		background: #a87bff;
+		height: 40px;
+		width: 100%;
+		display: block;
+		color: #fff;
+		border-radius: 4px;
+	}
+
+	.overlay {
+		display: none;
+		position: absolute;
+		left: 0;
+		top: 0;
+		right: 0;
+		background: #000;
+		opacity: 0.3;
+		text-align: center;
+		color: #fff;
+		font-size: 15px;
+		z-index: 10;
+	}
+
+	.blur {
+		-webkit-filter: blur(18px);
+		/* Chrome, Opera */
+		-moz-filter: blur(18px);
+		-ms-filter: blur(18px);
+		filter: blur(18px);
+	}
 </style>
 <style>
 	.el-table__body tr.online {
@@ -2068,5 +2058,9 @@
 
 	.labelTable.el-table td {
 		padding: 5px 0;
+	}
+
+	.el-tabs__new-tab {
+		margin-right: 15px;
 	}
 </style>
