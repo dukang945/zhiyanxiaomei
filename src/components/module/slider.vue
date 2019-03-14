@@ -29,7 +29,6 @@
 			},
 			addTab(path, pathName) {
 				let tempArr = this.editableTabs2.map(item => {
-					console.log(item)
 					return item.title
 
 				})
@@ -46,8 +45,7 @@
 				}
 			},
 			removeTab(targetName) {
-				let tabs = this.editableTabs2;
-				console.log(tabs)
+				let tabs = [...this.editableTabs2];
 				let activeName = this.editableTabsValue2;
 				if (tabs.length == 1) {
 					this.$router.push('/workspace');
@@ -67,7 +65,7 @@
 					tabs.splice(tempIndex, 1);
 					this.editableTabs2 = tabs;
 					this.editableTabsValue2 = tabs[tabs.length - 1].name;
-					this.$router.push(`/${tabs[tabs.length - 1].name}`)
+					this.$router.push(`${tabs[tabs.length - 1].name}`)
 				} else {
 					tabs.forEach((item, index) => {
 						if (item.name == targetName) {

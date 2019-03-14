@@ -17,10 +17,10 @@
           <el-form-item label="教程id" label-width="120px">
             <el-input v-model="formAdd.beautyDetailsId1"></el-input>
           </el-form-item>
-          <el-form-item label="眼部描述" label-width="120px">
-            <textarea id="eyeDescAdd" rows="10" cols="80"></textarea>
+          <el-form-item label="唇部描述" label-width="120px">
+            <textarea id="lipDescAdd" rows="10" cols="80"></textarea>
           </el-form-item>
-          <el-form-item label="眼部图片" label-width="120px">
+          <el-form-item label="唇部图片" label-width="120px">
             <el-upload
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
@@ -34,8 +34,8 @@
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
           </el-form-item>
-          <el-form-item label="眼妆画法" label-width="120px">
-            <textarea id="eyeMakeAdd" rows="10" cols="80"></textarea>
+          <el-form-item label="唇妆画法" label-width="120px">
+            <textarea id="lipMakeAdd" rows="10" cols="80"></textarea>
           </el-form-item>
           <el-form-item label="搜索产品" label-width="120px">
             <el-input v-model="searchBeautiColor" @input="getBeautiColorList" clearable></el-input>
@@ -52,7 +52,8 @@
               <el-table-column prop="name" label="色号名" align="center"></el-table-column>
               <el-table-column prop="productName" label="商品名" align="center"></el-table-column>
             </el-table>
-            <div class="labelChoosed">已选产品：
+            <div class="labelChoosed">
+              已选产品：
               <span
                 v-for="(item,key) in choosedBeautiColorList"
                 v-dragging="{ list: choosedBeautiColorList, item: item, group: 'name' }"
@@ -65,10 +66,10 @@
           <el-form-item label="教程id" label-width="120px">
             <el-input v-model="formAdd.beautyDetailsId2"></el-input>
           </el-form-item>
-          <el-form-item label="眼部描述2" label-width="120px">
-            <textarea id="eyeDescAdd2" rows="10" cols="80"></textarea>
+          <el-form-item label="唇部描述2" label-width="120px">
+            <textarea id="lipDescAdd2" rows="10" cols="80"></textarea>
           </el-form-item>
-          <el-form-item label="眼部图片2" label-width="120px">
+          <el-form-item label="唇部图片2" label-width="120px">
             <el-upload
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
@@ -82,8 +83,8 @@
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
           </el-form-item>
-          <el-form-item label="眼妆画法2" label-width="120px">
-            <textarea id="eyeMakeAdd2" rows="10" cols="80"></textarea>
+          <el-form-item label="唇妆画法2" label-width="120px">
+            <textarea id="lipMakeAdd2" rows="10" cols="80"></textarea>
           </el-form-item>
           <el-form-item label="搜索产品2" label-width="120px">
             <el-input v-model="searchBeautiColor2" @input="getBeautiColorList2" clearable></el-input>
@@ -100,7 +101,8 @@
               <el-table-column prop="name" label="色号名" align="center"></el-table-column>
               <el-table-column prop="productName" label="商品名" align="center"></el-table-column>
             </el-table>
-            <div class="labelChoosed">已选产品：
+            <div class="labelChoosed">
+              已选产品：
               <span
                 v-for="(item,key) in choosedBeautiColorList2"
                 v-dragging="{ list: choosedBeautiColorList2, item: item, group: 'name' }"
@@ -113,10 +115,10 @@
           <el-form-item label="教程id" label-width="120px">
             <el-input v-model="formAdd.beautyDetailsId3"></el-input>
           </el-form-item>
-          <el-form-item label="眼部描述3" label-width="120px">
-            <textarea id="eyeDescAdd3" rows="10" cols="80"></textarea>
+          <el-form-item label="唇部描述3" label-width="120px">
+            <textarea id="lipDescAdd3" rows="10" cols="80"></textarea>
           </el-form-item>
-          <el-form-item label="眼部图片3" label-width="120px">
+          <el-form-item label="唇妆图片3" label-width="120px">
             <el-upload
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
@@ -130,8 +132,8 @@
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
           </el-form-item>
-          <el-form-item label="眼妆画法3" label-width="120px">
-            <textarea id="eyeMakeAdd3" rows="10" cols="80"></textarea>
+          <el-form-item label="唇妆画法3" label-width="120px">
+            <textarea id="lipMakeAdd3" rows="10" cols="80"></textarea>
           </el-form-item>
           <el-form-item label="搜索产品3" label-width="120px">
             <el-input v-model="searchBeautiColor3" @input="getBeautiColorList3" clearable></el-input>
@@ -148,7 +150,8 @@
               <el-table-column prop="name" label="色号名" align="center"></el-table-column>
               <el-table-column prop="productName" label="商品名" align="center"></el-table-column>
             </el-table>
-            <div class="labelChoosed">已选产品：
+            <div class="labelChoosed">
+              已选产品：
               <span
                 v-for="(item,key) in choosedBeautiColorList3"
                 v-dragging="{ list: choosedBeautiColorList3, item: item, group: 'name' }"
@@ -212,10 +215,10 @@
         <el-form-item label="教程id" label-width="120px">
           <el-input v-model="formEdit.beautyDetailsId1"></el-input>
         </el-form-item>
-        <el-form-item label="眼部描述" label-width="120px">
-          <textarea id="eyeDesc" rows="10" cols="80"></textarea>
+        <el-form-item label="唇部描述" label-width="120px">
+          <textarea id="lipDesc" rows="10" cols="80"></textarea>
         </el-form-item>
-        <el-form-item label="眼部图片" label-width="120px">
+        <el-form-item label="唇部图片" label-width="120px">
           <el-upload
             class="upload-demo"
             action="/management/admin/kcupload!uploadImage.action?type=goods_path"
@@ -229,8 +232,8 @@
             <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
         </el-form-item>
-        <el-form-item label="眼妆画法" label-width="120px">
-          <textarea id="eyeMake" rows="10" cols="80"></textarea>
+        <el-form-item label="唇妆画法" label-width="120px">
+          <textarea id="lipMake" rows="10" cols="80"></textarea>
         </el-form-item>
         <el-form-item label="搜索产品" label-width="120px">
           <el-input v-model="searchBeautiColor" @input="getBeautiColorList" clearable></el-input>
@@ -247,7 +250,8 @@
             <el-table-column prop="name" label="色号名" align="center"></el-table-column>
             <el-table-column prop="productName" label="商品名" align="center"></el-table-column>
           </el-table>
-          <div class="labelChoosed">已选产品：
+          <div class="labelChoosed">
+            已选产品：
             <span
               v-for="(item,key) in choosedBeautiColorList"
               v-dragging="{ list: choosedBeautiColorList, item: item, group: 'name' }"
@@ -260,10 +264,10 @@
         <el-form-item label="教程id" label-width="120px">
           <el-input v-model="formEdit.beautyDetailsId2"></el-input>
         </el-form-item>
-        <el-form-item label="眼部描述2" label-width="120px">
-          <textarea id="eyeDesc2" rows="10" cols="80"></textarea>
+        <el-form-item label="唇部描述2" label-width="120px">
+          <textarea id="lipDesc2" rows="10" cols="80"></textarea>
         </el-form-item>
-        <el-form-item label="眼部图片2" label-width="120px">
+        <el-form-item label="唇部图片2" label-width="120px">
           <el-upload
             class="upload-demo"
             action="/management/admin/kcupload!uploadImage.action?type=goods_path"
@@ -277,8 +281,8 @@
             <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
         </el-form-item>
-        <el-form-item label="眼妆画法2" label-width="120px">
-          <textarea id="eyeMake2" rows="10" cols="80"></textarea>
+        <el-form-item label="唇妆画法2" label-width="120px">
+          <textarea id="lipMake2" rows="10" cols="80"></textarea>
         </el-form-item>
         <el-form-item label="搜索产品2" label-width="120px">
           <el-input v-model="searchBeautiColor2" @input="getBeautiColorList2" clearable></el-input>
@@ -295,7 +299,8 @@
             <el-table-column prop="name" label="色号名" align="center"></el-table-column>
             <el-table-column prop="productName" label="商品名" align="center"></el-table-column>
           </el-table>
-          <div class="labelChoosed">已选产品：
+          <div class="labelChoosed">
+            已选产品：
             <span
               v-for="(item,key) in choosedBeautiColorList2"
               v-dragging="{ list: choosedBeautiColorList2, item: item, group: 'name' }"
@@ -308,10 +313,10 @@
         <el-form-item label="教程id" label-width="120px">
           <el-input v-model="formEdit.beautyDetailsId3"></el-input>
         </el-form-item>
-        <el-form-item label="眼部描述3" label-width="120px">
-          <textarea id="eyeDesc3" rows="10" cols="80"></textarea>
+        <el-form-item label="唇部描述3" label-width="120px">
+          <textarea id="lipDesc3" rows="10" cols="80"></textarea>
         </el-form-item>
-        <el-form-item label="眼部图片3" label-width="120px">
+        <el-form-item label="唇部图片3" label-width="120px">
           <el-upload
             class="upload-demo"
             action="/management/admin/kcupload!uploadImage.action?type=goods_path"
@@ -325,11 +330,11 @@
             <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
         </el-form-item>
-        <el-form-item label="眼妆画法3" label-width="120px">
-          <textarea id="eyeMake3" rows="10" cols="80"></textarea>
+        <el-form-item label="唇妆画法3" label-width="120px">
+          <textarea id="lipMake3" rows="10" cols="80"></textarea>
         </el-form-item>
         <el-form-item label="搜索产品3" label-width="120px">
-          <el-input v-model="searchBeautiColor3" @change="getBeautiColorList3" clearable></el-input>
+          <el-input v-model="searchBeautiColor3" @input="getBeautiColorList3" clearable></el-input>
           <el-table
             :data="beautiColorTableData3"
             @row-click="selectBeautiColor3"
@@ -343,7 +348,8 @@
             <el-table-column prop="name" label="色号名" align="center"></el-table-column>
             <el-table-column prop="productName" label="商品名" align="center"></el-table-column>
           </el-table>
-          <div class="labelChoosed">已选产品：
+          <div class="labelChoosed">
+            已选产品：
             <span
               v-for="(item,key) in choosedBeautiColorList3"
               v-dragging="{ list: choosedBeautiColorList3, item: item, group: 'name' }"
@@ -402,11 +408,7 @@ export default {
       totalNum1: 1,
       totalNum2: 1,
       formEdit: {},
-      formAdd: {
-        beautyDetailsId1: 1,
-        beautyDetailsId2: 2,
-        beautyDetailsId3: 3
-      },
+      formAdd: {},
       labelTableData: [], //标签表格数据
       searchLabel: "", //搜索标签输入框
       choosedLabelList: [], //已选中标签列表
@@ -433,20 +435,25 @@ export default {
   },
   methods: {
     getlabelCountList(page1, row1) {
-      this.$axios.post("/management/admin/eyes!list.action", this.$qs.stringify({
+      this.$axios
+        .post(
+          "/management/admin/lip!list.action",
+          this.$qs.stringify({
             page: page1,
             row: row1
-          })).then(res => {
-        if (res.status == 200) {
-          console.log(res);
-          this.labelCountList = res.data.rows;
-          this.totalNum1 = res.data.total;
-        }
-      });
+          })
+        )
+        .then(res => {
+          if (res.status == 200) {
+            console.log(res);
+            this.labelCountList = res.data.rows;
+            this.totalNum1 = res.data.total;
+          }
+        });
     },
     getlabelList() {
       this.$axios
-        .get(`/management/admin/label!getTreeGrid.action?id=815`)
+        .get(`/management/admin/label!getTreeGrid.action?id=819`)
         .then(res => {
           if (res.status == 200) {
             this.labelList = res.data;
@@ -455,7 +462,7 @@ export default {
     },
     //初始化文本编辑器
     getCkeditor() {
-      CKEDITOR.replace("eyeDesc", {
+      CKEDITOR.replace("lipDesc", {
         height: 100,
         resize_maxHeight: 3000,
         filebrowserImageUploadUrl:
@@ -499,7 +506,7 @@ export default {
         enterMode: CKEDITOR.ENTER_BR, //可选：CKEDITOR.ENTER_BR或CKEDITOR.ENTER_P
         shiftEnterMode: CKEDITOR.ENTER_P
       });
-      CKEDITOR.replace("eyeDesc2", {
+      CKEDITOR.replace("lipDesc2", {
         height: 100,
         resize_maxHeight: 3000,
         filebrowserImageUploadUrl:
@@ -543,7 +550,7 @@ export default {
         enterMode: CKEDITOR.ENTER_BR, //可选：CKEDITOR.ENTER_BR或CKEDITOR.ENTER_P
         shiftEnterMode: CKEDITOR.ENTER_P
       });
-      CKEDITOR.replace("eyeDesc3", {
+      CKEDITOR.replace("lipDesc3", {
         height: 100,
         resize_maxHeight: 3000,
         filebrowserImageUploadUrl:
@@ -588,7 +595,7 @@ export default {
         shiftEnterMode: CKEDITOR.ENTER_P
       });
 
-      CKEDITOR.replace("eyeMake", {
+      CKEDITOR.replace("lipMake", {
         height: 100,
         resize_maxHeight: 3000,
         filebrowserImageUploadUrl:
@@ -632,7 +639,7 @@ export default {
         enterMode: CKEDITOR.ENTER_BR, //可选：CKEDITOR.ENTER_BR或CKEDITOR.ENTER_P
         shiftEnterMode: CKEDITOR.ENTER_P
       });
-      CKEDITOR.replace("eyeMake2", {
+      CKEDITOR.replace("lipMake2", {
         height: 100,
         resize_maxHeight: 3000,
         filebrowserImageUploadUrl:
@@ -676,7 +683,7 @@ export default {
         enterMode: CKEDITOR.ENTER_BR, //可选：CKEDITOR.ENTER_BR或CKEDITOR.ENTER_P
         shiftEnterMode: CKEDITOR.ENTER_P
       });
-      CKEDITOR.replace("eyeMake3", {
+      CKEDITOR.replace("lipMake3", {
         height: 100,
         resize_maxHeight: 3000,
         filebrowserImageUploadUrl:
@@ -722,7 +729,7 @@ export default {
       });
     },
     getCkeditor2() {
-      CKEDITOR.replace("eyeDescAdd", {
+      CKEDITOR.replace("lipDescAdd", {
         height: 100,
         resize_maxHeight: 3000,
         filebrowserImageUploadUrl:
@@ -766,7 +773,7 @@ export default {
         enterMode: CKEDITOR.ENTER_BR, //可选：CKEDITOR.ENTER_BR或CKEDITOR.ENTER_P
         shiftEnterMode: CKEDITOR.ENTER_P
       });
-      CKEDITOR.replace("eyeDescAdd2", {
+      CKEDITOR.replace("lipDescAdd2", {
         height: 100,
         resize_maxHeight: 3000,
         filebrowserImageUploadUrl:
@@ -810,7 +817,7 @@ export default {
         enterMode: CKEDITOR.ENTER_BR, //可选：CKEDITOR.ENTER_BR或CKEDITOR.ENTER_P
         shiftEnterMode: CKEDITOR.ENTER_P
       });
-      CKEDITOR.replace("eyeDescAdd3", {
+      CKEDITOR.replace("lipDescAdd3", {
         height: 100,
         resize_maxHeight: 3000,
         filebrowserImageUploadUrl:
@@ -855,7 +862,7 @@ export default {
         shiftEnterMode: CKEDITOR.ENTER_P
       });
 
-      CKEDITOR.replace("eyeMakeAdd", {
+      CKEDITOR.replace("lipMakeAdd", {
         height: 100,
         resize_maxHeight: 3000,
         filebrowserImageUploadUrl:
@@ -899,7 +906,7 @@ export default {
         enterMode: CKEDITOR.ENTER_BR, //可选：CKEDITOR.ENTER_BR或CKEDITOR.ENTER_P
         shiftEnterMode: CKEDITOR.ENTER_P
       });
-      CKEDITOR.replace("eyeMakeAdd2", {
+      CKEDITOR.replace("lipMakeAdd2", {
         height: 100,
         resize_maxHeight: 3000,
         filebrowserImageUploadUrl:
@@ -943,7 +950,7 @@ export default {
         enterMode: CKEDITOR.ENTER_BR, //可选：CKEDITOR.ENTER_BR或CKEDITOR.ENTER_P
         shiftEnterMode: CKEDITOR.ENTER_P
       });
-      CKEDITOR.replace("eyeMakeAdd3", {
+      CKEDITOR.replace("lipMakeAdd3", {
         height: 100,
         resize_maxHeight: 3000,
         filebrowserImageUploadUrl:
@@ -1008,28 +1015,34 @@ export default {
     //新增
     handleAdd() {
       var colorId = "";
-      for (let i = 0; i < this.choosedBeautiColorList.length; i++) {
-        colorId += `&productColor1=` + this.choosedBeautiColorList[i].id;
+      if (this.choosedBeautiColorList) {
+        for (let i = 0; i < this.choosedBeautiColorList.length; i++) {
+          colorId += `&productColor1=` + this.choosedBeautiColorList[i].id;
+        }
       }
       var colorId2 = "";
-      for (let i = 0; i < this.choosedBeautiColorList2.length; i++) {
-        colorId2 += `&productColor2=` + this.choosedBeautiColorList2[i].id;
+      if (this.choosedBeautiColorList2) {
+        for (let i = 0; i < this.choosedBeautiColorList2.length; i++) {
+          colorId2 += `&productColor2=` + this.choosedBeautiColorList2[i].id;
+        }
       }
       var colorId3 = "";
-      for (let i = 0; i < this.choosedBeautiColorList3.length; i++) {
-        colorId3 += `&productColor3=` + this.choosedBeautiColorList3[i].id;
+      if (this.choosedBeautiColorList3) {
+        for (let i = 0; i < this.choosedBeautiColorList3.length; i++) {
+          colorId3 += `&productColor3=` + this.choosedBeautiColorList3[i].id;
+        }
       }
 
-      this.formAdd.eyesDescribe = CKEDITOR.instances.eyeDescAdd.getData();
-      this.formAdd.eyeMakeup = CKEDITOR.instances.eyeMakeAdd.getData();
-      this.formAdd.eyesDescribe2 = CKEDITOR.instances.eyeDescAdd2.getData();
-      this.formAdd.eyeMakeup2 = CKEDITOR.instances.eyeMakeAdd2.getData();
-      this.formAdd.eyesDescribe3 = CKEDITOR.instances.eyeDescAdd3.getData();
-      this.formAdd.eyeMakeup3 = CKEDITOR.instances.eyeMakeAdd3.getData();
+      this.formAdd.description = CKEDITOR.instances.lipDescAdd.getData();
+      this.formAdd.details = CKEDITOR.instances.lipMakeAdd.getData();
+      this.formAdd.description2 = CKEDITOR.instances.lipDescAdd2.getData();
+      this.formAdd.details2 = CKEDITOR.instances.lipMakeAdd2.getData();
+      this.formAdd.description3 = CKEDITOR.instances.lipDescAdd3.getData();
+      this.formAdd.details3 = CKEDITOR.instances.lipMakeAdd3.getData();
       console.log(this.formAdd);
       this.$axios
         .post(
-          `/management/admin/eyes!save.action`,
+          `/management/admin/lip!save.action`,
           this.$qs.stringify(this.formAdd) + colorId + colorId2 + colorId3
         )
         .then(res => {
@@ -1037,10 +1050,22 @@ export default {
             if (res.status == 200) {
               this.AddVisible = false;
               this.$message.success(`添加成功`);
+              this.formAdd = {};
               this.fileList1 = [];
               this.fileList2 = [];
               this.fileList3 = [];
-              this.formAdd = {};
+              this.searchBeautiColor = "";
+              this.searchBeautiColor2 = "";
+              this.searchBeautiColor3 = "";
+              this.choosedBeautiColorList = [];
+              this.choosedBeautiColorList2 = [];
+              this.choosedBeautiColorList3 = [];
+              CKEDITOR.instances.lipDescAdd.setData();
+              CKEDITOR.instances.lipMakeAdd.setData();
+              CKEDITOR.instances.lipDescAdd2.setData();
+              CKEDITOR.instances.lipMakeAdd2.setData();
+              CKEDITOR.instances.lipDescAdd3.setData();
+              CKEDITOR.instances.lipMakeAdd3.setData();
               this.getlabelCountList();
             }
           }
@@ -1053,59 +1078,71 @@ export default {
       this.idx = row.id;
       // 获取编辑内容
       this.$axios
-        .get(`/management/admin/eyes!input.action?id=${this.idx}`)
+        .get(`/management/admin/lip!input.action?id=${this.idx}`)
         .then(res => {
           if (res.status == 200) {
             this.formEdit = res.data;
-            this.formEdit.eyesImg
-              ? (this.fileList1 = [{ url: this.formEdit.eyesImg }])
+            this.formEdit.lipImage
+              ? (this.fileList1 = [{ url: this.formEdit.lipImage }])
               : (this.fileList1 = []);
-            this.formEdit.eyesImg2
-              ? (this.fileList2 = [{ url: this.formEdit.eyesImg2 }])
+            this.formEdit.lipImage2
+              ? (this.fileList2 = [{ url: this.formEdit.lipImage2 }])
               : (this.fileList2 = []);
-            this.formEdit.eyesImg3
-              ? (this.fileList3 = [{ url: this.formEdit.eyesImg3 }])
+            this.formEdit.lipImage3
+              ? (this.fileList3 = [{ url: this.formEdit.lipImage3 }])
               : (this.fileList3 = []);
           }
         });
       // 获取选中色号内容
       this.$axios
         .post(
-          `/management/admin/beauty-color-to-label!comboGridlist.action`,
+          `/management/admin/beauty-color-to-label!getSelectDetail.action`,
           this.$qs.stringify({
-            labelId: row.id,
+            id: row.id,
             type: 1
           })
         )
         .then(res => {
           if (res.status == 200) {
-            this.choosedBeautiColorList = res.data.rows;
+            if (res.data.color) {
+              this.choosedBeautiColorList = res.data.color;
+            } else {
+              this.choosedBeautiColorList = [];
+            }
           }
         });
       this.$axios
         .post(
-          `/management/admin/beauty-color-to-label!comboGridlist.action`,
+          `/management/admin/beauty-color-to-label!getSelectDetail.action`,
           this.$qs.stringify({
-            labelId: row.id,
+            id: row.id,
             type: 2
           })
         )
         .then(res => {
           if (res.status == 200) {
-            this.choosedBeautiColorList2 = res.data.rows;
+            if (res.data.color) {
+              this.choosedBeautiColorList2 = res.data.color;
+            } else {
+              this.choosedBeautiColorList2 = [];
+            }
           }
         });
       this.$axios
         .post(
-          `/management/admin/beauty-color-to-label!comboGridlist.action`,
+          `/management/admin/beauty-color-to-label!getSelectDetail.action`,
           this.$qs.stringify({
-            labelId: row.id,
+            id: row.id,
             type: 3
           })
         )
         .then(res => {
           if (res.status == 200) {
-            this.choosedBeautiColorList3 = res.data.rows;
+            if (res.data.color) {
+              this.choosedBeautiColorList3 = res.data.color;
+            } else {
+              this.choosedBeautiColorList3 = [];
+            }
           }
         });
       // 初始化文本编辑器
@@ -1115,21 +1152,21 @@ export default {
           this.editor = true;
         }
         // 设置文本编辑器内容
-        CKEDITOR.instances.eyeDesc.setData(row.eyesDescribe);
-        CKEDITOR.instances.eyeMake.setData(row.eyeMakeup);
-        CKEDITOR.instances.eyeDesc2.setData(row.eyesDescribe2);
-        CKEDITOR.instances.eyeMake2.setData(row.eyeMakeup2);
-        CKEDITOR.instances.eyeDesc3.setData(row.eyesDescribe3);
-        CKEDITOR.instances.eyeMake3.setData(row.eyeMakeup3);
+        CKEDITOR.instances.lipDesc.setData(row.description);
+        CKEDITOR.instances.lipMake.setData(row.details);
+        CKEDITOR.instances.lipDesc2.setData(row.description2);
+        CKEDITOR.instances.lipMake2.setData(row.details2);
+        CKEDITOR.instances.lipDesc3.setData(row.description3);
+        CKEDITOR.instances.lipMake3.setData(row.details3);
       }, 10);
     },
     saveEdit() {
-      this.formEdit.eyesDescribe = CKEDITOR.instances.eyeDesc.getData();
-      this.formEdit.eyeMakeup = CKEDITOR.instances.eyeMake.getData();
-      this.formEdit.eyesDescribe2 = CKEDITOR.instances.eyeDesc2.getData();
-      this.formEdit.eyeMakeup2 = CKEDITOR.instances.eyeMake2.getData();
-      this.formEdit.eyesDescribe3 = CKEDITOR.instances.eyeDesc3.getData();
-      this.formEdit.eyeMakeup3 = CKEDITOR.instances.eyeMake3.getData();
+      this.formEdit.description = CKEDITOR.instances.lipDesc.getData();
+      this.formEdit.details = CKEDITOR.instances.lipMake.getData();
+      this.formEdit.description2 = CKEDITOR.instances.lipDesc2.getData();
+      this.formEdit.details2 = CKEDITOR.instances.lipMake2.getData();
+      this.formEdit.description3 = CKEDITOR.instances.lipDesc3.getData();
+      this.formEdit.details3 = CKEDITOR.instances.lipMake3.getData();
       var colorId = "";
       for (let i = 0; i < this.choosedBeautiColorList.length; i++) {
         colorId += `&productColor1=` + this.choosedBeautiColorList[i].id;
@@ -1148,22 +1185,22 @@ export default {
           beautyDetailsId2: this.formEdit.beautyDetailsId2,
           beautyDetailsId3: this.formEdit.beautyDetailsId3,
           labelId: this.formEdit.labels,
-          eyesDescribe: this.formEdit.eyesDescribe,
-          eyesImg: this.formEdit.eyesImg,
-          eyeMakeup: this.formEdit.eyeMakeup,
-          eyesDescribe2: this.formEdit.eyesDescribe2,
-          eyesImg2: this.formEdit.eyesImg2,
-          eyeMakeup2: this.formEdit.eyeMakeup2,
-          eyesDescribe3: this.formEdit.eyesDescribe3,
-          eyesImg3: this.formEdit.eyesImg3,
-          eyeMakeup3: this.formEdit.eyeMakeup3
+          description: this.formEdit.description,
+          lipImage: this.formEdit.lipImage,
+          details: this.formEdit.details,
+          description2: this.formEdit.description2,
+          lipImage2: this.formEdit.lipImage2,
+          details2: this.formEdit.details2,
+          description3: this.formEdit.description3,
+          lipImage3: this.formEdit.lipImage3,
+          details3: this.formEdit.details3
         }) +
         colorId +
         colorId2 +
         colorId3;
 
       this.$axios
-        .post(`/management/admin/eyes!save.action?id=${this.idx}`, params)
+        .post(`/management/admin/lip!save.action?id=${this.idx}`, params)
         .then(res => {
           if (res.status == 200) {
             if (res.status == 200) {
@@ -1184,9 +1221,6 @@ export default {
       this.fileList1 = [];
       this.fileList2 = [];
       this.fileList3 = [];
-      this.searchBeautiColor = "";
-      this.searchBeautiColor2 = "";
-      this.searchBeautiColor3 = "";
       this.choosedBeautiColorList = [];
       this.choosedBeautiColorList2 = [];
       this.choosedBeautiColorList3 = [];
@@ -1286,8 +1320,8 @@ export default {
     handleRemove2(file, fileList) {},
     handleRemove3(file, fileList) {},
     beforeUpload1(file) {
-      console.log(file);
-      this.imgData1.FileName ='zmxy/uploadFiles/'+
+      this.imgData1.FileName =
+        "zmxy/uploadFiles/" +
         new Date().valueOf() +
         "_" +
         sessionStorage.getItem("id") +
@@ -1297,7 +1331,8 @@ export default {
       this.imgData1.imgFile = file;
     },
     beforeUpload2(file) {
-      this.imgData2.FileName ='zmxy/uploadFiles/'+
+      this.imgData2.FileName =
+        "zmxy/uploadFiles/" +
         new Date().valueOf() +
         "_" +
         sessionStorage.getItem("id") +
@@ -1307,7 +1342,8 @@ export default {
       this.imgData2.imgFile = file;
     },
     beforeUpload3(file) {
-      this.imgData3.FileName = 'zmxy/uploadFiles/'+
+      this.imgData3.FileName =
+        "zmxy/uploadFiles/" +
         new Date().valueOf() +
         "_" +
         sessionStorage.getItem("id") +
@@ -1318,21 +1354,21 @@ export default {
     },
     handleSuccess1(res) {
       console.log(res);
-      this.formEdit.eyesImg1 = res.url;
+      this.formEdit.lipImage2 = res.url;
       if (this.AddVisible) {
-        this.formAdd.eyesImg1 = res.url;
+        this.formAdd.lipImage2 = res.url;
       }
     },
     handleSuccess2(res) {
-      this.formEdit.eyesImg2 = res.url;
+      this.formEdit.lipImage2 = res.url;
       if (this.AddVisible) {
-        this.formAdd.eyesImg2 = res.url;
+        this.formAdd.lipImage2 = res.url;
       }
     },
     handleSuccess3(res) {
-      this.formEdit.eyesImg3 = res.url;
+      this.formEdit.lipImage3 = res.url;
       if (this.AddVisible) {
-        this.formAdd.eyesImg3 = res.url;
+        this.formAdd.lipImage3 = res.url;
       }
     },
     //分页

@@ -2,7 +2,17 @@
 	<div class="constellationDetailContent">
 		<div class="handle-box">
 			<el-button type="primary" @click="AddVisible = true" size='small'>新增</el-button>
+			<el-date-picker
+      v-model="value2"
+      align="right"
+      type="date"
+	  @change="onchange"
+	  value-format="yyyy-MM-dd"
+      placeholder="选择日期"
+	  size='small'>
+    </el-date-picker>
 			<el-dialog title="新增" :visible.sync="AddVisible" width="50%" :before-close="handleClose">
+				
 				<el-form :label-position="labelPosition" label-width="150px" :rules="rules" ref="formLabelAdd" :model="formLabelAdd">
 					<el-form-item label="星座名称(日期-日期)" prop='constellation'>
 						<el-select v-model="formLabelAdd.constellation" placeholder="请选择">
@@ -19,24 +29,30 @@
 					<el-form-item label="运势时间">
 						<el-date-picker type="date" placeholder="选择日期" v-model="formLabelAdd.date" style="width: 100%;" value-format="yyyy-MM-dd"></el-date-picker>
 					</el-form-item>
-					<el-form-item label="教程1">
-						<el-input v-model="formLabelAdd.lableId[0]"></el-input>
-					</el-form-item>
-					<el-form-item label="推荐详情1">
-						<el-input v-model="formLabelAdd.message[0]" type="textarea" autosize></el-input>
-					</el-form-item>
-					<el-form-item label="教程2">
-						<el-input v-model="formLabelAdd.lableId[1]"></el-input>
-					</el-form-item>
-					<el-form-item label="推荐详情2">
-						<el-input v-model="formLabelAdd.message[1]" type="textarea" autosize></el-input>
-					</el-form-item>
-					<el-form-item label="教程3">
-						<el-input v-model="formLabelAdd.lableId[2]"></el-input>
-					</el-form-item>
-					<el-form-item label="推荐详情3">
-						<el-input v-model="formLabelAdd.message[2]" type="textarea" autosize></el-input>
-					</el-form-item>
+							<el-form-item label="爱情运势描述">
+								<el-input v-model="formLabelAdd.message1" type="textarea" autosize></el-input>
+							</el-form-item>
+					<el-form-item label="爱情运势id">
+								<el-input v-model="formLabelAdd.lableId1"></el-input>
+							</el-form-item>
+							<el-form-item label="事业学业描述">
+								<el-input v-model="formLabelAdd.message2" type="textarea" autosize></el-input>
+							</el-form-item>
+							<el-form-item label="事业学业id">
+								<el-input v-model="formLabelAdd.lableId2"></el-input>
+							</el-form-item>
+							<el-form-item label="财富运势描述">
+								<el-input v-model="formLabelAdd.message3" type="textarea" autosize></el-input>
+							</el-form-item>
+							<el-form-item label="财富运势id">
+								<el-input v-model="formLabelAdd.lableId3"></el-input>
+							</el-form-item>
+							<el-form-item label="健康运势描述">
+								<el-input v-model="formLabelAdd.message4" type="textarea" autosize></el-input>
+							</el-form-item>
+							<el-form-item label="健康运势id">
+								<el-input v-model="formLabelAdd.lableId4"></el-input>
+							</el-form-item>
 				</el-form>
 				<span slot="footer" class="dialog-footer">
 					<el-button @click="AddVisible = false">取 消</el-button>
@@ -57,7 +73,7 @@
 			</el-table-column>
 			<el-table-column prop="creatUser" label="创建人" width="120" align='center'>
 			</el-table-column>
-			<el-table-column label="操作" width="200">
+			<el-table-column label="操作" width="200" align='center'>
 				<template slot-scope="scope">
 					<el-button @click.native.prevent="deleteRow(scope.$index, tableData)" size='small' type="danger" class="el-icon-delete">删除</el-button>
 					<el-button type="primary" size='small' @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -78,23 +94,29 @@
 							<el-form-item label="运势时间">
 								<el-date-picker type="date" placeholder="选择日期" v-model="formLabelAlign.date" value-format='yyyy-MM-dd' style="width: 100%;"></el-date-picker>
 							</el-form-item>
-							<el-form-item label="教程1">
-								<el-input v-model="formLabelAlign.lableId[0]"></el-input>
+							<el-form-item label="爱情运势描述">
+								<el-input v-model="formLabelAlign.message1" type="textarea" autosize></el-input>
 							</el-form-item>
-							<el-form-item label="推荐详情1">
-								<el-input v-model="formLabelAlign.message[0]" type="textarea" autosize></el-input>
+							<el-form-item label="爱情运势id">
+								<el-input v-model="formLabelAlign.lableId1"></el-input>
 							</el-form-item>
-							<el-form-item label="教程2">
-								<el-input v-model="formLabelAlign.lableId[1]"></el-input>
+							<el-form-item label="事业学业描述">
+								<el-input v-model="formLabelAlign.message2" type="textarea" autosize></el-input>
 							</el-form-item>
-							<el-form-item label="推荐详情2">
-								<el-input v-model="formLabelAlign.message[1]" type="textarea" autosize></el-input>
+							<el-form-item label="事业学业id">
+								<el-input v-model="formLabelAlign.lableId2"></el-input>
 							</el-form-item>
-							<el-form-item label="教程3">
-								<el-input v-model="formLabelAlign.lableId[2]"></el-input>
+							<el-form-item label="财富运势描述">
+								<el-input v-model="formLabelAlign.message3" type="textarea" autosize></el-input>
 							</el-form-item>
-							<el-form-item label="推荐详情3">
-								<el-input v-model="formLabelAlign.message[2]" type="textarea" autosize></el-input>
+							<el-form-item label="财富运势id">
+								<el-input v-model="formLabelAlign.lableId3"></el-input>
+							</el-form-item>
+							<el-form-item label="健康运势描述">
+								<el-input v-model="formLabelAlign.message4" type="textarea" autosize></el-input>
+							</el-form-item>
+							<el-form-item label="健康运势id">
+								<el-input v-model="formLabelAlign.lableId4"></el-input>
 							</el-form-item>
 						</el-form>
 						<span slot="footer" class="dialog-footer">
@@ -115,6 +137,7 @@
 		data() {
 			return {
 				tableData: [],
+				value2: '',
 				dialogVisible: false,
 				AddVisible: false,
 				labelPosition: "left",
@@ -124,16 +147,12 @@
 					constellation: '',
 					luckScore: '',
 					details: '',
-					lableId: ['', '', ''],
-					message: ['', '', '']
 				},
 				formLabelAdd: {
 					date: '',
 					constellation: '',
 					luckScore: '',
 					details: '',
-					lableId: ['', '', ''],
-					message: ['', '', '']
 				},
 				rules: {
 					constellation: [{
@@ -150,7 +169,8 @@
 				page: 1,
 				row: 10,
 				totalNum: 1,
-				constellationList: []
+				constellationList: [],
+				
 			}
 		},
 		components: {
@@ -162,13 +182,21 @@
 				console.log(row)
 				this.idx = index;
 				const item = this.tableData[index];
+				this.$axios.get(``)
 				this.formLabelAlign = {
+					id:item.id,
 					date: item.date,
 					constellation: item.constellation,
 					luckScore: item.luckScore,
 					details: item.details,
-					lableId: item.lableId,
-					message: item.message
+					lableId1: item.lableId1,
+					lableId2: item.lableId2,
+					lableId3: item.lableId3,
+					lableId4: item.lableId4,
+					message1: item.message1,
+					message2: item.message2,
+					message3: item.message3,
+					message4: item.message4,
 				};
 				this.dialogVisible = true;
 			},
@@ -181,12 +209,12 @@
 							luckScore: this.formLabelAlign.luckScore,
 							details: this.formLabelAlign.details,
 							date: this.formLabelAlign.date,
-							lableId: this.formLabelAlign.lableId[0],
-							message: this.formLabelAlign.message[0],
-							lableId: this.formLabelAlign.lableId[1],
-							message: this.formLabelAlign.message[1],
-							lableId: this.formLabelAlign.lableId[2],
-							message: this.formLabelAlign.message[2]
+							lableId1: this.formLabelAlign.lableId1,
+							message1: this.formLabelAlign.message1,
+							lableId2: this.formLabelAlign.lableId2,
+							message2: this.formLabelAlign.message2,
+							lableId3: this.formLabelAlign.lableId3,
+							message3: this.formLabelAlign.message3
 						})).then(res => {
 							this.getData(this.page, this.row)
 							this.$message.success(`修改第 ${this.idx + 1} 行成功`);
@@ -194,6 +222,7 @@
 							this.$message.error(`出了点问题-.-!`);
 						})
 						this.dialogVisible = false;
+						this.formLabelAlign={}
 					} else {
 						console.log('error submit!!');
 						return false;
@@ -222,12 +251,14 @@
 							luckScore: this.formLabelAdd.luckScore,
 							details: this.formLabelAdd.details,
 							date: this.formLabelAdd.date,
-							lableId: this.formLabelAdd.lableId[0],
-							message: this.formLabelAdd.message[0],
-							lableId: this.formLabelAdd.lableId[1],
-							message: this.formLabelAdd.message[1],
-							lableId: this.formLabelAdd.lableId[2],
-							message: this.formLabelAdd.message[2]
+							lableId1: this.formLabelAdd.lableId1,
+							message1: this.formLabelAdd.message1,
+							lableId2: this.formLabelAdd.lableId2,
+							message2: this.formLabelAdd.message2,
+							lableId3: this.formLabelAdd.lableId3,
+							message3: this.formLabelAdd.message3,
+							lableId4: this.formLabelAdd.lableId4,
+							message4: this.formLabelAdd.message4
 						})).then(res => {
 							this.getData(this.page, this.row)
 							this.formLabelAdd = {
@@ -243,11 +274,17 @@
 							this.$message.error(`出了点问题-.-!`);
 						})
 						this.AddVisible = false;
+						this.formLabelAdd={}
 					} else {
 						console.log('error submit!!');
 						return false;
 					}
 				});
+			},
+			//日期搜索
+			onchange(val){
+				console.log(val)
+				this.getData(this.page,this.row)
 			},
 			handleClose(done) {
 				this.$confirm("确认关闭？")
@@ -270,6 +307,7 @@
 				var url = '/management/admin/constellation-details!list.action'
 				this.$axios.get(url, {
 					params: {
+						filter_EQS_date:this.value2,
 						page: page,
 						rows: row
 					}
@@ -286,6 +324,7 @@
 			// 获取星座列表
 			this.$axios.get('/management/admin/constellation!comboData.action').then(res => {
 				this.constellationList = res.data
+				console.log(this.constellationList)
 			})
 		}
 

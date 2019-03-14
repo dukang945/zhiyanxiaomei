@@ -48,6 +48,18 @@ import BeautyMakeupDataAll from '@/components/page/BeautyMakeupDataAll'
 import UserInterested from '@/components/page/UserInterested'
 import Workspace from '@/components/page/Workspace'
 import Eye from '@/components/page/Eye'
+import Nose from '@/components/page/Nose'
+import Lip from '@/components/page/Lip'
+import Hair from '@/components/page/Hair'
+import Praise from '@/components/page/Praise'
+import Star from '@/components/page/Star'
+import HusbandStar from '@/components/page/HusbandStar'
+import SimilarCelebrity from '@/components/page/SimilarCelebrity'
+import Emotion from '@/components/page/Emotion'
+import Answer from '@/components/page/Answer'
+import ShareDescribe from '@/components/page/ShareDescribe'
+import InterestedTest from '@/components/page/InterestedTest'
+import CategoryProblem from '@/components/page/CategoryProblem'
 
 Vue.use(Router)
 
@@ -56,7 +68,7 @@ export default new Router({
       path: '/Welcome',
       component: Welcome,
       name:'首页',
-			redirect:'/workspace',
+			redirect:'workspace',
       children: [{
           path: '/skillColumn',
 					name:'技能栏目管理',
@@ -119,7 +131,7 @@ export default new Router({
         },
         {
           path: '/constellationDetail',
-					name:'',
+					name:'星座详情管理',
           component: ConstellationDetail
         },
         {
@@ -139,8 +151,48 @@ export default new Router({
         },
         {
           path: '/face',
-					name:'',
+					name:'脸部管理',
           component: Face
+        },
+        {
+          path: '/lip',
+					name:'唇部管理',
+          component: Lip
+        },
+        {
+          path: '/nose',
+					name:'鼻部管理',
+          component: Nose
+        },
+        {
+          path: '/hair',
+					name:'发型管理',
+          component: Hair
+        },
+        {
+          path: '/praise',
+					name:'夸奖的话',
+          component: Praise
+        },
+        {
+          path: '/star',
+					name:'明星管理',
+          component: Star
+        },
+        {
+          path: '/husbandStar',
+					name:'明星夫妻',
+          component: HusbandStar
+        },
+        {
+          path: '/similarCelebrity',
+					name:'相似名人管理',
+          component: SimilarCelebrity
+        },
+        {
+          path: '/emotion',
+					name:'AI识颜情绪管理',
+          component: Emotion
         },
         {
           path: '/feedback',
@@ -213,6 +265,11 @@ export default new Router({
           component: Product
         },
         {
+          path: '/categoryProblem',
+					name:'产品分类问题及答案',
+          component: CategoryProblem
+        },
+        {
           path: '/rotation',
 					name:'',
           component: Rotation
@@ -279,8 +336,23 @@ export default new Router({
 				},
 				{
 					path:'/hotsearch',
-					name:'美妆知识',
+					name:'大家都在搜',
 					component: Hotsearch
+				},
+				{
+					path:'/answer',
+					name:'答案之书管理',
+					component: Answer
+				},
+				{
+					path:'/shareDescribe',
+					name:'分享描述管理',
+					component: ShareDescribe
+				},
+				{
+					path:'/interestedTest',
+					name:'感兴趣内容测试图管理',
+					component: InterestedTest
 				},
 				{
 					path:'/workspace',
