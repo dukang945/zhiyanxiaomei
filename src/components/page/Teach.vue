@@ -1023,13 +1023,11 @@
 					this.$message.error('没有选中的行')
 				}
 			},
-<<<<<<< HEAD
 			// 导出为Excel
 			tableToExcel() {
 
 			},
-=======
->>>>>>> yb
+
 			// 批量增加标签
 			batchLabel() {
 				if (this.checkedRowId) {
