@@ -163,6 +163,7 @@
 				this.idx = index;
 				const item = this.tableData[index];
 				this.formLabelAlign = {
+					id:item.id,
 					date: item.date,
 					constellation: item.constellation,
 					luckScore: item.luckScore,

@@ -9,6 +9,9 @@
 							<el-form-item label="标签名称" prop='name'>
 								<el-input v-model="formLabelAdd.name"></el-input>
 							</el-form-item>
+							<el-form-item label="英文名称">
+								<el-input v-model="formLabelAdd.enname"></el-input>
+							</el-form-item>
 							<el-form-item label="上级目录">
 								<el-input v-model="formLabelAdd.lableName" readonly></el-input>
 							</el-form-item>
@@ -73,9 +76,9 @@
 					<el-form-item label="标签名称" prop='name'>
 						<el-input v-model="formLabelAlign.name"></el-input>
 					</el-form-item>
-					<!-- <el-form-item label="上级目录">
-						<el-input v-model="formLabelAlign.lableName" readonly></el-input>
-					</el-form-item> -->
+					<el-form-item label="英文名称">
+						<el-input v-model="formLabelAlign.enname"></el-input>
+					</el-form-item>
 					<el-form-item label="排序号">
 						<el-input v-model="formLabelAlign.sort"></el-input>
 					</el-form-item>
@@ -234,6 +237,7 @@
 						id: res.data.id,
 						labelIsShow: res.data.labelIsShow,
 						name: res.data.name,
+						enname: res.data.enname,
 						sort: res.data.sort,
 						sta: res.data.sta,
 						status: res.data.status,
@@ -257,6 +261,7 @@
 						this.$axios.post(`/management/admin/label!save.action?id=${this.formLabelAlign.id}`, this.$qs.stringify({
 							labelIsShow: this.formLabelAlign.labelIsShow,
 							name: this.formLabelAlign.name,
+							enname: this.formLabelAlign.enname,
 							sort: this.formLabelAlign.sort,
 							sta: this.formLabelAlign.sta,
 							status: this.formLabelAlign.status,
@@ -284,6 +289,7 @@
 							labelIsShow: this.formLabelAdd.labelIsShow,
 							labelId: this.formLabelAdd.lableId,
 							name: this.formLabelAdd.name,
+							enname: this.formLabelAdd.enname,
 							sort: this.formLabelAdd.sort,
 							sta: this.formLabelAdd.sta,
 							type: this.formLabelAdd.type,

@@ -1,7 +1,7 @@
 <template>
 	<div class="editorBox">
 		<el-row>
-			<el-col :span='8' class='modelBox'>
+			<!-- <el-col :span='8' class='modelBox'>
 				<div class="modelList">模板列表</div>
 				<el-collapse accordion>
 					<el-collapse-item title="产品名称模板" name="1">
@@ -107,8 +107,8 @@
 						</div>
 					</el-collapse-item>
 				</el-collapse>
-			</el-col>
-			<el-col :span='14' :offset="2">
+			</el-col> -->
+			<el-col :span='24'>
 				<textarea name="editor" rows="10" cols="80"></textarea>
 			</el-col>
 		</el-row>
@@ -180,140 +180,140 @@
 
 			},
 			// 增加模板
-			addProductNameModel1() {
-				CKEDITOR.instances.editor.insertHtml(
-					`<div class="question">
-						<p>产品名1</p>
-					</div>
-					<br>`
-				)
-			},
-			addProductNameModel2() {
-				CKEDITOR.instances.editor.insertHtml(
-					`<div class="product-title">
-						<div class="main-title">
-							<div class="ball1">&nbsp;</div>
-							<div class="ball2">&nbsp;</div>
-							<div class="ball3">&nbsp;</div>
-							<p>产品名2</p>
-						</div>
-					</div>
-					<br>`
-				)
-			},
-			addTitleModel1() {
-				CKEDITOR.instances.editor.insertHtml(
-					`<div class="question">
-						<span class="line"></span>
-						<span class="block"></span>
-						<span>标题一</span>
-						<span class="block"></span>
-						<span class="line"></span>
-					</div>
-					<br>`
-				)
-			},
-			addTitleModel2() {
-				CKEDITOR.instances.editor.insertHtml(
-					`<div class="sub-container">
-						<div class="subtitle">
-							<span class="point-left"></span>
-							<p>标题二</p>
-							<span class="point-right"></span>
-							<div class="subtitle-front">&nbsp;</div>
-						</div>
-					</div>
-					<br>`
-				)
-			},
-			addTitleModel3() {
-				CKEDITOR.instances.editor.insertHtml(
-					`<div class="epilogue">
-						<span>标题三</span>
-					</div>
-					<br>`
-				)
-			},
-			addTitleModel4() {
-				CKEDITOR.instances.editor.insertHtml(
-					`<div class="column column-svg">
-						<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
-						<span>标题四</span>
-					</div>
-					<br>`
-				)
-			},
-			addImgModel1() {
-				CKEDITOR.instances.editor.insertHtml(
-					`<div class="product1">
-						<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
-					</div>
-					<br>`
-				)
-			},
-			addImgModel2() {
-				CKEDITOR.instances.editor.insertHtml(
-					`<div class="naked">
-						<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
-						<span>参考价格：540/30g</span>
-					</div>
-					<br>`
-				)
-			},
-			addImgModel3() {
-				CKEDITOR.instances.editor.insertHtml(
-					`<div class="comments-content">
-						<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
-					</div>
-					<br>`
-				)
-			},
-			addImgModel4() {
-				CKEDITOR.instances.editor.insertHtml(
-					`<div class="product2">
-						<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
-					</div>
-					<br>`
-				)
-			},
-			addTextModel1() {
-				CKEDITOR.instances.editor.insertHtml(
-					`<div class="column">
-						<p>文字1</p>
-					</div>
-					<br>`
-				)
-			},
-			addTextModel2() {
-				CKEDITOR.instances.editor.insertHtml(
-					`<div class="detail">
-						<p>正文并排</p>
-					</div>
-					<br>`
-				)
-			},
-			addTextModel3() {
-				CKEDITOR.instances.editor.insertHtml(
-					`<div class="answer">
-						<p>正文常规</p>
-					</div>
-					<br>`
-				)
-			},
-			addTextModel4() {
-				CKEDITOR.instances.editor.insertHtml(
-					`<h3>文字效果一</h3>
-					<br>`
-				)
-			},
-			addTextModel5() {
-				CKEDITOR.instances.editor.insertHtml(
-					`<div class="detail">
-						<span>文字效果二</span>
-					</div>
-					<br>`
-				)
-			},
+// 			addProductNameModel1() {
+// 				CKEDITOR.instances.editor.insertHtml(
+// 					`<div class="question">
+// 						<p>产品名1</p>
+// 					</div>
+// 					<br>`
+// 				)
+// 			},
+// 			addProductNameModel2() {
+// 				CKEDITOR.instances.editor.insertHtml(
+// 					`<div class="product-title">
+// 						<div class="main-title">
+// 							<div class="ball1">&nbsp;</div>
+// 							<div class="ball2">&nbsp;</div>
+// 							<div class="ball3">&nbsp;</div>
+// 							<p>产品名2</p>
+// 						</div>
+// 					</div>
+// 					<br>`
+// 				)
+// 			},
+// 			addTitleModel1() {
+// 				CKEDITOR.instances.editor.insertHtml(
+// 					`<div class="question">
+// 						<span class="line"></span>
+// 						<span class="block"></span>
+// 						<span>标题一</span>
+// 						<span class="block"></span>
+// 						<span class="line"></span>
+// 					</div>
+// 					<br>`
+// 				)
+// 			},
+// 			addTitleModel2() {
+// 				CKEDITOR.instances.editor.insertHtml(
+// 					`<div class="sub-container">
+// 						<div class="subtitle">
+// 							<span class="point-left"></span>
+// 							<p>标题二</p>
+// 							<span class="point-right"></span>
+// 							<div class="subtitle-front">&nbsp;</div>
+// 						</div>
+// 					</div>
+// 					<br>`
+// 				)
+// 			},
+// 			addTitleModel3() {
+// 				CKEDITOR.instances.editor.insertHtml(
+// 					`<div class="epilogue">
+// 						<span>标题三</span>
+// 					</div>
+// 					<br>`
+// 				)
+// 			},
+// 			addTitleModel4() {
+// 				CKEDITOR.instances.editor.insertHtml(
+// 					`<div class="column column-svg">
+// 						<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
+// 						<span>标题四</span>
+// 					</div>
+// 					<br>`
+// 				)
+// 			},
+// 			addImgModel1() {
+// 				CKEDITOR.instances.editor.insertHtml(
+// 					`<div class="product1">
+// 						<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
+// 					</div>
+// 					<br>`
+// 				)
+// 			},
+// 			addImgModel2() {
+// 				CKEDITOR.instances.editor.insertHtml(
+// 					`<div class="naked">
+// 						<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
+// 						<span>参考价格：540/30g</span>
+// 					</div>
+// 					<br>`
+// 				)
+// 			},
+// 			addImgModel3() {
+// 				CKEDITOR.instances.editor.insertHtml(
+// 					`<div class="comments-content">
+// 						<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
+// 					</div>
+// 					<br>`
+// 				)
+// 			},
+// 			addImgModel4() {
+// 				CKEDITOR.instances.editor.insertHtml(
+// 					`<div class="product2">
+// 						<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
+// 					</div>
+// 					<br>`
+// 				)
+// 			},
+// 			addTextModel1() {
+// 				CKEDITOR.instances.editor.insertHtml(
+// 					`<div class="column">
+// 						<p>文字1</p>
+// 					</div>
+// 					<br>`
+// 				)
+// 			},
+// 			addTextModel2() {
+// 				CKEDITOR.instances.editor.insertHtml(
+// 					`<div class="detail">
+// 						<p>正文并排</p>
+// 					</div>
+// 					<br>`
+// 				)
+// 			},
+// 			addTextModel3() {
+// 				CKEDITOR.instances.editor.insertHtml(
+// 					`<div class="answer">
+// 						<p>正文常规</p>
+// 					</div>
+// 					<br>`
+// 				)
+// 			},
+// 			addTextModel4() {
+// 				CKEDITOR.instances.editor.insertHtml(
+// 					`<h3>文字效果一</h3>
+// 					<br>`
+// 				)
+// 			},
+// 			addTextModel5() {
+// 				CKEDITOR.instances.editor.insertHtml(
+// 					`<div class="detail">
+// 						<span>文字效果二</span>
+// 					</div>
+// 					<br>`
+// 				)
+// 			},
 			// 获取editor内容
 			getEditorData(){
 				return CKEDITOR.instances.editor.getData()
