@@ -13,6 +13,8 @@ module.exports = {
     proxyTable: {
       '/management': {
         target: 'http://localhost:8080',
+        // target: 'http://192.168.12.225:8080',//xierui
+        // target: 'http://192.168.12.226:8080',//liqinxiang
         changeOrigin: true,
         pathRewrite: {
           '^/management': '/management'

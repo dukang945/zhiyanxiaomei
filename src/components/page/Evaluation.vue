@@ -6,21 +6,27 @@
 					<el-button type="primary" size='small' @click="add">新增</el-button>
 					<el-button type="primary" size='small' @click="batchOnline">批量上线</el-button>
 					<el-button type="primary" size='small' @click="batchOffline">批量下线</el-button>
-					<el-button type="primary" size='small' @click="batchDelete">批量删除</el-button>
-					<el-dialog title="新增测评" :visible="AddVisible" width="80%" @close='AddVisible=false'>
+					<el-button type="primary" size='small' @click="batchLabel">批量加标签</el-button>
+					<el-button type="danger" size='small' @click="batchDelete">批量删除</el-button>
+					<el-dialog title="新增测评" :visible="AddVisible" width="60%" @close='AddVisible=false;cancelAdd()'>
 						<el-form :label-position="labelPosition" label-width="120px" :model="formLabelAdd">
 							<el-form-item label="标题">
 								<el-input v-model="formLabelAdd.name"></el-input>
 							</el-form-item>
-							<el-form-item label="标签">
-								<el-input v-model="formLabelAdd.lableId" @focus=' showTreeBox=true '></el-input>
-								<div class="selectTreeBox" v-show="showTreeBox">
-									<el-tree :data="tagOptions" class='selectItem' ref="tree" show-checkbox node-key="id" :props="defaultProps">
-									</el-tree>
-									<div class="selectTreeBtn">
-										<el-button type='primary' size='small' plain @click='choosedLabel'>选好了</el-button>
-										<el-button type='primary' size='small' plain @click='resetLabel'>重置</el-button>
-									</div>
+							<el-form-item label="搜索标签">
+								<el-input v-model='searchLabel' @change='getLabelList' clearable></el-input>
+								<el-table :data="labelTableData" @row-click='selectLabel' border style="width: 100%" v-loading="loading" v-if='searchLabel'
+								 class='labelTable'>
+									<el-table-column prop="id" label="id" width="50" align='center'>
+									</el-table-column>
+									<el-table-column prop="name" label="标题" align='center'>
+									</el-table-column>
+									<el-table-column prop="labelName" label="上级标签" align='center'>
+									</el-table-column>
+								</el-table>
+								<div class="labelChoosed">
+									已选标签：<span v-for="(item,key) in choosedLabelList">{{item.name}}
+										<i class="el-icon-error" @click="deleteLabel(key)"></i></span>
 								</div>
 							</el-form-item>
 							<el-form-item label="点赞次数">
@@ -51,114 +57,7 @@
 
 							<el-form-item label="编辑页面内容">
 								<el-row>
-									<el-col :span='8' class='modelBox'>
-										<div class="modelList">模板列表</div>
-										<el-collapse accordion>
-											<el-collapse-item title="产品名称模板" name="1">
-												<div class="modelItem" @click="addProductNameModel1">
-													<div class="question">
-														<p>产品名1</p>
-													</div>
-												</div>
-
-												<div class="modelItem" @click="addProductNameModel2">
-													<div class="product-title">
-														<div class="main-title">
-															<div class="ball1">&nbsp;</div>
-
-															<div class="ball2">&nbsp;</div>
-
-															<div class="ball3">&nbsp;</div>
-
-															<p>产品名2</p>
-														</div>
-													</div>
-												</div>
-											</el-collapse-item>
-											<el-collapse-item title="标题模板" name="2">
-												<div class="modelItem" @click="addTitleModel1">
-													<div class="question">
-														<span class="line"></span>
-														<span class="block"></span>
-														<span>标题一</span>
-														<span class="block"></span>
-														<span class="line"></span>
-													</div>
-												</div>
-												<div class="modelItem" @click="addTitleModel2">
-													<div class="sub-container">
-														<div class="subtitle">
-															<span class="point-left"></span>
-															<p>标题二</p>
-															<span class="point-right"></span>
-															<div class="subtitle-front">&nbsp;</div>
-														</div>
-													</div>
-												</div>
-												<div class="modelItem" @click="addTitleModel3">
-													<div class="epilogue">
-														<span>标题三</span>
-													</div>
-												</div>
-												<div class="modelItem" @click="addTitleModel4">
-													<div class="column column-svg">
-														<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
-														<span>标题四</span>
-													</div>
-												</div>
-
-											</el-collapse-item>
-											<el-collapse-item title="图片模板" name="3">
-												<div class="modelItem" @click="addImgModel1">
-													<div class="product1">
-														<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
-													</div>
-												</div>
-												<div class="modelItem" @click="addImgModel2">
-													<div class="naked">
-														<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
-														<span>参考价格：540/30g</span>
-													</div>
-												</div>
-												<div class="modelItem" @click="addImgModel3">
-													<div class="comments-content">
-														<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
-													</div>
-												</div>
-												<div class="modelItem" @click="addImgModel4">
-													<div class="product2">
-														<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
-													</div>
-												</div>
-											</el-collapse-item>
-											<el-collapse-item title="文字模板" name="4">
-												<div class="modelItem" @click="addTextModel1">
-													<div class="column">
-														<p>文字1</p>
-													</div>
-												</div>
-												<div class="modelItem" @click="addTextModel2">
-													<div class="detail">
-														<p>正文并排</p>
-													</div>
-												</div>
-												<div class="modelItem" @click="addTextModel3">
-													<div class="answer">
-														<p>正文常规</p>
-													</div>
-												</div>
-												<div class="modelItem" @click="addTextModel4">
-													<h3>文字效果一</h3>
-												</div>
-												<div class="modelItem" @click="addTextModel5">
-													<div class="detail">
-														<span>文字效果二</span>
-													</div>
-												</div>
-											</el-collapse-item>
-										</el-collapse>
-									</el-col>
-									<el-col :span='14' :offset="2">
+									<el-col :span='22'>
 										<textarea id="editorAdd" rows="10" cols="80"></textarea>
 									</el-col>
 								</el-row>
@@ -166,7 +65,8 @@
 						</el-form>
 						<span slot="footer" class="dialog-footer">
 							<el-button @click="cancelAdd">取 消</el-button>
-							<el-button type="primary" @click="handleAdd">确 定</el-button>
+							<el-button type="primary" plain @click="saveDraft">保存草稿</el-button>
+							<el-button type="primary" @click="handleAdd">提交审核</el-button>
 						</span>
 					</el-dialog>
 				</div>
@@ -183,45 +83,43 @@
 			</el-col>
 		</el-row>
 		<el-row :gutter="10">
-			<el-col :span='3' class='treeBox'>
+			<el-col :span='2' class='treeBox'>
 				<span class="treeTitle">测评分类列表</span>
 				<el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
 			</el-col>
-			<el-col :span='21'>
-				<el-table :data="tableData" border style="width: 99%" class='table' max-height="630" @select='tableSelect'
-				 v-loading="loading" :row-class-name="tableRowClassName">
+			<el-col :span='22'>
+				<!-- <el-table :data="tableData" border style="width: 99%" class='table' max-height="630" @select='tableSelect'
+				 v-loading="loading" :row-class-name="tableRowClasName"> -->
+				<el-table :data="tableData" border style="width: 100%" class='table' max-height="630" @select='tableSelect' @select-all='tableSelectAll'
+				 v-loading="loading">
 					<el-table-column type="selection" width="55" align='center'></el-table-column>
-					<el-table-column type="index" label="序号" width="50" align='center'>
-					</el-table-column>
 					<el-table-column prop="id" label="id" width="50" align='center'>
 					</el-table-column>
-					<el-table-column prop="name" label="标题" width="200" align='center' :show-overflow-tooltip="true">
+					<el-table-column prop="name" label="标题" align='center' :show-overflow-tooltip="true">
 					</el-table-column>
-					<el-table-column prop="labelName" label="所属分类" width="200" align='center' :show-overflow-tooltip="true">
+					<el-table-column prop="labelName" label="标签" width="150" align='center' :show-overflow-tooltip="true">
 					</el-table-column>
-					<el-table-column label="H5地址" width="100" align='center'>
-						<template slot-scope="scope">
-							<el-button class='copyBtn' size="small" @click='copyH5Url(scope.row)' type="primary">复制</el-button>
-						</template>
+					<el-table-column prop="creatUser" label="创建人" width="100" align='center' :filters="userList" :filter-method="filterUser"
+					 filter-placement="bottom-end">
 					</el-table-column>
-					<el-table-column prop="creatUser" label="创建人" width="80" align='center'>
+					<el-table-column prop="online" label="审核状态" width="100" align='center' :formatter='getStatus' :filters="satusList"
+					 :filter-method="filterStatus" filter-placement="bottom-end">
 					</el-table-column>
 					<el-table-column prop="collectNumber" label="点赞次数" width="100" align='center'>
 					</el-table-column>
-					<el-table-column prop="createTime" label="创建时间" width="150" align='center' :formatter='getTime'>
+					<el-table-column prop="createTime" label="创建时间" width="100" align='center' :formatter='getTime'
+					 :show-overflow-tooltip="true">
 					</el-table-column>
-					<el-table-column prop="online" label="审核状态" width="100" align='center' :formatter='getStatus'>
-					</el-table-column>
-					<el-table-column label="操作" fixed="right" align='center' width='780'>
+					<el-table-column label="操作" fixed="right" align='center' width='680'>
 						<template slot-scope="scope">
 							<el-button @click.native.prevent="deleteRow(scope.$index, scope.row)" size='small' type="danger" class="el-icon-delete">删除</el-button>
 							<el-button size="small" type="primary" @click="edit(scope.$index, scope.row)" icon='el-icon-edit'>编辑</el-button>
 							<el-button size="small" type="primary" @click="switchOnline(scope.$index, scope.row)" class="el-icon-sort">{{tableData[scope.$index].online==0?'下线':'上线'}}</el-button>
-							<el-button size="small" type="success" @click="switchTop(scope.$index, scope.row)">{{tableData[scope.$index].sticky==0?'置顶':'取消置顶'}}</el-button>
-							<el-button size="small" type="primary" @click="creatH5(scope.$index, scope.row)" icon='el-icon-edit-outline'>生成H5</el-button>
+							<!-- <el-button size="small" type="success" @click="switchTop(scope.$index, scope.row)">{{tableData[scope.$index].sticky==0?'置顶':'取消置顶'}}</el-button> -->
+							<el-button size="small" type="primary" @click="checkH5(scope.$index, scope.row)" icon='el-icon-edit-outline'>预览H5</el-button>
 							<el-button size="small" type="primary" @click="updataSort(scope.$index, scope.row)" icon='el-icon-sort'>更新排序</el-button>
 							<el-button size="small" type="primary" @click="checkProduct(scope.$index, scope.row)">产品管理</el-button>
-							<el-button size="small" type="primary" @click="checkComment(scope.$index, scope.row)">查看评论</el-button>
+							<el-button size="small" type="primary" @click="checkComment(scope.$index, scope.row)">评论管理</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
@@ -229,20 +127,25 @@
 			</el-col>
 		</el-row>
 		<!-- 编辑表单 -->
-		<el-dialog title="编辑" :visible.sync="editDialogVisible" width="80%" :before-close="handleClose">
+		<el-dialog title="编辑" :visible.sync="editDialogVisible" width="60%" :before-close="handleClose" @open='openEdit'>
 			<el-form :label-position="labelPosition" label-width="120px" :model="editFormData">
 				<el-form-item label="标题">
 					<el-input v-model="editFormData.name"></el-input>
 				</el-form-item>
-				<el-form-item label="标签">
-					<el-input v-model="editFormData.labelId" @focus='showTreeBox=true'></el-input>
-					<div class="selectTreeBox" v-show="showTreeBox">
-						<el-tree :data="tagOptions" ref="tree2" class='selectItem' show-checkbox node-key="id" :props="defaultProps">
-						</el-tree>
-						<div class="selectTreeBtn">
-							<el-button type='primary' size='small' plain @click='choosedLabel2'>选好了</el-button>
-							<el-button type='primary' size='small' plain @click='resetLabel2'>重置</el-button>
-						</div>
+				<el-form-item label="搜索标签">
+					<el-input v-model='searchLabel' @change='getLabelList' clearable></el-input>
+					<el-table :data="labelTableData" @row-click='selectLabel' border style="width: 100%" v-loading="loading" v-if='searchLabel'
+					 class='labelTable'>
+						<el-table-column prop="id" label="id" width="50" align='center'>
+						</el-table-column>
+						<el-table-column prop="name" label="标题" align='center'>
+						</el-table-column>
+						<el-table-column prop="labelName" label="上级标签" align='center'>
+						</el-table-column>
+					</el-table>
+					<div class="labelChoosed">
+						已选标签：<span v-for="(item,key) in choosedLabelList">{{item.name}}
+							<i class="el-icon-error" @click="deleteLabel(key)"></i></span>
 					</div>
 				</el-form-item>
 				<el-form-item label="点赞次数">
@@ -254,7 +157,6 @@
 						<el-option label="否" :value="Number(1)"></el-option>
 					</el-select>
 				</el-form-item>
-
 				<el-form-item label="列表图片">
 					<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData' :before-upload='beforeUpload'
 					 :on-success="uploadListImgSuccess" :on-remove="handleRemoveListPic" :file-list="editListPicFileList" :on-preview="handlePictureCardPreview"
@@ -316,7 +218,7 @@
 			</el-form>
 		</el-dialog>
 		<!-- 查看评论弹框 -->
-		<el-dialog title="评论管理" :visible.sync="checkCommentDialogVisible" width="80%">
+		<el-dialog title="评论管理" :visible.sync="checkCommentDialogVisible" width="60%">
 			<el-button type="primary" @click="addComment" size='small' style='margin-bottom: 20px;'>新增评论</el-button>
 			<el-table :data="commentTableData" border style="width: 100%">
 				<el-table-column type="index" label="序号" width="50" align='center'>
@@ -343,7 +245,7 @@
 			<Pagination :totalNum='commentTotalNum' @change_Page='changeCommentPage' @change_Size='changeCommentSize'></Pagination>
 		</el-dialog>
 		<!-- 产品管理弹框 -->
-		<el-dialog title="产品管理" :visible.sync="productDialogVisible" width="80%">
+		<el-dialog title="产品管理" :visible.sync="productDialogVisible" width="60%">
 			<el-button type="primary" @click="addProduct" size='small' style='margin-bottom: 20px;'>新增产品</el-button>
 			<el-table :data="productTableData" border style="width: 100%">
 				<el-table-column type="index" label="序号" width="50" align='center'>
@@ -435,6 +337,31 @@
 		<el-dialog :visible.sync="imgDialogVisible">
 			<img width="100%" :src="dialogImageUrl" alt="">
 		</el-dialog>
+		<!-- 批量增加标签弹框 -->
+		<el-dialog title="批量增加标签" :visible.sync="batchAddLabelDialogVisible" width="50%">
+			<el-form :label-position="labelPosition" label-width="80px">
+				<el-form-item label="搜索标签">
+					<el-input v-model='searchLabel' @change='getLabelList' clearable></el-input>
+					<el-table :data="labelTableData" @row-click='selectLabel' border style="width: 100%" v-loading="loading" v-if='searchLabel'
+					 class='labelTable'>
+						<el-table-column prop="id" label="id" width="50" align='center'>
+						</el-table-column>
+						<el-table-column prop="name" label="标题" align='center'>
+						</el-table-column>
+						<el-table-column prop="labelName" label="上级标签" align='center'>
+						</el-table-column>
+					</el-table>
+					<div class="labelChoosed">
+						已选标签：<span v-for="(item,key) in choosedLabelList">{{item.name}}
+							<i class="el-icon-error" @click="deleteLabel(key)"></i></span>
+					</div>
+				</el-form-item>
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="cancelAddLabel">取消</el-button>
+				<el-button type="primary" @click="addLabel">确定</el-button>
+			</span>
+		</el-dialog>
 	</div>
 </template>
 
@@ -450,9 +377,14 @@
 				searchForm: {
 					text: ''
 				}, //搜索框
-
+				labelTableData: [], //标签表格数据
+				searchLabel: '', //搜索标签输入框
+				choosedLabelList: [], //已选中标签列表
+				beautiColorTableData: [], //色号表格数据
+				searchBeautiColor: '', //搜索色号输入框
+				choosedBeautiColorList: [], //已选中色号列表
 				formLabelAdd: {}, //新增教程表单
-				searchColor: '', //色号搜索内容
+				// searchColor: '', //色号搜索内容
 				editFormData: {}, //编辑表单
 				addCommentForm: {}, //新增评论表单
 				addproductForm: {}, //新增产品表单
@@ -469,6 +401,7 @@
 				addProductDialogVisible: false,
 				editProductDialogVisible: false,
 				imgDialogVisible: false,
+				batchAddLabelDialogVisible: false,
 				tableData: [],
 				commentTableData: [], //评论表格数据
 				productTableData: [], //产品表格数据
@@ -521,9 +454,27 @@
 				hasEditor: false,
 				textData: '', //这是编辑表单文本编辑器内容
 				showTreeBox: false, //显示树形结构
-				selectLabel: '',
 				selectId: [],
-				selectIdEdit: [], //编辑表单的选中labelId
+				userList: [], // 用户列表（用于筛选）
+				satusList: [{
+					value: 0,
+					text: "上线"
+				}, {
+					value: 1,
+					text: "下线"
+				}, {
+					value: 2,
+					text: "草稿"
+				}, {
+					value: 3,
+					text: "待审核"
+				}, {
+					value: 4,
+					text: "已审核"
+				}, {
+					value: 5,
+					text: "审核驳回"
+				}, ], // 状态列表（用于筛选）
 			}
 		},
 		components: {
@@ -531,46 +482,6 @@
 			Editor
 		},
 		methods: {
-			// 选好标签
-			choosedLabel() {
-				let tempArr = this.$refs.tree.getCheckedNodes();
-				if (tempArr.length > 0) {
-					let tempId = [];
-					let tempLabel = [];
-					for (let i = 0; i < tempArr.length; i++) {
-						tempId.push(tempArr[i].id)
-						tempLabel.push(tempArr[i].text)
-					}
-					this.formLabelAdd.lableId = tempLabel.join(',')
-					this.selectId = tempId;
-				}
-				this.showTreeBox = false
-			},
-			// 重置选中标签
-			resetLabel() {
-				this.$refs.tree.setCheckedKeys([]);
-				this.formLabelAdd.lableId = '';
-			},
-			choosedLabel2() {
-				let tempArr = this.$refs.tree2.getCheckedNodes();
-				console.log(tempArr)
-				if (tempArr.length > 0) {
-					let tempId = [];
-					let tempLabel = [];
-					for (let i = 0; i < tempArr.length; i++) {
-						tempId.push(tempArr[i].id)
-						tempLabel.push(tempArr[i].text)
-					}
-					this.editFormData.labelId = tempLabel.join(',')
-					this.selectIdEdit = tempId;
-				}
-				this.showTreeBox = false
-			},
-			// 重置选中标签
-			resetLabel2() {
-				this.$refs.tree2.setCheckedKeys([]);
-				this.editFormData.labelId = '';
-			},
 			// 编辑器
 			initCKEditor() {
 				CKEDITOR.replace('editorAdd', {
@@ -618,162 +529,14 @@
 				var data;
 				var mySelection = CKEDITOR.instances.editorAdd.getSelection();
 				if (CKEDITOR.env.ie) {
-				    mySelection.unlock(true);
-				    data = mySelection.getNative().createRange().text;
+					mySelection.unlock(true);
+					data = mySelection.getNative().createRange().text;
 				} else {
-				    data = mySelection.getNative();
+					data = mySelection.getNative();
 				}
 				return data;
 			},
-			// 增加模板
-			addProductNameModel1() {
-				let selectText=this.edtorHasSelsct();
-				console.log(selectText)
-				CKEDITOR.instances.editorAdd.insertHtml(
-					`<div class="question">
-						<p>产品名1</p>
-					</div>
-					<br>`
-				)
-			},
-			addProductNameModel2() {
-				CKEDITOR.instances.editorAdd.insertHtml(
-					`<div class="product-title">
-						<div class="main-title">
-							<div class="ball1">&nbsp;</div>
-							<div class="ball2">&nbsp;</div>
-							<div class="ball3">&nbsp;</div>
-							<p>产品名2</p>
-						</div>
-					</div>
-					<br>`
-				)
-			},
-			addTitleModel1() {
-				CKEDITOR.instances.editorAdd.insertHtml(
-					`<div class="question">
-						<span class="line"></span>
-						<span class="block"></span>
-						<span>标题一</span>
-						<span class="block"></span>
-						<span class="line"></span>
-					</div>
-					<br>`
-				)
-			},
-			addTitleModel2() {
-				CKEDITOR.instances.editorAdd.insertHtml(
-					`<div class="sub-container">
-						<div class="subtitle">
-							<span class="point-left"></span>
-							<p>标题二</p>
-							<span class="point-right"></span>
-							<div class="subtitle-front">&nbsp;</div>
-						</div>
-					</div>
-					<br>`
-				)
-			},
-			addTitleModel3() {
-				CKEDITOR.instances.editorAdd.insertHtml(
-					`<div class="epilogue">
-						<span>标题三</span>
-					</div>
-					<br>`
-				)
-			},
-			addTitleModel4() {
-				CKEDITOR.instances.editorAdd.insertHtml(
-					`<div class="column column-svg">
-						<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
-						<span>标题四</span>
-					</div>
-					<br>`
-				)
-			},
-			addImgModel1() {
-				CKEDITOR.instances.editorAdd.insertHtml(
-					`<div class="product1">
-						<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
-					</div>
-					<br>`
-				)
-			},
-			addImgModel2() {
-				CKEDITOR.instances.editorAdd.insertHtml(
-					`<div class="naked">
-						<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
-						<span>参考价格：540/30g</span>
-					</div>
-					<br>`
-				)
-			},
-			addImgModel3() {
-				CKEDITOR.instances.editorAdd.insertHtml(
-					`<div class="comments-content">
-						<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
-					</div>
-					<br>`
-				)
-			},
-			addImgModel4() {
-				CKEDITOR.instances.editorAdd.insertHtml(
-					`<div class="product2">
-						<img src="https://www.we-electron.com/uploadFiles/html/beauty_appraisal/img/zhanwei.png" />
-					</div>
-					<br>`
-				)
-			},
-			addTextModel1() {
-				CKEDITOR.instances.editorAdd.insertHtml(
-					`<div class="column">
-						<p>文字1</p>
-					</div>
-					<br>`
-				)
-			},
-			addTextModel2() {
-				CKEDITOR.instances.editorAdd.insertHtml(
-					`<div class="detail">
-						<p>正文并排</p>
-					</div>
-					<br>`
-				)
-			},
-			addTextModel3() {
-				CKEDITOR.instances.editorAdd.insertHtml(
-					`<div class="answer">
-						<p>正文常规</p>
-					</div>
-					<br>`
-				)
-			},
-			addTextModel4() {
-				CKEDITOR.instances.editorAdd.insertHtml(
-					`<h3>文字效果一</h3>
-					<br>`
-				)
-			},
-			addTextModel5() {
-				CKEDITOR.instances.editorAdd.insertHtml(
-					`<div class="detail">
-						<span>文字效果二</span>
-					</div>
-					<br>`
-				)
-			},
 
-
-			tableRowClassName({
-				row,
-				index
-			}) {
-				if (row.online === 0) {
-					return 'online';
-				} else if (row.online === 1) {
-					return '';
-				}
-			},
 			handleClose(done) {
 				this.$confirm("确认关闭？")
 					.then(_ => {
@@ -783,6 +546,7 @@
 			},
 			// 新增
 			add() {
+				this.choosedLabelList=[];
 				let _this = this;
 				_this.AddVisible = true;
 				setTimeout(function() {
@@ -796,7 +560,11 @@
 				console.log('新增里面的options')
 				console.log(_this.tagOptions)
 			},
-			// 确认新增
+			// 保存草稿
+			saveDraft(){
+				
+			},
+			// 提交审核
 			handleAdd() {
 				// 格式化表单数据为参数所需类型
 				var testObj = {};
@@ -812,16 +580,16 @@
 					testObj.bannerImage = `<img src="${this.tempBannerImgUrl}" alt="" />`
 				}
 
-				var labelIdString = '';
+				var labelStr = '';
 
-				if (this.selectIdEdit.length > 0) {
-					for (let i = 0; i < this.selectIdEdit.length; i++) {
-						labelIdString += `&labelId=${this.labelIdEdit[i]}`
+				if (this.choosedLabelList.length > 0) {
+					for (let i = 0; i < this.choosedLabelList.length; i++) {
+						labelStr += `&labelId=${this.choosedLabelList[i].id}`
 					}
 				}
 
 				testObj.text = CKEDITOR.instances.editorAdd.getData();
-				let paramsStr = this.$qs.stringify(testObj) + labelIdString;
+				let paramsStr = this.$qs.stringify(testObj) + labelStr;
 				console.log(testObj)
 				this.$axios.post('/management/admin/beauty-appraisal!save.action', paramsStr).then(res => {
 					this.getTableData('/management/admin/beauty-appraisal!list.action', this.page, this.row);
@@ -829,7 +597,8 @@
 					this.tempListImgUrl = '';
 					this.tempBannerImgUrl = '';
 					this.formLabelAdd = {};
-					this.resetLabel();
+					this.choosedLabelList=[];
+					this.selectId=[];
 				})
 			},
 			// 取消新增
@@ -837,12 +606,25 @@
 				this.AddVisible = false;
 				CKEDITOR.instances.editorAdd.setData("")
 				this.formLabelAdd = {}
-				this.resetLabel();
+				this.searchLabel='';
 				this.tempListImgUrl = '';
+				this.selectId=[];
 				this.tempBannerImgUrl = '';
 			},
 			// 表格多选框change
 			tableSelect(selection) {
+				console.log(selection)
+				let tempArr = [];
+				if (selection.length > 0) {
+					selection.forEach(item => {
+						tempArr.push(item.id)
+					})
+				} else if (selection.length == 0) {
+					this.checkedRowId = ''
+				}
+				this.checkedRowId = tempArr.join(',')
+			},
+			tableSelectAll(selection){
 				let tempArr = [];
 				if (selection.length > 0) {
 					selection.forEach(item => {
@@ -879,6 +661,47 @@
 					this.$message.error('没有选中的行')
 				}
 			},
+			// 批量增加标签
+			batchLabel() {
+				if (this.checkedRowId) {
+					this.batchAddLabelDialogVisible = true
+				} else {
+					this.$message.error('没有选中的行')
+				}
+			},
+			// 提交增加标签
+			addLabel() {
+				if (this.choosedLabelList.length > 0) {
+					console.log(this.choosedLabelList)
+					var idString = '';
+					for (let i = 0; i < this.choosedLabelList.length; i++) {
+						if (i === (this.choosedLabelList.length - 1)) {
+							idString += `labelId=${this.choosedLabelList[i].id}`
+						} else {
+							idString += `labelId=${this.choosedLabelList[i].id}&`
+						}
+					}
+					this.$axios.post(`/management/admin/beauty-appraisal!batchAddLabel.action?ids=${this.checkedRowId}`, idString).then(
+						res => {
+							if (res.status === 200) {
+								this.choosedLabelList = [];
+								this.searchLabel = '';
+								this.batchAddLabelDialogVisible = false;
+							} else {
+								this.batchAddLabelDialogVisible = false;
+								this.$message.error('出了点问题-.-！')
+							}
+						})
+				} else {
+					this.$message.error('没有选中的标签')
+				}
+			},
+			// 取消增加标签
+			cancelAddLabel() {
+				this.batchAddLabelDialogVisible = false;
+				this.choosedLabelList = [];
+				this.searchLabel = '';
+			},
 			// 批量删除
 			batchDelete() {
 				this.$confirm('确定要进行批量删除么？').then(res => {
@@ -897,26 +720,26 @@
 				this.getTableData('/management/admin/beauty-appraisal!list.action', this.page, this.row, '', this.searchForm.text)
 			},
 			// 复制H5页面路径
-			copyH5Url(row) {
-				var Url = row.url;
-				if (Url) {
-					var clipboard = new Clipboard('.copyBtn', {
-						text: function() {
-							return Url;
-						}
-					});
-					clipboard.on('success', e => {
-						this.$message.success('复制成功')
-						clipboard.destroy()
-					})
-					clipboard.on('error', e => {
-						this.$message.error('浏览器不支持复制')
-						clipboard.destroy()
-					})
-				} else {
-					this.$message.error('还没有生成H5页面，请点击生成H5再试')
-				}
-			},
+// 			copyH5Url(row) {
+// 				var Url = row.url;
+// 				if (Url) {
+// 					var clipboard = new Clipboard('.copyBtn', {
+// 						text: function() {
+// 							return Url;
+// 						}
+// 					});
+// 					clipboard.on('success', e => {
+// 						this.$message.success('复制成功')
+// 						clipboard.destroy()
+// 					})
+// 					clipboard.on('error', e => {
+// 						this.$message.error('浏览器不支持复制')
+// 						clipboard.destroy()
+// 					})
+// 				} else {
+// 					this.$message.error('还没有生成H5页面，请点击生成H5再试')
+// 				}
+// 			},
 			// 树形控件操作
 			handleNodeClick(a, b, c) {
 				this.tempId = a.id;
@@ -958,7 +781,12 @@
 			},
 			// 表格操作
 			// 编辑
+			openEdit(){
+				// this.textData = row.text;
+				console.log('已打开编辑')
+			},
 			edit(index, row) {
+				this.choosedLabelList=[];
 				console.log('新编辑里面的options')
 				console.log(this.tagOptions)
 				console.log(row)
@@ -977,13 +805,8 @@
 					labelId: row.labelName
 				};
 				setTimeout(function() {
-					let temp = row.labelId.split(',');
-					if (temp && temp.length > 0) {
-						console.log(temp)
-						that.$refs.tree2.setCheckedKeys(temp);
-					}
 					that.textData = row.text;
-				}, 200);
+				}, 500);
 				that.editFormData = tempObj
 				// 显示图片
 				let testExp = /http.*?(\.png|\.jpg)/gi;
@@ -1001,6 +824,16 @@
 					}]
 					this.tempBannerImgUrl = row.bannerImage.match(testExp)[0]
 				}
+				if (row.labelId) {
+					let tempIdArr = row.labelId.split(',');
+					let tempNameArr = row.labelName.split(',');
+					for (let i = 0; i < tempIdArr.length; i++) {
+						this.choosedLabelList.push({
+							id: tempIdArr[i],
+							name: tempNameArr[i]
+						})
+					}
+				}
 			},
 			// 取消编辑
 			cancelEdit() {
@@ -1010,7 +843,8 @@
 				this.textData = '';
 				this.editListPicFileList = [];
 				this.editBannerPicFileList = [];
-				this.resetLabel2()
+				this.choosedLabelList=[];
+				// this.resetLabel2()
 			},
 			// 提交编辑
 			handleEdit() {
@@ -1033,10 +867,13 @@
 				}
 				testObj.text = editorhtml;
 				var labelIdString = '';
-				if (this.selectIdEdit.length > 0) {
-					for (let i = 0; i < this.selectIdEdit.length; i++) {
-						labelIdString += `&labelId=${this.selectIdEdit[i]}`
+				if (this.choosedLabelList.length > 0) {
+					for (let i = 0; i < this.choosedLabelList.length; i++) {
+						labelIdString += `&labelId=${this.choosedLabelList[i].id}`
 					}
+				}else{
+					this.$message.error('请至少绑定一个标签');
+					return;
 				}
 				let paramsStr = this.$qs.stringify(testObj) + labelIdString
 				console.log(testObj)
@@ -1050,7 +887,7 @@
 					this.editListPicFileList = [];
 					this.editBannerPicFileList = [];
 					this.editFormData = {};
-					this.resetLabel2();
+					// this.resetLabel2();
 				})
 			},
 			// 删除
@@ -1085,16 +922,24 @@
 						})
 			},
 			// 创建H5页面
-			creatH5(index, row) {
-				this.$axios.post(`/management/admin/beauty-appraisal!saveHtml.action?id=${row.id}`).then(
-					res => {
-						if (res.status == 200) {
-							this.$message.success('H5页面创建成功');
-							this.getTableData(`/management/admin/beauty-appraisal!list.action`, this.page, this.row, this.tempId)
-						} else {
-							this.$message.error('好像出了点问题-.-！')
-						}
-					})
+// 			creatH5(index, row) {
+// 				this.$axios.post(`/management/admin/beauty-appraisal!saveHtml.action?id=${row.id}`).then(
+// 					res => {
+// 						if (res.status == 200) {
+// 							this.$message.success('H5页面创建成功');
+// 							this.getTableData(`/management/admin/beauty-appraisal!list.action`, this.page, this.row, this.tempId)
+// 						} else {
+// 							this.$message.error('好像出了点问题-.-！')
+// 						}
+// 					})
+// 			},
+			checkH5(index,row){
+				console.log(row)
+				if(row.url){
+					window.open(row.url);
+				}else{
+					this.$message.error('还没有生成H5地址……')
+				}
 			},
 			// 更新排序
 			updataSort(index, row) {
@@ -1320,6 +1165,14 @@
 			getStatus(row, column, statusNum) {
 				return statusNum == 0 ? '上线' : '下线'
 			},
+			// 筛选审核状态
+			filterStatus(value, row) {
+				return row.online === value;
+			},
+			// 筛选创建用户
+			filterUser(value, row) {
+				return row.creatUser === value;
+			},
 			// 列表数据
 			getTableData(url, page, row, id, q) {
 				// /management/admin/beauty-appraisal!list.action?labelId=773
@@ -1397,6 +1250,47 @@
 					this.productColorOptions = res.data.rows
 				})
 			},
+			// 获取标签列表
+			getLabelList(val) {
+				this.$axios.post('/management/admin/label!list.action', this.$qs.stringify({
+					page: 1,
+					rows: 50,
+					q: val
+				})).then(res => {
+					console.log(res.data)
+					this.labelTableData = res.data.rows
+				})
+			},
+			// 删除标签
+			deleteLabel(key) {
+				console.log(key)
+				this.choosedLabelList.splice(key, 1)
+			},
+			// 点击单选
+			selectLabel(row) {
+				console.log(row);
+				this.choosedLabelList.push(row);
+			},
+			// 色号操作
+
+			// 获取色号列表
+			getBeautiColorList(val) {
+				this.$axios.post('/management/admin/beauty-color!comboGridlist.action', this.$qs.stringify({
+					page: 1,
+					rows: 50,
+					q: val
+				})).then(res => {
+					this.beautiColorTableData = res.data.rows
+				})
+			},
+			// 删除色号
+			deleteBeautiColor(key) {
+				this.choosedBeautiColorList.splice(key, 1)
+			},
+			// 点击单选
+			selectBeautiColor(row) {
+				this.choosedBeautiColorList.push(row);
+			},
 		},
 		mounted() {
 			var _this = this;
@@ -1406,81 +1300,21 @@
 				_this.treeData = res.data;
 				this.tagOptions = res.data
 			})
-			// 			_this.$axios.get('/management/admin/label!getTreeGrid.action').then(res => {
-			// 				let tempList = res.data.map(item => {
-			// 					return {
-			// 						id: item.id,
-			// 						label: item.text,
-			// 						value: item.id,
-			// 						name: item.name,
-			// 						text: item.text,
-			// 						state: item.state,
-			// 						checked: false
-			// 					}
-			// 				})
-			// 				for (let i = 0; i < tempList.length; i++) {
-			// 					if (tempList[i].state == 'closed') {
-			// 						_this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${tempList[i].id}`).then(res2 => {
-			// 							if (res2.data) {
-			// 								var children2 = res2.data.map(item => {
-			// 									return {
-			// 										id: item.id,
-			// 										name: item.name,
-			// 										label: item.text,
-			// 										value: item.id,
-			// 										text: item.text,
-			// 										state: item.state,
-			// 										checked: false
-			// 									}
-			// 								})
-			// 								tempList[i].children = children2;
-			// 								for (let j = 0; j < children2.length; j++) {
-			// 									if (children2[j].state == 'closed') {
-			// 										_this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${children2[j].id}`).then(res3 => {
-			// 											if (res3.data) {
-			// 												var children3 = res3.data.map(item => {
-			// 													return {
-			// 														id: item.id,
-			// 														name: item.name,
-			// 														text: item.text,
-			// 														value: item.id,
-			// 														label: item.text,
-			// 														state: item.state,
-			// 														checked: false
-			// 													}
-			// 												})
-			// 												tempList[i].children[j].children = children3;
-			// 												for (let k = 0; k < children3.length; k++) {
-			// 													if (children3[k].state == 'closed') {
-			// 														_this.$axios.get(`/management/admin/label!getTreeGrid.action?id=${children3[k].id}`).then(res4 => {
-			// 															if (res4.data) {
-			// 																var children4 = res4.data.map(item => {
-			// 																	return {
-			// 																		id: item.id,
-			// 																		name: item.name,
-			// 																		text: item.text,
-			// 																		value: item.id,
-			// 																		label: item.text,
-			// 																		state: item.state,
-			// 																		checked: false
-			// 																	}
-			// 																})
-			// 																tempList[i].children[j].children[k].children = children4;
-			// 															}
-			// 														})
-			// 													}
-			// 												}
-			// 											}
-			// 										})
-			// 									}
-			// 								}
-			// 							}
-			// 						})
-			// 					}
-			// 				}
-			// 				this.treeData = tempList;
-			// 				this.tagOptions = tempList;
-			// 			})
+			// 获取用户列表
+			this.$axios.get('/management/admin/user!list.action', this.$qs.stringify({
+				page: 1,
+				row: 20,
+				deptId: 1
+			})).then(res => {
+				let tempArr = [];
+				res.data.rows.forEach(item => {
+					tempArr.push({
+						value: item.loginName,
+						text: item.userName
+					})
+				})
+				this.userList = tempArr
+			})
 		}
 	}
 </script>
@@ -1597,6 +1431,28 @@
 		padding: 10px 0;
 		display: flex;
 		justify-content: space-around;
+	}
+
+	/* 标签选择器 */
+	.labelChoosed span {
+		display: inline-block;
+		padding: 5px 10px;
+		border-radius: 5px;
+		margin-top: 15px;
+		margin-right: 10px;
+		cursor: pointer;
+		transition: all 0.5s;
+		line-height: 20px;
+		border: 1px solid #ccc;
+	}
+
+	.labelChoosed span:hover {
+		background: #eeeeee;
+	}
+
+	.labelTable {
+		max-height: 250px;
+		overflow-y: auto;
 	}
 
 	.treeBox::-webkit-scrollbar {

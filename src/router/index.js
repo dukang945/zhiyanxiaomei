@@ -56,47 +56,47 @@ export default new Router({
       name:'首页',
 			redirect:'/workspace',
       children: [{
-          path: '/skillColumn',
+          path: '/jnlmgl',
 					name:'技能栏目管理',
           component: SkillColumn
         },
         {
-          path: '/skillDetail',
+          path: '/jnxqgl',
 					name:'技能详情管理',
           component: SkillDetail
         },
         {
-          path: '/about',
+          path: '/gywmgl',
 					name:'关于我们',
           component: About
         },
         {
-          path: '/act',
+          path: '/jmgl',
 					name:'节目管理',
           component: Act
         },
         {
-          path: '/actDetail',
+          path: '/jmxqgl',
 					name:'节目详情管理',
           component: ActDetail
         },
         {
-          path: '/advice',
+          path: '/hzjygl',
 					name:'化妆建议管理',
           component: Advice
         },
         {
-          path: '/aim',
+          path: '/hzmdgl',
 					name:'化妆目的管理',
           component: Aim
         },
         {
-          path: '/branch',
+          path: '/bzzlgl1',
 					name:'步骤子类管理',
           component: Branch,
         },
         {
-          path: '/brand',
+          path: '/ppgl',
 					name:'品牌管理',
           component: Brand,
         },
@@ -106,28 +106,28 @@ export default new Router({
           component: Classify
         },
         {
-          path: '/color',
+          path: '/cpshgl',
 					name:'产品色号管理',
           component: Color
         },
         {
-          path: '/constellation',
+          path: '/xzgl',
 					name:'星座管理',
           component: Constellation
         },
         {
-          path: '/constellationDetail',
-					name:'',
+          path: '/xzxqgl',
+					name:'星座详情管理',
           component: ConstellationDetail
         },
         {
-          path: '/log',
+          path: '/xtrz',
 					name:'系统日志',
           component: Log
         },
         {
-          path: '/evaluation',
-					name:'',
+          path: '/mzcpgl',
+					name:'美妆测评',
           component: Evaluation
         },
         {
@@ -136,127 +136,127 @@ export default new Router({
           component: Face
         },
         {
-          path: '/feedback',
+          path: '/yhfk',
 					name:'用户反馈管理',
           component: Feedback
         },
         {
-          path: '/icon',
+          path: '/syicongl',
 					name:'首页icon管理',
           component: Icon
         },
         {
-          path: '/ingredient',
+          path: '/hzpcfgl',
 					name:'化妆品成分管理',
           component: Ingredient
         },
         {
-          path: '/issue',
+          path: '/jfwtgl',
 					name:'肌肤问题管理',
           component: Issue
         },
         {
-          path: '/keyword',
+          path: '/gjcgl',
 					name:'关键词管理',
           component: Keyword
         },
         {
-          path: '/main',
+          path: '/bzzlgl',
 					name:'步骤主类管理',
           component: Main
         },
         {
-          path: '/makeup',
+          path: '/hzcpgl',
 					name:'化妆产品管理',
           component: Makeup
         },
         {
-          path: '/marking',
-					name:'',
+          path: '/zrdffl',
+					name:'妆容打分分类',
           component: Marking
         },
         {
-          path: '/markingDetail',
-					name:'',
+          path: '/zrdfms',
+					name:'妆容打分描述',
           component: MarkingDetail
         },
         {
-          path: '/member',
-					name:'',
+          path: '/mzjhyxx',
+					name:'美妆镜会员信息',
           component: Member
         },
         {
-          path: '/menu',
+          path: '/cdgl',
 					name:'菜单管理',
           component: Menu
         },
         {
-          path: '/module',
-					name:'',
+          path: '/mzmktgl',
+					name:'美妆模块图管理',
           component: Module
         },
         {
-          path: '/part',
+          path: '/jsgl',
 					name:'角色管理',
           component: Part
         },
         {
-          path: '/product',
+          path: '/cpflgl',
 					name:'产品分类管理',
           component: Product
         },
         {
-          path: '/rotation',
-					name:'',
+          path: '/lbtgl',
+					name:'轮播图管理',
           component: Rotation
         },
         {
-          path: '/search',
-					name:'',
+          path: '/rsxxgl',
+					name:'热搜信息管理',
           component: Search
         },
         {
-          path: '/strategy',
-					name:'',
+          path: '/hfglgl',
+					name:'护肤攻略管理',
           component: Strategy
         },
         {
-          path: '/tag',
+          path: '/bqgl',
 					name:'标签管理',
           component: Tag
         },
         {
-          path: '/teach',
+          path: '/zrjcgl',
 					name:'妆容教程管理',
           component: Teach
         },
         {
-          path: '/temperament',
-					name:'',
+          path: '/zrdzqzgl',
+					name:'妆容定制气质管理',
           component: Temperament
         },
         {
-          path: '/user',
-					name:'',
+          path: '/htyhgl',
+					name:'后台用户管理',
           component: User,
         },
         {
-          path: '/labelCountAll',
+          path: '/yhxzhgxqbq',
 					name:'标签数据统计',
           component: LabelCountAll,
         },
         {
-          path: '/registeredUser',
+          path: '/yhjcsjmd',
 					name:'用户基础数据',
           component: Registered,
         },
 				{
-					path: '/beautyMakeupDataAll',
+					path: '/wzsjmdtj',
 					name:'文章数据统计',
 					component: BeautyMakeupDataAll,
 				},
         {
-          path: '/vipMsg',
+          path: '/hyxxgl',
 					name:'会员信息管理',
           component: VipMsg
         },
@@ -266,7 +266,7 @@ export default new Router({
 					component: Beautyknowledge
 				},
 				{
-					path:'/hotsearch',
+					path:'/mzzs',
 					name:'美妆知识',
 					component: Hotsearch
 				},

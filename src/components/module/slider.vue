@@ -67,7 +67,7 @@
 					tabs.splice(tempIndex, 1);
 					this.editableTabs2 = tabs;
 					this.editableTabsValue2 = tabs[tabs.length - 1].name;
-					this.$router.push(`/${tabs[tabs.length - 1].name}`)
+					this.$router.push(`${tabs[tabs.length - 1].name}`)
 				} else {
 					tabs.forEach((item, index) => {
 						if (item.name == targetName) {
