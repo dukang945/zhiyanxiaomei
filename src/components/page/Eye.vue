@@ -170,16 +170,7 @@
       <el-table-column prop="id" label="id" align="center"></el-table-column>
       <el-table-column prop="labelName" label="标签名称" align="center"></el-table-column>
       <el-table-column prop="labelName" label="创建人" align="center"></el-table-column>
-      <el-table-column prop="status" label="状态" align="center">
-        <template slot-scope="scope">
-          <span v-if="scope.row.status == 0">下线</span>
-          <span v-else-if="scope.row.status == 1">上线</span>
-          <span v-else-if="scope.row.status == 2">草稿</span>
-          <span v-else-if="scope.row.status == 3">待审核</span>
-          <span v-else-if="scope.row.status == 4">已审核</span>
-          <span v-else-if="scope.row.status == 5">不通过</span>
-        </template>
-      </el-table-column>
+      
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button size="small" type="primary" @click="handleEdit(scope.row)" v-has>编辑</el-button>
@@ -189,11 +180,7 @@
             size="small"
             v-del
           >删除</el-button>
-          <el-button size="small" v-if="scope.row.status==0">上线</el-button>
-          <el-button size="small" v-else-if="scope.row.status==1">下线</el-button>
-          <el-button size="small" v-else-if="scope.row.status==2">提交审核</el-button>
-          <el-button size="small" v-show="scope.row.status==3">通过</el-button>
-          <el-button size="small" v-show="scope.row.status==3">拒绝</el-button>
+          
         </template>
       </el-table-column>
     </el-table>
@@ -329,7 +316,7 @@
           <textarea id="eyeMake3" rows="10" cols="80"></textarea>
         </el-form-item>
         <el-form-item label="搜索产品3" label-width="120px">
-          <el-input v-model="searchBeautiColor3" @change="getBeautiColorList3" clearable></el-input>
+          <el-input v-model="searchBeautiColor3" @input="getBeautiColorList3" clearable></el-input>
           <el-table
             :data="beautiColorTableData3"
             @row-click="selectBeautiColor3"
@@ -1048,6 +1035,12 @@ export default {
     },
     //编辑
     handleEdit(row) {
+      this.searchBeautiColor = "";
+      this.searchBeautiColor2 = "";
+      this.searchBeautiColor3 = "";
+      this.choosedBeautiColorList=[]
+      this.choosedBeautiColorList2=[]
+      this.choosedBeautiColorList3=[]
       console.log(row);
       this.TableVisible = true;
       this.idx = row.id;
@@ -1073,7 +1066,7 @@ export default {
         .post(
           `/management/admin/beauty-color-to-label!comboGridlist.action`,
           this.$qs.stringify({
-            labelId: row.id,
+            labelId: row.labels,
             type: 1
           })
         )
@@ -1086,7 +1079,7 @@ export default {
         .post(
           `/management/admin/beauty-color-to-label!comboGridlist.action`,
           this.$qs.stringify({
-            labelId: row.id,
+            labelId: row.labels,
             type: 2
           })
         )
@@ -1099,7 +1092,7 @@ export default {
         .post(
           `/management/admin/beauty-color-to-label!comboGridlist.action`,
           this.$qs.stringify({
-            labelId: row.id,
+            labelId: row.labels,
             type: 3
           })
         )
@@ -1297,23 +1290,11 @@ export default {
       this.imgData1.imgFile = file;
     },
     beforeUpload2(file) {
-      this.imgData2.FileName ='zmxy/uploadFiles/'+
-        new Date().valueOf() +
-        "_" +
-        sessionStorage.getItem("id") +
-        "_" +
-        Math.round(Math.random() * 999999) +
-        ".jpg";
+      this.imgData2.FileName =File.name
       this.imgData2.imgFile = file;
     },
     beforeUpload3(file) {
-      this.imgData3.FileName = 'zmxy/uploadFiles/'+
-        new Date().valueOf() +
-        "_" +
-        sessionStorage.getItem("id") +
-        "_" +
-        Math.round(Math.random() * 999999) +
-        ".jpg";
+      this.imgData3.FileName =File.name
       this.imgData3.imgFile = file;
     },
     handleSuccess1(res) {

@@ -4,11 +4,305 @@
       <el-button type="primary" @click="AddVisible = true" v-has size="small">新增</el-button>
       <el-dialog title="新增" :visible.sync="AddVisible" width="80%" @opened="addOPen">
         <el-form :model="formAdd">
-          <el-form-item label="问题列表" label-width="120px">
-            <el-input v-model="formAdd.problem"></el-input>
+          <el-form-item label="类型" label-width="120px">
+            <el-input v-model="formAdd.type"></el-input>
           </el-form-item>
-          <el-form-item label="答案" label-width="120px">
-            <el-input v-model="formAdd.answer"></el-input>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formAdd.labelId1" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程1 id" label-width="120px">
+            <el-input v-model="formAdd.beautyDetailsId1"></el-input>
+          </el-form-item>
+           <el-form-item label="图片1" label-width="120px">
+            <el-upload
+              ref='upload'
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :file-list="fileList1"
+              :before-upload="beforeUpload1"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary" @click="uploadName(1)">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formAdd.labelId2" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程2 id" label-width="120px">
+            <el-input v-model="formAdd.beautyDetailsId2"></el-input>
+          </el-form-item>
+           <el-form-item label="图片2" label-width="120px">
+            <el-upload
+            ref='upload'
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :file-list="fileList2"
+              :before-upload="beforeUpload1"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary" @click="uploadName(2)">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formAdd.labelId3" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程3 id" label-width="120px">
+            <el-input v-model="formAdd.beautyDetailsId3"></el-input>
+          </el-form-item>
+           <el-form-item label="图片3" label-width="120px">
+            <el-upload
+            ref='upload'
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :before-upload="beforeUpload1"
+              :file-list="fileList3"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary"  @click="uploadName(3)">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formAdd.labelId4" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程4 id" label-width="120px">
+            <el-input v-model="formAdd.beautyDetailsId4"></el-input>
+          </el-form-item>
+           <el-form-item label="图片4" label-width="120px">
+            <el-upload
+            ref='upload'
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :before-upload="beforeUpload1"
+              :file-list="fileList4"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary" @click="uploadName(4)">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formAdd.labelId5" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程5 id" label-width="120px">
+            <el-input v-model="formAdd.beautyDetailsId5"></el-input>
+          </el-form-item>
+           <el-form-item label="图片5" label-width="120px">
+            <el-upload
+            ref='upload'
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :before-upload="beforeUpload1"
+              :file-list="fileList5"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary" @click="uploadName(5)">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formAdd.labelId6" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程6 id" label-width="120px">
+            <el-input v-model="formAdd.beautyDetailsId6"></el-input>
+          </el-form-item>
+           <el-form-item label="图片6" label-width="120px">
+            <el-upload
+            ref='upload'
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :before-upload="beforeUpload1"
+              :file-list="fileList6"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary" @click="uploadName(6)">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formAdd.labelId7" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程7 id" label-width="120px">
+            <el-input v-model="formAdd.beautyDetailsId7"></el-input>
+          </el-form-item>
+           <el-form-item label="图片7" label-width="120px">
+            <el-upload
+            ref='upload'
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :before-upload="beforeUpload1"
+              :file-list="fileList7"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary" @click="uploadName(7)">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formAdd.labelId8" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程8 id" label-width="120px">
+            <el-input v-model="formAdd.beautyDetailsId9"></el-input>
+          </el-form-item>
+           <el-form-item label="图片8" label-width="120px">
+            <el-upload
+            ref='upload'
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :before-upload="beforeUpload1"
+              :file-list="fileList8"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary" @click="uploadName(8)">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formAdd.labelId9" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程9 id" label-width="120px">
+            <el-input v-model="formAdd.beautyDetailsId9"></el-input>
+          </el-form-item>
+           <el-form-item label="图片9" label-width="120px">
+            <el-upload
+            ref='upload'
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :before-upload="beforeUpload1"
+              :file-list="fileList9"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary" @click="uploadName(9)">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formAdd.labelId10" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程10 id" label-width="120px">
+            <el-input v-model="formAdd.beautyDetailsId10"></el-input>
+          </el-form-item>
+           <el-form-item label="图片10" label-width="120px">
+            <el-upload
+            ref='upload'
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :before-upload="beforeUpload1"
+              :file-list="fileList10"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary" @click="uploadName(10)">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formAdd.labelId11" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程11 id" label-width="120px">
+            <el-input v-model="formAdd.beautyDetailsId11"></el-input>
+          </el-form-item>
+           <el-form-item label="图片11" label-width="120px">
+            <el-upload
+            ref='upload'
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :before-upload="beforeUpload1"
+              :file-list="fileList11"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary" @click="uploadName(11)">点击上传</el-button>
+            </el-upload>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -34,11 +328,295 @@
     </el-table>
     <el-dialog title="编辑" :visible.sync="EditVisible" width="80%" @opened="addOPen">
         <el-form :model="formEdit">
-          <el-form-item label="问题列表" label-width="120px">
-            <el-input v-model="formEdit.problem"></el-input>
+          <el-form-item label="类型" label-width="120px">
+            <el-input v-model="formEdit.type"></el-input>
           </el-form-item>
-          <el-form-item label="答案" label-width="120px">
-            <el-input v-model="formEdit.answer"></el-input>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formEdit.label1" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程1 id" label-width="120px">
+            <el-input v-model="formEdit.beautyDetailsId1"></el-input>
+          </el-form-item>
+           <el-form-item label="图片1" label-width="120px">
+            <el-upload
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :file-list="fileList1"
+              :before-upload="beforeUpload1"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary" @click="uploadName(1)">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formEdit.label2" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程2 id" label-width="120px">
+            <el-input v-model="formEdit.beautyDetailsId2"></el-input>
+          </el-form-item>
+           <el-form-item label="图片2" label-width="120px">
+            <el-upload
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :file-list="fileList2"
+              :before-upload="beforeUpload1"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary" @click="uploadName(2)">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formEdit.label3" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程3 id" label-width="120px">
+            <el-input v-model="formEdit.beautyDetailsId3"></el-input>
+          </el-form-item>
+           <el-form-item label="图片3" label-width="120px">
+            <el-upload
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :file-list="fileList3"
+              :before-upload="beforeUpload1"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary"  @click="uploadName(3)">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formEdit.label4" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程4 id" label-width="120px">
+            <el-input v-model="formEdit.beautyDetailsId4"></el-input>
+          </el-form-item>
+           <el-form-item label="图片4" label-width="120px">
+            <el-upload
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :file-list="fileList4"
+              :before-upload="beforeUpload1"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary" @click="uploadName(4)">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formEdit.label5" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程5 id" label-width="120px">
+            <el-input v-model="formEdit.beautyDetailsId5"></el-input>
+          </el-form-item>
+           <el-form-item label="图片5" label-width="120px">
+            <el-upload
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :file-list="fileList5"
+              :before-upload="beforeUpload1"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary" @click="uploadName(5)">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formEdit.label6" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程6 id" label-width="120px">
+            <el-input v-model="formEdit.beautyDetailsId6"></el-input>
+          </el-form-item>
+           <el-form-item label="图片6" label-width="120px">
+            <el-upload
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :file-list="fileList6"
+              :before-upload="beforeUpload1"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary" @click="uploadName(6)">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formEdit.label7" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程7 id" label-width="120px">
+            <el-input v-model="formEdit.beautyDetailsId7"></el-input>
+          </el-form-item>
+           <el-form-item label="图片7" label-width="120px">
+            <el-upload
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :file-list="fileList7"
+              :before-upload="beforeUpload1"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary" @click="uploadName(7)">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formEdit.label8" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程8 id" label-width="120px">
+            <el-input v-model="formEdit.beautyDetailsId9"></el-input>
+          </el-form-item>
+           <el-form-item label="图片8" label-width="120px">
+            <el-upload
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :file-list="fileList8"
+              :before-upload="beforeUpload1"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary" @click="uploadName(8)">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formEdit.label9" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程9 id" label-width="120px">
+            <el-input v-model="formEdit.beautyDetailsId9"></el-input>
+          </el-form-item>
+           <el-form-item label="图片9" label-width="120px">
+            <el-upload
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :file-list="fileList9"
+              :before-upload="beforeUpload1"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary" @click="uploadName(9)">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formEdit.label10" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程10 id" label-width="120px">
+            <el-input v-model="formEdit.beautyDetailsId10"></el-input>
+          </el-form-item>
+           <el-form-item label="图片10" label-width="120px">
+            <el-upload
+            v-model="formAdd.image10"
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :file-list="fileList10"
+              :before-upload="beforeUpload1"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary" @click="uploadName(10)">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标签" label-width="120px">
+            <el-select v-model="formEdit.label11" placeholder="请选择标签">
+              <el-option
+                :label="item.name"
+                :value="item.id.toString()"
+                v-for="item in labelList"
+                :key="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="绑定教程11 id" label-width="120px">
+            <el-input v-model="formEdit.beautyDetailsId11"></el-input>
+          </el-form-item>
+           <el-form-item label="图片11" label-width="120px">
+            <el-upload
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="imgData1"
+              :on-success="handleSuccess1"
+              :file-list="fileList11"
+              :before-upload="beforeUpload1"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary" @click="uploadName(11)">点击上传</el-button>
+            </el-upload>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -63,8 +641,22 @@ export default {
   data() {
     return {
       labelCountList: [],
+      labelList: [],
+      fileList1:[],
+      fileList2:[],
+      fileList3:[],
+      fileList4:[],
+      fileList5:[],
+      fileList6:[],
+      fileList7:[],
+      fileList8:[],
+      fileList9:[],
+      fileList10:[],
+      fileList11:[],
+      imgData1:{},
       formAdd: {},
       formEdit: {},
+      imgVal:-1,
       AddVisible: false,
       EditVisible: false,
       idx: -1,
@@ -76,6 +668,7 @@ export default {
   },
   mounted() {
     this.getlabelCountList(1, 10);
+    this.getlabelList()
   },
   methods: {
     getlabelCountList(page1, row1) {
@@ -91,15 +684,33 @@ export default {
           }
         });
     },
+    getlabelList(){
+        this.$axios.get('/management/admin/label!getTreeGrid.action?id=1').then(res=>{
+            if(res.status==200){
+                this.labelList=res.data
+            }
+        })
+    },
     //新增dialog打开回调
     addOPen() {
       this.formAdd = {};
+      this.fileList1=[]
+      this.fileList2=[]
+      this.fileList3=[]
+      this.fileList4=[]
+      this.fileList5=[]
+      this.fileList6=[]
+      this.fileList7=[]
+      this.fileList8=[]
+      this.fileList9=[]
+      this.fileList10=[]
+      this.fileList11=[]
     },
     //新增
     handleAdd() {
       this.$axios
         .post(
-          "/management/admin/category-problem!save.action",
+          "/management/admin/interest-group!save.action",
           this.$qs.stringify(this.formAdd)
         )
         .then(res => {
@@ -113,9 +724,38 @@ export default {
     },
     //编辑
     handleEdit(row){
-        this.formEdit = row
+        console.log(row)
+        this.fileList1=[]
+        this.fileList2=[]
+        this.fileList3=[]
+        this.fileList4=[]
+        this.fileList5=[]
+        this.fileList6=[]
+        this.fileList7=[]
+        this.fileList8=[]
+        this.fileList9=[]
+        this.fileList10=[]
+        this.fileList11=[]
         this.EditVisible =true
         this.idx = row.id;
+        this.$axios.get(`/management/admin/interest-group!input.action?id=${this.idx}`).then(res=>{
+            if(res.status==200){
+              console.log(res)
+                this.formEdit=res.data
+                this.formEdit.image1?this.fileList1=[{url:this.formEdit.image1}]:this.fileList1=[]
+                this.formEdit.image2?this.fileList2=[{url:this.formEdit.image2}]:this.fileList2=[]
+                this.formEdit.image3?this.fileList3=[{url:this.formEdit.image3}]:this.fileList3=[]
+                this.formEdit.image4?this.fileList4=[{url:this.formEdit.image4}]:this.fileList4=[]
+                this.formEdit.image5?this.fileList5=[{url:this.formEdit.image5}]:this.fileList5=[]
+                this.formEdit.image6?this.fileList6=[{url:this.formEdit.image6}]:this.fileList6=[]
+                this.formEdit.image7?this.fileList7=[{url:this.formEdit.image7}]:this.fileList7=[]
+                this.formEdit.image8?this.fileList8=[{url:this.formEdit.image8}]:this.fileList8=[]
+                this.formEdit.image9?this.fileList9=[{url:this.formEdit.image9}]:this.fileList9=[]
+                this.formEdit.image10?this.fileList10=[{url:this.formEdit.image10}]:this.fileList10=[]
+                this.formEdit.image11?this.fileList11=[{url:this.formEdit.image11}]:this.fileList11=[]
+               
+            }
+        })
     },
     //保存编辑
     saveEdit(){
@@ -138,7 +778,7 @@ export default {
         type: "warning"
       }).then(() => {
         this.$axios
-          .get(`/management/admin/category-problem!delete.action?id=${rows[index].id}`)
+          .get(`/management/admin/interest-group!delete.action?id=${rows[index].id}`)
           .then(res => {
             if (res.status == 200) {
               this.$message.success("删除成功");
@@ -146,6 +786,86 @@ export default {
             }
           });
       });
+    },
+    //图片上传
+    uploadName(val){
+        this.imgVal =val
+    },
+    beforeUpload1(file) {
+      console.log(file);
+      this.imgData1.FileName =file.name
+      this.imgData1.imgFile = file;
+    },
+    handleSuccess1(res) {
+      console.log(res);
+      switch (this.imgVal) {
+          case 1:
+              this.formAdd.image1 = res.url
+              if(this.EditVisible){
+                this.formEdit.image1 = res.url
+              }
+              break;
+          case 2:
+              this.formAdd.image2 = res.url
+              if(this.EditVisible){
+                this.formEdit.image1 = res.url
+              }
+              break;
+          case 3:
+              this.formAdd.image3 = res.url
+              if(this.EditVisible){
+                this.formEdit.image1 = res.url
+              }
+              break;
+          case 4:
+              this.formAdd.image4 = res.url
+              if(this.EditVisible){
+                this.formEdit.image1 = res.url
+              }
+              break;
+          case 5:
+              this.formAdd.image5 = res.url
+              if(this.EditVisible){
+                this.formEdit.image1 = res.url
+              }
+              break;
+          case 6:
+              this.formAdd.image6 = res.url
+              if(this.EditVisible){
+                this.formEdit.image1 = res.url
+              }
+              break;
+          case 7:
+              this.formAdd.image7 = res.url
+              if(this.EditVisible){
+                this.formEdit.image1 = res.url
+              }
+              break;
+          case 8:
+              this.formAdd.image8 = res.url
+              if(this.EditVisible){
+                this.formEdit.image1 = res.url
+              }
+              break;
+          case 9:
+              this.formAdd.image9 = res.url
+              if(this.EditVisible){
+                this.formEdit.image1 = res.url
+              }
+              break;
+          case 10:
+              this.formAdd.image10 = res.url
+              if(this.EditVisible){
+                this.formEdit.image1 = res.url
+              }
+              break;
+          case 11:
+              this.formAdd.image11 = res.url
+              if(this.EditVisible){
+                this.formEdit.image1 = res.url
+              }
+              break;
+      }
     },
     //分页
     handleSizeChange(val) {

@@ -10,7 +10,7 @@
         <el-form-item label="中文名称" label-width="120px">
            <el-input v-model="formAdd.name"></el-input>
           </el-form-item>
-        <el-form-item label="描述" label-width="120px">
+        <el-form-item label="描述" label-width="120px" >
          <textarea id="noseDesc" rows="5" cols="80" v-model="formAdd.emotionDescribe"></textarea>
         </el-form-item>
       </el-form>
@@ -27,7 +27,7 @@
       </el-table-column>
       <el-table-column prop="name" label="中文名称" align="center">
       </el-table-column>
-      <el-table-column prop="emotionDescribe" label="描述" align="center"></el-table-column>
+      <el-table-column prop="emotionDescribe" label="描述" align="center" show-overflow-tooltip></el-table-column>
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button

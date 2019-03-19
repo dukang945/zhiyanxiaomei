@@ -36,7 +36,7 @@
       <el-table-column prop="id" label="id" align="center"></el-table-column>
       <el-table-column prop="name" label="名人昵称" align="center">
       </el-table-column>
-      <el-table-column prop="starDescribe" label="擅长描述" align="center"></el-table-column>
+      <el-table-column prop="starDescribe" label="擅长描述" align="center" show-overflow-tooltip></el-table-column>
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button

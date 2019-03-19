@@ -60,6 +60,7 @@ import Answer from '@/components/page/Answer'
 import ShareDescribe from '@/components/page/ShareDescribe'
 import InterestedTest from '@/components/page/InterestedTest'
 import CategoryProblem from '@/components/page/CategoryProblem'
+import KnowledgeMes from '@/components/page/KnowledgeMes'
 
 Vue.use(Router)
 
@@ -116,7 +117,7 @@ export default new Router({
         },
         {
           path: '/classify',
-					name:'',
+					name:'美妆测评分类',
           component: Classify
         },
         {
@@ -141,7 +142,7 @@ export default new Router({
         },
         {
           path: '/evaluation',
-					name:'',
+					name:'美妆测评',
           component: Evaluation
         },
         {
@@ -231,17 +232,17 @@ export default new Router({
         },
         {
           path: '/marking',
-					name:'',
+					name:'妆容打分',
           component: Marking
         },
         {
           path: '/markingDetail',
-					name:'',
+					name:'妆容打分详情',
           component: MarkingDetail
         },
         {
           path: '/member',
-					name:'',
+					name:'美妆镜会员信息',
           component: Member
         },
         {
@@ -251,7 +252,7 @@ export default new Router({
         },
         {
           path: '/module',
-					name:'',
+					name:'美妆模块图',
           component: Module
         },
         {
@@ -271,17 +272,17 @@ export default new Router({
         },
         {
           path: '/rotation',
-					name:'',
+					name:'轮播图',
           component: Rotation
         },
         {
           path: '/search',
-					name:'',
+					name:'热搜信息管理',
           component: Search
         },
         {
           path: '/strategy',
-					name:'',
+					name:'护肤攻略管理',
           component: Strategy
         },
         {
@@ -296,12 +297,12 @@ export default new Router({
         },
         {
           path: '/temperament',
-					name:'',
+					name:'妆容定制气质管理',
           component: Temperament
         },
         {
           path: '/user',
-					name:'',
+					name:'后台用户管理',
           component: User,
         },
         {
@@ -323,6 +324,11 @@ export default new Router({
 					path: '/beautyMakeupDataAll',
 					name:'文章数据统计',
 					component: BeautyMakeupDataAll,
+				},
+				{
+					path: '/knowledgeMes',
+					name:'文章数据统计',
+					component: KnowledgeMes,
 				},
         {
           path: '/vipMsg',
