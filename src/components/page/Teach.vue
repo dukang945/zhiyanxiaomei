@@ -1,15 +1,15 @@
 <template>
 	<div class="teachContent">
 		<el-row>
-			<el-col :span="18">
+			<el-col :span="16">
 				<div class="btnGroup">
 					<el-button type="primary" size='small' @click="add">新增</el-button>
 					<el-button type="primary" size='small' @click="batchOnline">批量上线</el-button>
 					<el-button type="primary" size='small' @click="batchOffline">批量下线</el-button>
-					<el-button type="primary" size='small' @click="batchDelete">批量删除</el-button>
 					<el-button type="primary" size='small' @click="batchLabel">批量加标签</el-button>
-					<el-button type="primary" size='small' @click="tableToExcel" plain>导出为Excel</el-button>
-					<el-dialog title="新增教程" :visible.sync="AddVisible" width="50%" :before-close="handleClose">
+					<el-button type="danger" size='small' @click="batchDelete">批量删除</el-button>
+					<!-- <el-button type="primary" size='small' @click="tableToExcel" plain>导出为Excel</el-button> -->
+					<el-dialog title="新增教程" :visible.sync="AddVisible" width="50%" :before-close="handleClose" @close='closeAddDialog'>
 						<el-form label-position="right" ref='addForm' label-width="120px" :model="formLabelAdd">
 							<el-form-item label="名称">
 								<el-input v-model="formLabelAdd.name"></el-input>
@@ -25,12 +25,11 @@
 									</el-table-column>
 									<el-table-column prop="labelName" label="上级标签" align='center'>
 									</el-table-column>
-
-									<div class="labelChoosed">
-										已选标签：<span v-for="(item,key) in choosedLabelList">{{item.name}}
-											<i class="el-icon-error" @click="deleteLabel(key)"></i></span>
-									</div>
-									</el-table>
+								</el-table>
+								<div class="labelChoosed">
+									已选标签：<span v-for="(item,key) in choosedLabelList">{{item.name}}
+										<i class="el-icon-error" @click="deleteLabel(key)"></i></span>
+								</div>
 							</el-form-item>
 							<el-form-item label="点赞次数">
 								<el-input v-model="formLabelAdd.greatNumber"></el-input>
@@ -82,31 +81,19 @@
 							<el-form-item label='化妆步骤'>
 								<el-tabs v-model="teachStepValue" type="border-card" editable @tab-remove="removeTab" @tab-add='addMainStep'>
 									<el-tab-pane v-for="(item, index) in stepList" :key="item.id" :label="item.name" :name="item.name">
-										<el-form :model="formLabelAdd.step[index]" class='stepBox'>
+										<el-form :model="formLabelAdd.beautyDetailsRelationList[index]" class='stepBox'>
 											<el-form-item label="教程步骤名">
-												<el-select v-model="formLabelAdd.step[index].stepName" placeholder="请选择">
+												<el-select v-model="formLabelAdd.beautyDetailsRelationList[index].procedureName" placeholder="请选择">
 													<el-option v-for="item in stepNameOptions" :key="item.id" :label="item.text" :value="item.text">
 													</el-option>
 												</el-select>
 											</el-form-item>
-											<el-form-item label="主步骤说明">
-												<el-input type="textarea" autosize v-model="formLabelAdd.step[index].stepDis" style='width: 80%;'
-												 placeholder='如有多个子部骤,主步骤说明和图片可不填'></el-input>
-											</el-form-item>
-											<el-form-item label="主步骤图片">
-												<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
-												 :before-upload='beforeUpload' :on-success="uploadSuccess" :on-remove="handleRemove" :on-preview="handlePictureCardPreview"
-												 list-type="picture">
-													<el-button size="small" type="primary" @click='uploadName("addStep-"+index)'>点击上传</el-button>
-													<span slot="tip" class="el-upload__tip" style="margin-left: 20px;">只能上传jpg/png文件，且不超过500kb</span>
-												</el-upload>
-											</el-form-item>
 											<transition-group tag="div" name="el-zoom-in-top">
-												<div v-for='(val,key) in formLabelAdd.step[index].miniStep' v-if='formLabelAdd.step[index].miniStep.length>0'
+												<div v-for='(val,key) in formLabelAdd.beautyDetailsRelationList[index].childrenProcedureList' v-if='formLabelAdd.beautyDetailsRelationList[index].childrenProcedureList.length>0'
 												 class="miniStepBox" :key='val.id'>
 													<p>小步骤序号：{{key+1}} <span class="deleteMiniStep" @click="deleteMiniStep(index,key)"><i class="el-icon-close"></i></span></p>
 													<el-form-item label="小步骤说明">
-														<el-input type="textarea" style='width: 80%;' autosize v-model="formLabelAdd.step[index].miniStep[key].miniStepDis"></el-input>
+														<el-input type="textarea" style='width: 80%;' autosize v-model="formLabelAdd.beautyDetailsRelationList[index].childrenProcedureList[key].procedureDes"></el-input>
 													</el-form-item>
 													<el-form-item label="小步骤图片">
 														<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
@@ -133,7 +120,7 @@
 					</el-dialog>
 				</div>
 			</el-col>
-			<el-col :span="6">
+			<el-col :span="8">
 				<el-form :inline="true" :model="searchForm" class="right-search">
 					<el-form-item>
 						<el-input v-model="searchForm.text" size='small' placeholder="请输入搜索内容"></el-input>
@@ -153,8 +140,6 @@
 				<!-- <el-table :data="tableData" border style="width: 100%" class='table' @select='tableSelect' v-loading="loading" :row-class-name="tableRowClassName"> -->
 				<el-table :data="tableData" border style="width: 100%" class='table' @select='tableSelect' v-loading="loading">
 					<el-table-column type="selection" width="55" align='center'></el-table-column>
-					<!-- <el-table-column type="index" label="序号" width="50" align='center'>
-					</el-table-column> -->
 					<el-table-column prop="id" label="id" width="50" align='center'>
 					</el-table-column>
 					<el-table-column prop="name" label="标题" align='center' :show-overflow-tooltip="true">
@@ -188,7 +173,7 @@
 			</el-col>
 		</el-row>
 		<!-- 编辑表单 -->
-		<el-dialog title="编辑" :visible.sync="editDialogVisible" width="50%" :before-close="handleClose">
+		<el-dialog title="编辑" :visible.sync="editDialogVisible" width="50%" :before-close="handleClose" @close='closeEditDialog'>
 			<el-form :label-position="labelPosition" label-width="120px" :model="editFormData">
 				<el-form-item label="名称">
 					<el-input v-model="editFormData.name"></el-input>
@@ -248,10 +233,44 @@
 					<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData' :before-upload='beforeUpload'
 					 :on-success="uploadSuccess" :on-remove="handleRemove" :on-preview="handlePictureCardPreview" :file-list="editFileList"
 					 list-type="picture">
-						<el-button size="small" type="primary">点击上传</el-button>
+						<el-button size="small" type="primary" @click='uploadName("editImg")'>点击上传</el-button>
 						<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
 					</el-upload>
 				</el-form-item>
+				<!-- 编辑步骤 -->
+				<el-form-item label='化妆步骤'>
+					<el-tabs v-model="teachStepValue" type="border-card" editable @tab-remove="removeEditTab" @tab-add='editAddMainStep'>
+						<el-tab-pane v-for="(item, index) in stepEditList" :key="item.id" :label="item.name" :name="item.name">
+							<el-form :model="editFormData.beautyDetailsRelationList[index]" class='stepBox'>
+								<el-form-item label="教程步骤名">
+									<el-select v-model="editFormData.beautyDetailsRelationList[index].procedureName" placeholder="请选择">
+										<el-option v-for="item in stepNameOptions" :key="item.id" :label="item.text" :value="item.text">
+										</el-option>
+									</el-select>
+								</el-form-item>
+								<transition-group tag="div" name="el-zoom-in-top">
+									<div v-for='(val,key) in editFormData.beautyDetailsRelationList[index].childrenProcedureList' v-if='editFormData.beautyDetailsRelationList[index].childrenProcedureList.length>0'
+									 class="miniStepBox" :key='val.id'>
+										<p>小步骤序号：{{key+1}} <span class="deleteMiniStep" @click="editDeleteMiniStep(index,key)"><i class="el-icon-close"></i></span></p>
+										<el-form-item label="小步骤说明">
+											<el-input type="textarea" style='width: 80%;' autosize v-model="editFormData.beautyDetailsRelationList[index].childrenProcedureList[key].procedureDes"></el-input>
+										</el-form-item>
+										<el-form-item label="小步骤图片">
+											<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
+											 :before-upload='beforeUpload' :on-success="uploadSuccess" :on-remove="handleRemove" :on-preview="handlePictureCardPreview"
+											 list-type="picture" :file-list='editStepfileList[index][key]'>
+												<el-button size="small" type="primary" @click='uploadName("editMiniStep-"+index+"-"+key)'>点击上传</el-button>
+												<span slot="tip" class="el-upload__tip" style="margin-left: 20px;">只能上传jpg/png文件，且不超过500kb</span>
+											</el-upload>
+										</el-form-item>
+									</div>
+								</transition-group>
+								<el-button size='small' type='primary' icon='el-icon-plus' @click='editAddMiniStep(index)' plain>增加子步骤</el-button>
+							</el-form>
+						</el-tab-pane>
+					</el-tabs>
+				</el-form-item>
+
 			</el-form>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="cancelEdit">取 消</el-button>
@@ -396,7 +415,7 @@
 			<Pagination :totalNum='commentTotalNum' @change_Page='changeCommentPage' @change_Size='changeCommentSize'></Pagination>
 		</el-dialog>
 		<!-- 预览H5页面弹框 -->
-		<el-dialog :visible.sync="H5PageDialogVisible" width="50%" top='20px' @close='colseViewPage'>
+		<el-dialog :visible.sync="H5PageDialogVisible" width="70%" top='20px' @close='colseViewPage'>
 			<div class="content">
 				<img class="phoneBorder" src="../../images/viewPage.png" alt="">
 				<div class="pageContent">
@@ -404,38 +423,50 @@
 						<p>{{viewPageData.name}}</p>
 					</div>
 					<div style="clear: both;"></div>
-					<div id="time"><span>{{getTime(1,1,viewPageData.createTime)}}</span><span>视频来源：{{viewPageData.original==0?'网络':'原创'}}</span></div>
+					<div id="time"><span>{{getTime(1,1,viewPageData.createTime).split(" ")[0]}}</span><span>视频来源：{{viewPageData.original==0?'网络':'原创'}}</span></div>
 					<div class="rate">
 						<p>难度</p>
 						<ul>
-							<li><img src="img/allStar.png"></li>
+							<li v-for="item in viewPageData.star"><img src="../../images/allStar.png"></li>
 						</ul>
 					</div>
 					<div style="clear: both;"></div>
-					<div id="about">{{viewPageData.about}}</div>
+					<div id="about">{{trimTag(viewPageData.about)}}</div>
 					<hr style="border:0.5px dashed #E8E8E8;margin-top:13px;" />
 					<div id="label">
-						<div id="labelLeft" v-for="(item) in (viewPageData.labelName?viewPageData.labelName.split(','):[])"><a href="javascript:void(0);">{{item}}</a></div>
+						<div id="labelLeft" v-for="(item) in (viewPageData.labelName?viewPageData.labelName.split(','):[])">
+							<a href="javascript:void(0);">{{item}}</a></div>
 					</div>
 					<div style="clear: both;"></div>
-					<div v-for='(item) in viewStepList'>
+					<div v-for='(item,index) in viewPageData.beautyDetailsRelationList'>
 						<div>
 							<div class="angled stripes"></div>
 							<div class="column">
-								<p class="wordart">{{item.procedureSort}}</p>
+								<p :class="index+1>9?'wordart wordart1':'wordart'">{{index+1}}</p>
 								<p class="abbreviation">st</p>
-								<p class="columnName">{{item.procedureName}}</p><img src='img/dizhuang.png'>
+								<p class="columnName">{{item.procedureName}}</p>
+								<img :src='getTitleImg(item.procedureName)'>
 							</div>
 						</div>
-						<div class="intro">
-							<!-- <div class="sequence">
-								<div class="sequence1"></div><span>01</span>
-							</div> -->
-							<p>{{item.procedureDes}}</p>
-							<img :src='getImgUrl(item.procedureImg)'>
+						<div class="intro" v-for="(childrenItem,key) in item.childrenProcedureList" :key='childrenItem.id'>
+							<div class="sequence" v-if='item.childrenProcedureList.length>1&&childrenItem.desSort!=98&&childrenItem.desSort!=99'>
+								<div class="sequence1"></div><span>{{(key+1)>9?(key+1):'0'+(key+1)}}</span>
+							</div>
+							<p>{{childrenItem.procedureDes}}</p>
+							<img :src="itemImg" v-for="(itemImg, ind) in childrenItem.procedureImg">
 						</div>
 					</div>
 				</div>
+				<img class="phoneBorder productBox" src="../../images/viewPage.png" alt="">
+				<div class="productContent">
+					<div class="productTitle">产品清单</div>
+					<div class="productItem" v-for="(item,index) in viewPageColorList">
+						<img :src="getImgUrl(item.image)" alt="">
+						<p>{{item.name}} {{item.specification}}</p>
+						<p>参考价格 ：￥{{item.price}}</p>
+					</div>
+				</div>
+
 			</div>
 		</el-dialog>
 		<!-- 批量增加标签弹框 -->
@@ -485,6 +516,7 @@
 					id: 1,
 					name: '步骤1'
 				}], //教程步骤数组
+				stepEditList: [],
 				tabIndex: 1,
 				teachStepValue: '步骤1', //tab栏name值
 				stepNameOptions: [{
@@ -520,30 +552,53 @@
 				}, {
 					id: '点缀',
 					text: '点缀'
+				}, {
+					id: '结语',
+					text: '结语'
 				}], //教程步骤名称
 				formLabelAdd: {
 					name: '',
-					lableId: '',
-					labelName: '',
 					greatNumber: '',
 					pageView: '',
-					productColor: [],
 					moduleId: '',
 					videoUrl: '',
 					star: '',
 					about: '',
 					image: '',
-					step: [{
-						stepName: '',
-						stepDis: '',
-						stepImg: '',
-						miniStep: []
+					beautyDetailsRelationList: [{
+						procedureName: '',
+						procedureSort: 1,
+						childrenProcedureList: [{
+							procedureDes: '',
+							beautyDetailsRelationId: 0,
+							procedureImg: [],
+							desSort: 1,
+							id: 1
+						}]
 					}]
 				}, //新增教程表单
 
 
 				editFormData: {
-
+					name: '',
+					greatNumber: '',
+					pageView: '',
+					moduleId: '',
+					videoUrl: '',
+					star: '',
+					about: '',
+					image: '',
+					beautyDetailsRelationList: [{
+						procedureName: '',
+						procedureSort: 1,
+						childrenProcedureList: [{
+							procedureDes: '',
+							beautyDetailsRelationId: 0,
+							procedureImg: [],
+							desSort: 1,
+							id: 1
+						}, ]
+					}]
 				}, //编辑表单
 
 				pushForm: {}, //推送表单
@@ -561,6 +616,7 @@
 				addCommentDialogVisible: false,
 				checkCommentDialogVisible: false,
 				H5PageDialogVisible: false,
+				// H5PageDialogVisible: true,
 				batchAddLabelDialogVisible: false,
 				totalNum: 10,
 				colorTotalNum: 10,
@@ -615,11 +671,8 @@
 				selectIdEdit: [], //编辑表单的选中labelId
 				viewPageData: {
 					name: '',
-					lableId: '',
-					labelName: '',
 					greatNumber: '',
 					pageView: '',
-					productColor: [],
 					moduleId: '',
 					videoUrl: '',
 					star: '',
@@ -654,13 +707,121 @@
 			Pagination
 		},
 		methods: {
+			// 去除文本中标签
+			trimTag(str) {
+				let testExp = /<.*?>/gi;
+				if (str) {
+					let tempList = str.match(testExp);
+					if (tempList && tempList.length > 0) {
+						for (let i = 0; i < tempList.length; i++) {
+							str = str.replace(tempList[i], '');
+						}
+					}
+					str = str.replace('&nbsp;', '')
+					return str
+				} else {
+					return ''
+				}
+			},
 			getImgUrl(str) {
 				let testExp = /http.*?(\.png|\.jpg|\.gif)/gi;
 				if (str) {
 					return str.match(testExp)[0]
 				}
 			},
-
+			// 获取化妆步骤标题图片
+			getTitleImg(str) {
+				var imgStr = '';
+				switch (str) {
+					case '底妆':
+						imgStr = 'dizhuang'
+						break;
+					case '定妆':
+						imgStr = 'dingzhuang'
+						break;
+					case '眉毛':
+						imgStr = 'meimao'
+						break;
+					case '眼影':
+						imgStr = 'yanying'
+						break;
+					case '眼线':
+						imgStr = 'yanxian'
+						break;
+					case '睫毛':
+						imgStr = 'jiemao'
+						break;
+					case '修容':
+						imgStr = 'xiurong'
+						break;
+					case '高光':
+						imgStr = 'gaoguang'
+						break;
+					case '腮红':
+						imgStr = 'saihong'
+						break;
+					case '唇妆':
+						imgStr = 'chunzhuang'
+						break;
+					case '点缀':
+						imgStr = 'dianzhui'
+						break;
+					default:
+						break;
+				}
+				return '../../../static/stepImg/' + imgStr + '.png'
+			},
+			closeAddDialog() {
+				this.formLabelAdd = {
+					name: '',
+					greatNumber: '',
+					pageView: '',
+					moduleId: '',
+					videoUrl: '',
+					star: '',
+					about: '',
+					image: '',
+					beautyDetailsRelationList: [{
+						procedureName: '',
+						procedureSort: 1,
+						childrenProcedureList: [{
+							procedureDes: '',
+							beautyDetailsRelationId: 0,
+							procedureImg: [],
+							desSort: 1,
+							id: 1
+						}, ]
+					}]
+				};
+				this.choosedLabelList = [];
+				this.choosedBeautiColorList = [];
+			},
+			closeEditDialog() {
+				this.editFormData = {
+					name: '',
+					greatNumber: '',
+					pageView: '',
+					moduleId: '',
+					videoUrl: '',
+					star: '',
+					about: '',
+					image: '',
+					beautyDetailsRelationList: [{
+						procedureName: '',
+						procedureSort: 1,
+						childrenProcedureList: [{
+							procedureDes: '',
+							procedureImg: [],
+							desSort: 1,
+							id: 1
+						}, ]
+					}]
+				};
+				this.choosedLabelList = [];
+				this.choosedBeautiColorList = [];
+				this.stepEditList = [];
+				this.editStepfileList = [];
+			},
 			tableRowClassName({
 				row,
 				index
@@ -689,12 +850,64 @@
 			},
 			// 保存为草稿
 			saveDraft() {
-				console.log('这是选中的标签数组')
-				console.log(this.choosedLabelList)
-				console.log('这是选中的色号数组')
-				console.log(this.choosedBeautiColorList)
-				console.log('这是新增表单')
 				console.log(this.formLabelAdd)
+				let tempObj = JSON.parse(JSON.stringify(this.formLabelAdd));
+				let stepStr = '';
+				for (let i = 0; i < tempObj.beautyDetailsRelationList.length; i++) {
+					if (tempObj.beautyDetailsRelationList[i].childrenProcedureList.length == 1) {
+						tempObj.beautyDetailsRelationList[i].childrenProcedureList[0].desSort = ''
+					}
+				}
+				tempObj.beautyDetailsRelationList = JSON.stringify(tempObj.beautyDetailsRelationList)
+				let labelStr = '';
+				let colorStr = '';
+				if (this.choosedLabelList.length > 0) {
+					for (let i = 0; i < this.choosedLabelList.length; i++) {
+						labelStr += `&labelId=${this.choosedLabelList[i].id}`
+					}
+				}
+				if (this.choosedBeautiColorList.length > 0) {
+					for (let i = 0; i < this.choosedBeautiColorList.length; i++) {
+						colorStr += `&productColor=${this.choosedBeautiColorList[i].id}`
+					}
+				}
+				this.$axios.post('/management/admin/beauty-details!save.action', this.$qs.stringify(tempObj) + colorStr + labelStr)
+					.then(res => {
+						if (res.data) {
+							this.$message.success('保存草稿成功')
+							this.getTableData('/management/admin/beauty-details!list.action', this.page, this.row, this.tempId);
+							this.AddVisible = false;
+							this.imgPlace = '';
+							this.formLabelAdd = {
+								name: '',
+								greatNumber: '',
+								pageView: '',
+								moduleId: '',
+								videoUrl: '',
+								star: '',
+								about: '',
+								image: '',
+								beautyDetailsRelationList: [{
+									procedureName: '',
+									procedureSort: 1,
+									childrenProcedureList: [{
+										procedureDes: '',
+										beautyDetailsRelationId: 0,
+										procedureImg: [],
+										desSort: 1,
+										id: 1
+									}, ]
+								}]
+							};
+							this.choosedBeautiColorList = [];
+							this.addFileList = [];
+							this.stepList = [{
+								id: 1,
+								name: '步骤1'
+							}];
+							this.teachStepValue = '步骤1'
+						}
+					})
 			},
 			// 确认新增
 			handleAdd() {
@@ -706,7 +919,7 @@
 					}
 				}
 				if (this.tempImgUrl) {
-					testObj.image = `<img src="${this.tempImgUrl}" alt="" />`
+					testObj.image = this.tempImgUrl
 				}
 				var productColorString = '';
 				if (this.formLabelAdd.productColor.length > 0) {
@@ -727,20 +940,22 @@
 					this.tempImgUrl = '';
 					this.formLabelAdd = {
 						name: '',
-						lableId: '',
 						greatNumber: '',
 						pageView: '',
-						productColor: [],
 						moduleId: '',
 						videoUrl: '',
 						about: '',
-						star: '',
 						image: '',
-						step: [{
-							stepName: '',
-							stepDis: '',
-							stepImg: '',
-							miniStep: []
+						beautyDetailsRelationList: [{
+							procedureName: '',
+							procedureSort: '',
+							childrenProcedureList: [{
+								procedureDes: '',
+								beautyDetailsRelationId: 0,
+								procedureImg: [],
+								desSort: '',
+								id: 1
+							}]
 						}]
 					};
 					this.addFileList = []
@@ -751,7 +966,6 @@
 				console.log(this.formLabelAdd)
 				this.formLabelAdd = {
 					name: '',
-					lableId: '',
 					greatNumber: '',
 					pageView: '',
 					productColor: [],
@@ -759,11 +973,16 @@
 					videoUrl: '',
 					about: '',
 					image: '',
-					step: [{
-						stepName: '',
-						stepDis: '',
-						stepImg: '',
-						miniStep: []
+					beautyDetailsRelationList: [{
+						procedureName: '',
+						procedureSort: 1,
+						childrenProcedureList: [{
+							procedureDes: '',
+							beautyDetailsRelationId: 0,
+							procedureImg: [],
+							desSort: 1,
+							id: 1
+						}]
 					}]
 				}
 				this.stepList = [{
@@ -773,8 +992,7 @@
 				this.teachStepValue = '步骤1'
 				this.addFileList = []
 				this.tempImgUrl = '';
-				console.log('----------')
-				console.log(this.formLabelAdd)
+				this.choosedBeautiColorList = [];
 				this.AddVisible = false;
 			},
 			// 表格多选框change
@@ -830,6 +1048,7 @@
 			tableToExcel() {
 
 			},
+
 			// 批量增加标签
 			batchLabel() {
 				if (this.checkedRowId) {
@@ -903,12 +1122,10 @@
 				this.tempImgUrl = res.url;
 				// 判断图片保存位置
 				if (this.imgPlace.indexOf('addImg') > -1) {
-					this.formLabelAdd.image = `<img src="${res.url}" alt="" />`
-				} else if (this.imgPlace.indexOf('addStep') > -1) {
-					this.formLabelAdd.step[(this.imgPlace.split('-')[1])].stepImg = `<img src="${res.url}" alt="" />`;
+					this.formLabelAdd.image = res.url;
 				} else if (this.imgPlace.indexOf('addMiniStep') > -1) {
-					this.formLabelAdd.step[(this.imgPlace.split('-')[1])].miniStep[(this.imgPlace.split('-')[2])].miniStepImg =
-						`<img src="${res.url}" alt="" />`;
+					this.formLabelAdd.beautyDetailsRelationList[(this.imgPlace.split('-')[1])].childrenProcedureList[(this.imgPlace.split(
+						'-')[2])].procedureImg.push(res.url);
 				}
 				// 清空上传图片参数
 				this.imgData = {
@@ -939,6 +1156,9 @@
 			// 表格操作
 			// 编辑
 			edit(index, row) {
+				console.log(row)
+				this.stepEditList = [];
+				this.editStepfileList = [];
 				// 获取输入框数据
 				var that = this;
 				that.editDialogVisible = true;
@@ -948,12 +1168,39 @@
 				tempObj.name = row.name;
 				tempObj.greatNumber = row.greatNumber;
 				tempObj.pageView = row.pageView;
-				tempObj.star = row.star;
 				tempObj.moduleId = row.moduleId;
 				tempObj.videoUrl = row.videoUrl;
 				tempObj.about = row.about;
 				tempObj.image = row.image;
+				tempObj.beautyDetailsRelationList = row.beautyDetailsRelationList
 				this.editFormData = tempObj
+				// 填充步骤图片数据
+				this.editFormData.beautyDetailsRelationList.forEach((item, index) => {
+					this.stepEditList.push({
+						id: index + 1,
+						name: '步骤' + (index + 1)
+					})
+					this.editStepfileList.push([])
+					if (item.childrenProcedureList.length > 0) {
+						item.childrenProcedureList.forEach((item1, index1) => {
+							this.editStepfileList[index].push([])
+							if (item1.procedureImg && item1.procedureImg.length > 0) {
+								item1.procedureImg.forEach(item2 => {
+									this.editStepfileList[index][index1].push({
+										name: '步骤' + (index + 1) + '-' + (index1 + 1) + '图',
+										url: item2
+									})
+								})
+							}
+						})
+					}
+				})
+				console.log('以下是编辑表单步骤数组')
+				console.log(this.editFormData.beautyDetailsRelationList)
+				console.log('以下是编辑tab列表')
+				console.log(this.stepEditList)
+				console.log('以下是步骤图片列表')
+				console.log(this.editStepfileList)
 				// 格式化标签数据并填充
 				if (row.labelId) {
 					let tempIdArr = row.labelId.split(',');
@@ -967,7 +1214,9 @@
 				}
 				// 格式化产品色号数据并填充
 				that.$axios.get(`/management/admin/beauty-color!getSelectDetail.action?id=${row.id}`).then(res => {
-					this.choosedBeautiColorList = [...res.data.color]
+					if (res.data.color && res.data.color.length > 0) {
+						this.choosedBeautiColorList = [...res.data.color]
+					}
 				})
 				// 显示图片
 				let testExp = /http.*?(\.png|\.jpg)/gi;
@@ -984,68 +1233,140 @@
 				// 清空所有选项
 				this.editFormData = {
 					name: '',
-					level: '',
-					labelId: '',
 					greatNumber: '',
-					clickNumber: '',
 					pageView: '',
-					minute: '',
-					selectName: '',
-					productColor: [],
 					moduleId: '',
 					videoUrl: '',
+					star: '',
 					about: '',
-					image: ''
+					image: '',
+					beautyDetailsRelationList: [{
+						procedureName: '',
+						procedureSort: 1,
+						childrenProcedureList: [{
+							procedureDes: '',
+							beautyDetailsRelationId: 0,
+							procedureImg: [],
+							desSort: 1,
+							id: 1
+						}, ]
+					}]
 				}
 				this.tempImgUrl = '';
 				this.editFileList = [];
+				this.stepEditList = [];
+				this.editStepfileList = [];
+				this.teachStepValue = '步骤1'
 			},
 			// 提交编辑
 			handleEdit() {
 				console.log(this.editFormData)
-				var testObj = {};
-				for (var key in this.editFormData) {
-					if (key != 'labelId' && key != 'productColor' && key != 'lableId' && key != 'id') {
-						testObj[key] = this.editFormData[key]
+				let tempObj = JSON.parse(JSON.stringify(this.editFormData));
+				let stepStr = '';
+				for (let i = 0; i < tempObj.beautyDetailsRelationList.length; i++) {
+					if (tempObj.beautyDetailsRelationList[i].childrenProcedureList.length == 1) {
+						tempObj.beautyDetailsRelationList[i].childrenProcedureList[0].desSort = ''
 					}
 				}
-				if (this.tempImgUrl) {
-					testObj.image = `<img src="${this.tempImgUrl}" alt="" />`
-				}
-				var productColorString = '';
-				if (this.editFormData.productColor.length > 0) {
-					for (let i = 0; i < this.editFormData.productColor.length; i++) {
-						productColorString += `&productColor=${this.editFormData.productColor[i]}`
+				tempObj.beautyDetailsRelationList = JSON.stringify(tempObj.beautyDetailsRelationList)
+				let labelStr = '';
+				let colorStr = '';
+				if (this.choosedLabelList.length > 0) {
+					for (let i = 0; i < this.choosedLabelList.length; i++) {
+						labelStr += `&labelId=${this.choosedLabelList[i].id}`
 					}
 				}
-				var labelIdString = '';
-				if (this.selectIdEdit.length > 0) {
-					for (let i = 0; i < this.selectIdEdit.length; i++) {
-						labelIdString += `&labelId=${this.selectIdEdit[i]}`
+				if (this.choosedBeautiColorList.length > 0) {
+					for (let i = 0; i < this.choosedBeautiColorList.length; i++) {
+						colorStr += `&productColor=${this.choosedBeautiColorList[i].id}`
 					}
 				}
-				let paramsStr = this.$qs.stringify(testObj) + labelIdString + productColorString
-				this.$axios.post(`/management/admin/beauty-details!save.action?id=${this.editFormData.id}`, paramsStr).then(res => {
-					this.getTableData('/management/admin/beauty-details!list.action', this.page, this.row, this.tempId);
-					this.editDialogVisible = false;
-					this.tempImgUrl = '';
-					this.editFormData = {
-						name: '',
-						level: '',
-						lableId: '',
-						greatNumber: '',
-						clickNumber: '',
-						pageView: '',
-						minute: '',
-						selectName: '',
-						productColor: [],
-						moduleId: '',
-						videoUrl: '',
-						about: '',
-						image: ''
-					};
-					this.editFileList = []
-				})
+				this.$axios.post(`/management/admin/beauty-details!save.action`, this.$qs.stringify(tempObj) +
+						colorStr + labelStr)
+					.then(res => {
+						if (res.data) {
+							this.$message.success('修改成功')
+							this.getTableData('/management/admin/beauty-details!list.action', this.page, this.row, this.tempId);
+							this.editDialogVisible = false;
+							this.imgPlace = '';
+							this.editFormData = {
+								name: '',
+								greatNumber: '',
+								pageView: '',
+								moduleId: '',
+								videoUrl: '',
+								star: '',
+								about: '',
+								image: '',
+								beautyDetailsRelationList: [{
+									procedureName: '',
+									procedureSort: 1,
+									childrenProcedureList: [{
+										procedureDes: '',
+										beautyDetailsRelationId: 0,
+										procedureImg: [],
+										desSort: 1,
+										id: 1
+									}, ]
+								}]
+							};
+							this.tempImgUrl = '';
+							this.editFileList = [];
+							this.stepEditList = [];
+							this.editStepfileList = [];
+							this.teachStepValue = '步骤1'
+						} else {
+							this.$message.error('好像出了点问题-.-！')
+						}
+					})
+				// 				var testObj = {};
+				// 				for (var key in this.editFormData) {
+				// 					if (key != 'labelId' && key != 'productColor' && key != 'lableId' && key != 'id') {
+				// 						testObj[key] = this.editFormData[key]
+				// 					}
+				// 				}
+				// 				if (this.tempImgUrl) {
+				// 					testObj.image = `<img src="${this.tempImgUrl}" alt="" />`
+				// 				}
+				// 				var productColorString = '';
+				// 				if (this.editFormData.productColor.length > 0) {
+				// 					for (let i = 0; i < this.editFormData.productColor.length; i++) {
+				// 						productColorString += `&productColor=${this.editFormData.productColor[i]}`
+				// 					}
+				// 				}
+				// 				var labelIdString = '';
+				// 				if (this.selectIdEdit.length > 0) {
+				// 					for (let i = 0; i < this.selectIdEdit.length; i++) {
+				// 						labelIdString += `&labelId=${this.selectIdEdit[i]}`
+				// 					}
+				// 				}
+				// 				let paramsStr = this.$qs.stringify(testObj) + labelIdString + productColorString
+				// 				this.$axios.post(`/management/admin/beauty-details!save.action?id=${this.editFormData.id}`, paramsStr).then(res => {
+				// 					this.getTableData('/management/admin/beauty-details!list.action', this.page, this.row, this.tempId);
+				// 					this.editDialogVisible = false;
+				// 					this.tempImgUrl = '';
+				// 					this.editFormData = {
+				// 						name: '',
+				// 						greatNumber: '',
+				// 						pageView: '',
+				// 						moduleId: '',
+				// 						videoUrl: '',
+				// 						star: '',
+				// 						about: '',
+				// 						image: '',
+				// 						beautyDetailsRelationList: [{
+				// 							procedureName: '',
+				// 							procedureSort: 1,
+				// 							childrenProcedureList: [{
+				// 								procedureDes: '',
+				// 								procedureImg: [],
+				// 								desSort: 1,
+				// 								id: 1
+				// 							}, ]
+				// 						}]
+				// 					};
+				// 					this.editFileList = []
+				// 				})
 			},
 			// 删除
 			deleteRow(index, row) {
@@ -1072,16 +1393,12 @@
 				console.log(row)
 				this.H5PageDialogVisible = true;
 				this.viewPageData = row;
-				// 标签数据
+				// 色号数据
 				this.$axios.get(`/management/admin/beauty-color!getSelectDetail.action?id=${row.id}`).then(res => {
+					console.log(res.data)
 					if (Object.keys(res.data).length != 0) {
 						this.viewPageColorList = [...res.data.color]
 					}
-				})
-				// 步骤数据
-				this.$axios.get(`/management/admin/beauty-details-relation!list.action?beautyDetailsId=${row.id}`).then(res => {
-					console.log(res.data);
-					this.viewStepList = res.data.rows
 				})
 			},
 			colseViewPage() {
@@ -1422,32 +1739,95 @@
 				this.teachStepValue = activeName;
 				this.stepList = tabs.filter(tab => tab.name !== targetName);
 			},
+			removeEditTab(targetName) {
+				let tabs = this.stepEditList;
+				let activeName = this.teachStepValue;
+				if (activeName === targetName) {
+					tabs.forEach((tab, index) => {
+						if (tab.name === targetName) {
+							let nextTab = tabs[index + 1] || tabs[index - 1];
+							if (nextTab) {
+								activeName = nextTab.name;
+							}
+						}
+					});
+				}
+				this.teachStepValue = activeName;
+				this.stepEditList = tabs.filter(tab => tab.name !== targetName);
+			},
 			addMainStep() {
-				let newTabName = this.stepList.length + 1 + '';
+				let newTabName = this.stepList.length + 1;
 				this.stepList.push({
 					id: this.stepList.length + 1,
 					name: '步骤' + newTabName
 				});
 				this.teachStepValue = this.stepList[this.stepList.length - 1].name;
-				this.formLabelAdd.step.push({
-					stepName: '',
-					stepDis: '',
-					stepImg: '',
-					miniStep: []
+				this.formLabelAdd.beautyDetailsRelationList.push({
+					procedureName: '',
+					procedureSort: this.formLabelAdd.beautyDetailsRelationList.length + 1,
+					childrenProcedureList: [{
+						procedureDes: "",
+						beautyDetailsRelationId: 0,
+						procedureImg: [],
+						desSort: 1,
+						id: 1
+					}]
 				})
+				console.log(this.formLabelAdd.beautyDetailsRelationList)
+			},
+			editAddMainStep() {
+				let newTabName = this.stepEditList.length + 1 + '';
+				this.stepEditList.push({
+					id: this.stepEditList.length + 1,
+					name: '步骤' + newTabName
+				});
+				// this.teachStepValue = this.stepEditList[this.stepEditList.length - 1].name;
+				this.editFormData.beautyDetailsRelationList.push({
+					procedureName: '',
+					procedureSort: this.editFormData.beautyDetailsRelationList.length + 1,
+					childrenProcedureList: [{
+						procedureDes: "",
+						beautyDetailsRelationId: 0,
+						procedureImg: [],
+						desSort: 1,
+						id: 1
+					}]
+				})
+				this.editStepfileList.push([
+					[]
+				])
 			},
 			addMiniStep(index) {
-				this.formLabelAdd.step[index].miniStep.push({
-					id: this.formLabelAdd.step[index].miniStep.length + 1,
-					miniStepDis: '',
-					miniStepImg: ''
+				console.log(index)
+				this.formLabelAdd.beautyDetailsRelationList[index].childrenProcedureList.push({
+					id: this.formLabelAdd.beautyDetailsRelationList[index].childrenProcedureList.length + 1,
+					procedureDes: '',
+					beautyDetailsRelationId: 0,
+					procedureImg: [],
+					desSort: this.formLabelAdd.beautyDetailsRelationList[index].childrenProcedureList.length + 1
+				})
+			},
+			editAddMiniStep(index) {
+				console.log(index)
+				this.editFormData.beautyDetailsRelationList[index].childrenProcedureList.push({
+					id: this.editFormData.beautyDetailsRelationList[index].childrenProcedureList.length + 1,
+					procedureDes: '',
+					beautyDetailsRelationId: 0,
+					procedureImg: [],
+					desSort: this.editFormData.beautyDetailsRelationList[index].childrenProcedureList.length + 1
 				})
 			},
 			deleteMiniStep(index1, index2) {
-				this.formLabelAdd.step[index1].miniStep.splice(index2, 1);
+				this.formLabelAdd.beautyDetailsRelationList[index1].childrenProcedureList.splice(index2, 1);
+			},
+			editDeleteMiniStep(index1, index2) {
+				this.editFormData.beautyDetailsRelationList[index1].childrenProcedureList.splice(index2, 1);
 			}
 		},
 		mounted() {
+			// 			this.$axios.get('/management/admin/beauty-details!dataConvert.action').then(res => {
+			// 				console.log(res)
+			// 			})
 			this.getTableData('/management/admin/beauty-details!list.action', 1, 10);
 			this.$axios.get('/management/admin/label!getTree.action').then(res => {
 				this.treeData = res.data;
@@ -1677,41 +2057,46 @@
 
 	.content {
 		width: 100%;
+		height: 770px;
 		position: relative;
+		min-width: 1000px;
 	}
 
+	/* H5 页面预览 */
 	.content .phoneBorder {
+		position: absolute;
 		width: 378px;
 		height: auto;
-		display: block;
-		margin: 0 auto;
+		left: 5%;
 	}
 
 	.content .pageContent {
 		position: absolute;
-		height: 585px;
+		height: 579px;
 		width: 330px;
-		top: 90px;
-		left: 50%;
-		margin-left: -165px;
+		top: 95px;
+		left: calc(5% + 25px);
 		overflow-y: auto;
 	}
 
-	.pageContent::-webkit-scrollbar {
+	.pageContent::-webkit-scrollbar,
+	.productContent::-webkit-scrollbar {
 		/*滚动条整体样式*/
 		width: 3px;
 		/*高宽分别对应横竖滚动条的尺寸*/
 		height: 3px;
 	}
 
-	.pageContent::-webkit-scrollbar-thumb {
+	.pageContent::-webkit-scrollbar-thumb,
+	.productContent::-webkit-scrollbar-thumb {
 		/*滚动条里面小方块*/
 		border-radius: 5px;
 		-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
 		background: rgba(255, 255, 255, 0.7);
 	}
 
-	.pageContent::-webkit-scrollbar-track {
+	.pageContent::-webkit-scrollbar-track,
+	.productContent::-webkit-scrollbar-track {
 		/*滚动条里面轨道*/
 		-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
 		border-radius: 0;
@@ -1771,6 +2156,7 @@
 	.rate p {
 		float: left;
 		font-size: 11.95px;
+		margin: 0;
 		color: #a87bff;
 		lopacity: 0.9;
 		line-height: 18.77px;
@@ -1779,8 +2165,8 @@
 	.rate ul {
 		float: left;
 		list-style: none;
-		margin-top: -2.56px;
-		margin-left: 6.83px;
+		margin: 0;
+		padding-left: 10px;
 	}
 
 	.rate ul li {
@@ -1818,9 +2204,11 @@
 	.column {
 		position: absolute;
 		height: 27.3px;
-		width: 215px;
+		width: 250px;
 		background: #F0E6FF;
-		margin: -22.2px 54.6px 0px 50.3px;
+		left: 50%;
+		margin-top: -22.2px;
+		margin-left: -125px;
 	}
 
 	.column img {
@@ -1841,11 +2229,12 @@
 		line-height: 75.9px;
 		color: #333333;
 		letter-spacing: -1.3px;
-		margin: -36.7px 120.3px -11.9px 1.7px;
+		margin: -36.7px 120.3px -11.9px 10px;
 	}
 
 	.wordart1 {
-		margin-left: -17.1px;
+		margin-left: -14px;
+		font-size: 50px;
 	}
 
 	.abbreviation {
@@ -1855,7 +2244,7 @@
 		font-size: 15.4px;
 		color: #333333;
 		letter-spacing: -0.33px;
-		margin: 3.4px 161.3px 2.6px 36.7px;
+		margin: 3.4px 161.3px 2.6px 46.7px;
 	}
 
 	.columnName {
@@ -1874,11 +2263,11 @@
 	}
 
 	.intro p {
-		font-size: 11.9px;
+		font-size: 16px;
 		color: #333333;
 		letter-spacing: -0.25px;
-		line-height: 20.5px;
-		margin: 34.1px 0px 0px 0px;
+		line-height: 24px;
+		margin: 40px 0px 0px 0px;
 	}
 
 	.intro p:last-child {
@@ -1898,6 +2287,7 @@
 		margin-right: 4.7px;
 		background-color: #CBA6FF;
 		display: inline;
+		margin-top: 3px;
 	}
 
 	.sequence span {
@@ -1998,6 +2388,58 @@
 		-moz-filter: blur(18px);
 		-ms-filter: blur(18px);
 		filter: blur(18px);
+	}
+
+	/* 产品清单预览 */
+	.content .productBox {
+		position: absolute;
+		width: 378px;
+		height: auto;
+		display: block;
+		left: 60%;
+	}
+
+	.content .productContent {
+		position: absolute;
+		height: 579px;
+		width: 330px;
+		top: 95px;
+		left: calc(60% + 25px);
+		overflow-y: auto;
+	}
+
+	.productContent .productTitle {
+		text-align: center;
+		line-height: 40px;
+		font-size: 16px;
+		border-bottom: 1px solid #ccc;
+	}
+
+	.productContent .productItem {
+		padding: 10px;
+		box-sizing: border-box;
+		border-bottom: 1px solid #eee;
+		position: relative;
+		padding-left: 110px;
+		min-height: 100px;
+	}
+
+	.productItem img {
+		position: absolute;
+		top: 15px;
+		left: 10px;
+		width: 80px;
+		height: 80px;
+	}
+
+	.productItem p:nth-of-type(1) {
+		font-size: 12px;
+		line-height: 16px;
+	}
+
+	.productItem p:nth-of-type(2) {
+		font-size: 10px;
+		line-height: 16px;
 	}
 </style>
 <style>
