@@ -15,6 +15,7 @@
 								<el-input v-model="formLabelAdd.name"></el-input>
 							</el-form-item>
 							<el-form-item label="搜索标签">
+
 								<el-input v-model='searchLabel' @change='getLabelList' clearable></el-input>
 								<el-table :data="labelTableData" @row-click='selectLabel' border style="width: 100%" v-loading="loading" v-if='searchLabel'
 								 class='labelTable'>
@@ -36,6 +37,7 @@
 							<el-form-item label="浏览量">
 								<el-input v-model="formLabelAdd.pageView"></el-input>
 							</el-form-item>
+
 							<el-form-item label="搜索产品">
 								<el-input v-model='searchBeautiColor' @change='getBeautiColorList' clearable></el-input>
 								<el-table :data="beautiColorTableData" @row-click='selectBeautiColor' border style="width: 100%" v-loading="loading"
@@ -97,6 +99,7 @@
 														<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
 														 :before-upload='beforeUpload' :on-success="uploadSuccess" :on-remove="handleRemove" :on-preview="handlePictureCardPreview"
 														 list-type="picture">
+
 															<el-button size="small" type="primary" @click='uploadName("addMiniStep-"+index+"-"+key)'>点击上传</el-button>
 															<span slot="tip" class="el-upload__tip" style="margin-left: 20px;">只能上传jpg/png文件，且不超过500kb</span>
 														</el-upload>
@@ -111,8 +114,9 @@
 						</el-form>
 						<span slot="footer" class="dialog-footer">
 							<el-button @click="cancelAdd">取 消</el-button>
-							<el-button type="primary" plain @click="saveDraft">保存草稿</el-button>
-							<el-button type="primary" @click="handleAdd">提交审核</el-button>
+							<el-button type="primary" plain @click="saveDraft">提交</el-button>
+							<!-- <el-button type="primary" plain @click="saveDraft">保存草稿</el-button>
+							<el-button type="primary" @click="handleAdd">提交审核</el-button> -->
 						</span>
 					</el-dialog>
 				</div>
@@ -197,7 +201,6 @@
 				<el-form-item label="浏览量">
 					<el-input v-model="editFormData.pageView"></el-input>
 				</el-form-item>
-
 				<el-form-item label="搜索产品">
 					<el-input v-model='searchBeautiColor' @change='getBeautiColorList' clearable></el-input>
 					<el-table :data="beautiColorTableData" @row-click='selectBeautiColor' border style="width: 100%" v-loading="loading"
@@ -221,7 +224,11 @@
 					</el-select>
 				</el-form-item>
 				<el-form-item label="视频">
-
+					<el-upload action="/management/admin/kcupload!uploadVideo.action?type=makeupvideo_path&dir=media"
+					 :before-upload='beforeUploadVideo' :on-success="uploadSuccessVideo" :on-remove="handleRemoveVideo" :file-list='editVideo'>
+						<el-button size="small" type="primary">点击上传</el-button>
+						<span slot="tip" class="el-upload__tip" style="margin-left: 20px;">只能上传mp4或flv格式文件，为保证速度，请尽量压缩文件</span>
+					</el-upload>
 				</el-form-item>
 				<el-form-item label="简介">
 					<el-input type="textarea" autosize v-model="editFormData.about"></el-input>
@@ -420,7 +427,7 @@
 						<p>{{viewPageData.name}}</p>
 					</div>
 					<div style="clear: both;"></div>
-					<div id="time"><span>{{getTime(1,1,viewPageData.createTime)}}</span><span>视频来源：{{viewPageData.original==0?'网络':'原创'}}</span></div>
+					<div id="time"><span>{{getTime(1,1,viewPageData.createTime).split(" ")[0]}}</span><span>视频来源：{{viewPageData.original==0?'网络':'原创'}}</span></div>
 					<div class="rate">
 						<p>难度</p>
 						<ul>
@@ -428,7 +435,7 @@
 						</ul>
 					</div>
 					<div style="clear: both;"></div>
-					<div id="about">{{viewPageData.about}}</div>
+					<div id="about">{{trimTag(viewPageData.about)}}</div>
 					<hr style="border:0.5px dashed #E8E8E8;margin-top:13px;" />
 					<div id="label">
 						<div id="labelLeft" v-for="(item) in (viewPageData.labelName?viewPageData.labelName.split(','):[])">
@@ -567,6 +574,7 @@
 						procedureSort: 1,
 						childrenProcedureList: [{
 							procedureDes: '',
+							beautyDetailsRelationId: 0,
 							procedureImg: [],
 							desSort: 1,
 							id: 1
@@ -589,6 +597,7 @@
 						procedureSort: 1,
 						childrenProcedureList: [{
 							procedureDes: '',
+							beautyDetailsRelationId: 0,
 							procedureImg: [],
 							desSort: 1,
 							id: 1
@@ -644,7 +653,10 @@
 					imgFile: null
 				},
 				imgPlace: '', //点击上传的位置
-				videoData: {},
+				videoData: {
+					imgFileFileName:'',
+					imgFile: null
+				},
 				tempImgUrl: '',
 				tempRowId: '',
 				loading: true,
@@ -652,6 +664,7 @@
 				addFileList: [],
 				editFileList: [],
 				editStepfileList: [],
+				editVideo:[],
 				dialogImageUrl: '',
 				imgDialogVisible: false,
 				commentDetailId: '',
@@ -702,6 +715,22 @@
 			Pagination
 		},
 		methods: {
+			// 去除文本中标签
+			trimTag(str) {
+				let testExp = /<.*?>/gi;
+				if (str) {
+					let tempList = str.match(testExp);
+					if (tempList && tempList.length > 0) {
+						for (let i = 0; i < tempList.length; i++) {
+							str = str.replace(tempList[i], '');
+						}
+					}
+					str = str.replace('&nbsp;', '')
+					return str
+				} else {
+					return ''
+				}
+			},
 			getImgUrl(str) {
 				let testExp = /http.*?(\.png|\.jpg|\.gif)/gi;
 				if (str) {
@@ -765,6 +794,7 @@
 						procedureSort: 1,
 						childrenProcedureList: [{
 							procedureDes: '',
+							beautyDetailsRelationId: 0,
 							procedureImg: [],
 							desSort: 1,
 							id: 1
@@ -797,8 +827,8 @@
 				};
 				this.choosedLabelList = [];
 				this.choosedBeautiColorList = [];
-				this.stepEditList=[];
-				this.editStepfileList=[];
+				this.stepEditList = [];
+				this.editStepfileList = [];
 			},
 			tableRowClassName({
 				row,
@@ -870,13 +900,14 @@
 									procedureSort: 1,
 									childrenProcedureList: [{
 										procedureDes: '',
+										beautyDetailsRelationId: 0,
 										procedureImg: [],
 										desSort: 1,
 										id: 1
 									}, ]
 								}]
 							};
-							this.choosedBeautiColorList=[];
+							this.choosedBeautiColorList = [];
 							this.addFileList = [];
 							this.stepList = [{
 								id: 1,
@@ -928,6 +959,7 @@
 							procedureSort: '',
 							childrenProcedureList: [{
 								procedureDes: '',
+								beautyDetailsRelationId: 0,
 								procedureImg: [],
 								desSort: '',
 								id: 1
@@ -954,6 +986,7 @@
 						procedureSort: 1,
 						childrenProcedureList: [{
 							procedureDes: '',
+							beautyDetailsRelationId: 0,
 							procedureImg: [],
 							desSort: 1,
 							id: 1
@@ -967,7 +1000,7 @@
 				this.teachStepValue = '步骤1'
 				this.addFileList = []
 				this.tempImgUrl = '';
-				this.choosedBeautiColorList=[];
+				this.choosedBeautiColorList = [];
 				this.AddVisible = false;
 			},
 			// 表格多选框change
@@ -1019,10 +1052,16 @@
 					this.$message.error('没有选中的行')
 				}
 			},
+			// 导出为Excel
+			tableToExcel() {
+
+			},
+
 			// 批量增加标签
 			batchLabel() {
 				if (this.checkedRowId) {
 					this.batchAddLabelDialogVisible = true
+					this.choosedLabelList=[];
 				} else {
 					this.$message.error('没有选中的行')
 				}
@@ -1043,6 +1082,7 @@
 					this.$axios.post(`/management/admin/beauty-details!batchAddLabel.action?ids=${this.checkedRowId}`, idString).then(
 						res => {
 							if (res.status === 200) {
+								this.getTableData('/management/admin/beauty-details!list.action', this.page, this.row, this.tempId);
 								this.choosedLabelList = [];
 								this.searchLabel = '';
 								this.batchAddLabelDialogVisible = false;
@@ -1105,21 +1145,20 @@
 			},
 			// 视频上传
 			beforeUploadVideo(file) {
-				// 				this.imgData.FileName = file.name;
-				// 				this.imgData.imgFile = file
+				this.videoData.imgFileFileName = file.name;
+				this.videoData.imgFile = file
 				console.log(file)
 			},
 			handleRemoveVideo(file, fileList) {
 				// this.tempImgUrl = '';
+				this.formLabelAdd.videoUrl=''
 				console.log(file)
 			},
 			uploadSuccessVideo(res, file, fileList) {
-				// 				this.tempImgUrl = res.url;
-				// 				// 清空上传图片参数
-				// 				this.imgData = {
-				// 					FileName: '',
-				// 					imgFile: null
-				// 				}
+				this.videoData.imgFileFileName = '';
+				this.videoData.imgFile = null
+				this.formLabelAdd.videoUrl=res.data
+				// 清空上传图片参数
 				console.log(res)
 				console.log(file)
 			},
@@ -1127,8 +1166,8 @@
 			// 编辑
 			edit(index, row) {
 				console.log(row)
-				this.stepEditList=[];
-				this.editStepfileList=[];
+				this.stepEditList = [];
+				this.editStepfileList = [];
 				// 获取输入框数据
 				var that = this;
 				that.editDialogVisible = true;
@@ -1144,9 +1183,7 @@
 				tempObj.image = row.image;
 				tempObj.beautyDetailsRelationList = row.beautyDetailsRelationList
 				this.editFormData = tempObj
-				console.log('以下是表单步骤对象')
-				console.log(this.editFormData.beautyDetailsRelationList)
-				// 填充步骤数据
+				// 填充步骤图片数据
 				this.editFormData.beautyDetailsRelationList.forEach((item, index) => {
 					this.stepEditList.push({
 						id: index + 1,
@@ -1159,7 +1196,7 @@
 							if (item1.procedureImg && item1.procedureImg.length > 0) {
 								item1.procedureImg.forEach(item2 => {
 									this.editStepfileList[index][index1].push({
-										name: '步骤' + (index+1) + '-' + (index1+1) + '图',
+										name: '步骤' + (index + 1) + '-' + (index1 + 1) + '图',
 										url: item2
 									})
 								})
@@ -1167,10 +1204,6 @@
 						})
 					}
 				})
-				console.log('以下是tab列表')
-				console.log(this.stepEditList)
-				console.log('以下是步骤列表')
-				console.log(this.editStepfileList)
 				// 格式化标签数据并填充
 				if (row.labelId) {
 					let tempIdArr = row.labelId.split(',');
@@ -1184,7 +1217,7 @@
 				}
 				// 格式化产品色号数据并填充
 				that.$axios.get(`/management/admin/beauty-color!getSelectDetail.action?id=${row.id}`).then(res => {
-					if (res.data.color&&res.data.color.length > 0) {
+					if (res.data.color && res.data.color.length > 0) {
 						this.choosedBeautiColorList = [...res.data.color]
 					}
 				})
@@ -1215,6 +1248,7 @@
 						procedureSort: 1,
 						childrenProcedureList: [{
 							procedureDes: '',
+							beautyDetailsRelationId: 0,
 							procedureImg: [],
 							desSort: 1,
 							id: 1
@@ -1223,8 +1257,8 @@
 				}
 				this.tempImgUrl = '';
 				this.editFileList = [];
-				this.stepEditList=[];
-				this.editStepfileList=[];
+				this.stepEditList = [];
+				this.editStepfileList = [];
 				this.teachStepValue = '步骤1'
 			},
 			// 提交编辑
@@ -1250,7 +1284,8 @@
 						colorStr += `&productColor=${this.choosedBeautiColorList[i].id}`
 					}
 				}
-				this.$axios.post(`/management/admin/beauty-details!save.action?id=${tempObj.id}`, this.$qs.stringify(tempObj) + colorStr + labelStr)
+				this.$axios.post(`/management/admin/beauty-details!save.action`, this.$qs.stringify(tempObj) +
+						colorStr + labelStr)
 					.then(res => {
 						if (res.data) {
 							this.$message.success('修改成功')
@@ -1271,6 +1306,7 @@
 									procedureSort: 1,
 									childrenProcedureList: [{
 										procedureDes: '',
+										beautyDetailsRelationId: 0,
 										procedureImg: [],
 										desSort: 1,
 										id: 1
@@ -1279,61 +1315,61 @@
 							};
 							this.tempImgUrl = '';
 							this.editFileList = [];
-							this.stepEditList=[];
-							this.editStepfileList=[];
+							this.stepEditList = [];
+							this.editStepfileList = [];
 							this.teachStepValue = '步骤1'
-						}else{
+						} else {
 							this.$message.error('好像出了点问题-.-！')
 						}
 					})
-// 				var testObj = {};
-// 				for (var key in this.editFormData) {
-// 					if (key != 'labelId' && key != 'productColor' && key != 'lableId' && key != 'id') {
-// 						testObj[key] = this.editFormData[key]
-// 					}
-// 				}
-// 				if (this.tempImgUrl) {
-// 					testObj.image = `<img src="${this.tempImgUrl}" alt="" />`
-// 				}
-// 				var productColorString = '';
-// 				if (this.editFormData.productColor.length > 0) {
-// 					for (let i = 0; i < this.editFormData.productColor.length; i++) {
-// 						productColorString += `&productColor=${this.editFormData.productColor[i]}`
-// 					}
-// 				}
-// 				var labelIdString = '';
-// 				if (this.selectIdEdit.length > 0) {
-// 					for (let i = 0; i < this.selectIdEdit.length; i++) {
-// 						labelIdString += `&labelId=${this.selectIdEdit[i]}`
-// 					}
-// 				}
-// 				let paramsStr = this.$qs.stringify(testObj) + labelIdString + productColorString
-// 				this.$axios.post(`/management/admin/beauty-details!save.action?id=${this.editFormData.id}`, paramsStr).then(res => {
-// 					this.getTableData('/management/admin/beauty-details!list.action', this.page, this.row, this.tempId);
-// 					this.editDialogVisible = false;
-// 					this.tempImgUrl = '';
-// 					this.editFormData = {
-// 						name: '',
-// 						greatNumber: '',
-// 						pageView: '',
-// 						moduleId: '',
-// 						videoUrl: '',
-// 						star: '',
-// 						about: '',
-// 						image: '',
-// 						beautyDetailsRelationList: [{
-// 							procedureName: '',
-// 							procedureSort: 1,
-// 							childrenProcedureList: [{
-// 								procedureDes: '',
-// 								procedureImg: [],
-// 								desSort: 1,
-// 								id: 1
-// 							}, ]
-// 						}]
-// 					};
-// 					this.editFileList = []
-// 				})
+				// 				var testObj = {};
+				// 				for (var key in this.editFormData) {
+				// 					if (key != 'labelId' && key != 'productColor' && key != 'lableId' && key != 'id') {
+				// 						testObj[key] = this.editFormData[key]
+				// 					}
+				// 				}
+				// 				if (this.tempImgUrl) {
+				// 					testObj.image = `<img src="${this.tempImgUrl}" alt="" />`
+				// 				}
+				// 				var productColorString = '';
+				// 				if (this.editFormData.productColor.length > 0) {
+				// 					for (let i = 0; i < this.editFormData.productColor.length; i++) {
+				// 						productColorString += `&productColor=${this.editFormData.productColor[i]}`
+				// 					}
+				// 				}
+				// 				var labelIdString = '';
+				// 				if (this.selectIdEdit.length > 0) {
+				// 					for (let i = 0; i < this.selectIdEdit.length; i++) {
+				// 						labelIdString += `&labelId=${this.selectIdEdit[i]}`
+				// 					}
+				// 				}
+				// 				let paramsStr = this.$qs.stringify(testObj) + labelIdString + productColorString
+				// 				this.$axios.post(`/management/admin/beauty-details!save.action?id=${this.editFormData.id}`, paramsStr).then(res => {
+				// 					this.getTableData('/management/admin/beauty-details!list.action', this.page, this.row, this.tempId);
+				// 					this.editDialogVisible = false;
+				// 					this.tempImgUrl = '';
+				// 					this.editFormData = {
+				// 						name: '',
+				// 						greatNumber: '',
+				// 						pageView: '',
+				// 						moduleId: '',
+				// 						videoUrl: '',
+				// 						star: '',
+				// 						about: '',
+				// 						image: '',
+				// 						beautyDetailsRelationList: [{
+				// 							procedureName: '',
+				// 							procedureSort: 1,
+				// 							childrenProcedureList: [{
+				// 								procedureDes: '',
+				// 								procedureImg: [],
+				// 								desSort: 1,
+				// 								id: 1
+				// 							}, ]
+				// 						}]
+				// 					};
+				// 					this.editFileList = []
+				// 				})
 			},
 			// 删除
 			deleteRow(index, row) {
@@ -1728,18 +1764,13 @@
 					id: this.stepList.length + 1,
 					name: '步骤' + newTabName
 				});
-				console.log(this.stepList)
-				console.log('..............')
-				console.log(this.formLabelAdd)
 				this.teachStepValue = this.stepList[this.stepList.length - 1].name;
-				console.log(this.teachStepValue)
-				console.log(this.formLabelAdd.beautyDetailsRelationList)
-				console.log('....................')
 				this.formLabelAdd.beautyDetailsRelationList.push({
 					procedureName: '',
 					procedureSort: this.formLabelAdd.beautyDetailsRelationList.length + 1,
 					childrenProcedureList: [{
 						procedureDes: "",
+						beautyDetailsRelationId: 0,
 						procedureImg: [],
 						desSort: 1,
 						id: 1
@@ -1753,23 +1784,28 @@
 					id: this.stepEditList.length + 1,
 					name: '步骤' + newTabName
 				});
-				this.teachStepValue = this.stepEditList[this.stepEditList.length - 1].name;
+				// this.teachStepValue = this.stepEditList[this.stepEditList.length - 1].name;
 				this.editFormData.beautyDetailsRelationList.push({
 					procedureName: '',
 					procedureSort: this.editFormData.beautyDetailsRelationList.length + 1,
 					childrenProcedureList: [{
 						procedureDes: "",
+						beautyDetailsRelationId: 0,
 						procedureImg: [],
 						desSort: 1,
 						id: 1
 					}]
 				})
+				this.editStepfileList.push([
+					[]
+				])
 			},
 			addMiniStep(index) {
 				console.log(index)
 				this.formLabelAdd.beautyDetailsRelationList[index].childrenProcedureList.push({
 					id: this.formLabelAdd.beautyDetailsRelationList[index].childrenProcedureList.length + 1,
 					procedureDes: '',
+					beautyDetailsRelationId: 0,
 					procedureImg: [],
 					desSort: this.formLabelAdd.beautyDetailsRelationList[index].childrenProcedureList.length + 1
 				})
@@ -1779,6 +1815,7 @@
 				this.editFormData.beautyDetailsRelationList[index].childrenProcedureList.push({
 					id: this.editFormData.beautyDetailsRelationList[index].childrenProcedureList.length + 1,
 					procedureDes: '',
+					beautyDetailsRelationId: 0,
 					procedureImg: [],
 					desSort: this.editFormData.beautyDetailsRelationList[index].childrenProcedureList.length + 1
 				})
@@ -1791,6 +1828,9 @@
 			}
 		},
 		mounted() {
+			// 			this.$axios.get('/management/admin/beauty-details!dataConvert.action').then(res => {
+			// 				console.log(res)
+			// 			})
 			this.getTableData('/management/admin/beauty-details!list.action', 1, 10);
 			this.$axios.get('/management/admin/label!getTree.action').then(res => {
 				this.treeData = res.data;

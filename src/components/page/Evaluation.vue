@@ -57,7 +57,7 @@
 
 							<el-form-item label="编辑页面内容">
 								<el-row>
-									<el-col :span='22'>
+									<el-col :span='24'>
 										<textarea id="editorAdd" rows="10" cols="80"></textarea>
 									</el-col>
 								</el-row>
@@ -92,7 +92,7 @@
 				 v-loading="loading" :row-class-name="tableRowClasName"> -->
 				<el-table :data="tableData" border style="width: 100%" class='table' max-height="630" @select='tableSelect' @select-all='tableSelectAll'
 				 v-loading="loading">
-					<el-table-column type="selection" width="55" align='center'></el-table-column>
+					<el-table-column type="selection" width="50" align='center'></el-table-column>
 					<el-table-column prop="id" label="id" width="50" align='center'>
 					</el-table-column>
 					<el-table-column prop="name" label="标题" align='center' :show-overflow-tooltip="true">
@@ -110,7 +110,7 @@
 					<el-table-column prop="createTime" label="创建时间" width="100" align='center' :formatter='getTime'
 					 :show-overflow-tooltip="true">
 					</el-table-column>
-					<el-table-column label="操作" fixed="right" align='center' width='680'>
+					<el-table-column label="操作" fixed="right" align='center' width='670'>
 						<template slot-scope="scope">
 							<el-button @click.native.prevent="deleteRow(scope.$index, scope.row)" size='small' type="danger" class="el-icon-delete">删除</el-button>
 							<el-button size="small" type="primary" @click="edit(scope.$index, scope.row)" icon='el-icon-edit'>编辑</el-button>
@@ -254,9 +254,9 @@
 				</el-table-column>
 				<el-table-column prop="beautyAppraisalId" label="测评ID" width='100' align='center'>
 				</el-table-column>
-				<el-table-column prop="productId[0]" label="产品ID" width='100' align='center'>
+				<el-table-column prop="productId" label="产品ID" width='100' align='center' :formatter='getProductIdStr' :show-overflow-tooltip="true">
 				</el-table-column>
-				<el-table-column prop="colorName" label="色号名称" align='center'>
+				<el-table-column prop="productColor" label="色号名称" align='center' :formatter='getProductColorStr' :show-overflow-tooltip="true">
 				</el-table-column>
 				<el-table-column label="操作" width="200" align='center'>
 					<template slot-scope="scope">
@@ -291,9 +291,6 @@
 						</div>
 					</el-select>
 				</el-form-item>
-				<el-form-item label='色号名称'>
-					<el-input v-model="addproductForm.name"></el-input>
-				</el-form-item>
 				<el-form-item>
 					<el-button @click="cancelAddProduct">取 消</el-button>
 					<el-button type="primary" @click="handleAddProduct">确 定</el-button>
@@ -304,7 +301,7 @@
 		<el-dialog title="编辑产品" :visible.sync="editProductDialogVisible" width="50%" append-to-body>
 			<el-form :label-position="labelPosition" label-width="100px" :model="editProductForm">
 				<el-form-item label='选择色号'>
-					<el-select v-model="editProductForm.productColor" multiple placeholder="请选择色号" filterable :filter-method='(q)=>{
+					<el-select v-model="editProductForm.productColor" multiple placeholder="请选择色号" filterable remote :filter-method='(q)=>{
 						searchColor=q;
 						getColorProductData(colorPage,colorRow,q)
 					}'
@@ -324,9 +321,9 @@
 						</div>
 					</el-select>
 				</el-form-item>
-				<el-form-item label='色号名称'>
+				<!-- <el-form-item label='色号名称'>
 					<el-input v-model="editProductForm.name"></el-input>
-				</el-form-item>
+				</el-form-item> -->
 				<el-form-item>
 					<el-button @click="cancelEditProduct">取 消</el-button>
 					<el-button type="primary" @click="handleEditProduct">确 定</el-button>
@@ -613,7 +610,6 @@
 			},
 			// 表格多选框change
 			tableSelect(selection) {
-				console.log(selection)
 				let tempArr = [];
 				if (selection.length > 0) {
 					selection.forEach(item => {
@@ -665,6 +661,7 @@
 			batchLabel() {
 				if (this.checkedRowId) {
 					this.batchAddLabelDialogVisible = true
+					this.choosedLabelList=[];
 				} else {
 					this.$message.error('没有选中的行')
 				}
@@ -684,6 +681,7 @@
 					this.$axios.post(`/management/admin/beauty-appraisal!batchAddLabel.action?ids=${this.checkedRowId}`, idString).then(
 						res => {
 							if (res.status === 200) {
+								this.getTableData(`/management/admin/beauty-appraisal!list.action`, this.page, this.row, this.tempId)
 								this.choosedLabelList = [];
 								this.searchLabel = '';
 								this.batchAddLabelDialogVisible = false;
@@ -787,9 +785,6 @@
 			},
 			edit(index, row) {
 				this.choosedLabelList=[];
-				console.log('新编辑里面的options')
-				console.log(this.tagOptions)
-				console.log(row)
 				var that = this;
 				that.editDialogVisible = true;
 				var tempObj = {};
@@ -871,10 +866,11 @@
 					for (let i = 0; i < this.choosedLabelList.length; i++) {
 						labelIdString += `&labelId=${this.choosedLabelList[i].id}`
 					}
-				}else{
-					this.$message.error('请至少绑定一个标签');
-					return;
 				}
+// 				else{
+// 					this.$message.error('请至少绑定一个标签');
+// 					return;
+// 				}
 				let paramsStr = this.$qs.stringify(testObj) + labelIdString
 				console.log(testObj)
 				this.$axios.post(`/management/admin/beauty-appraisal!save.action?id=${this.editFormData.id}`, paramsStr).then(res => {
@@ -887,7 +883,6 @@
 					this.editListPicFileList = [];
 					this.editBannerPicFileList = [];
 					this.editFormData = {};
-					// this.resetLabel2();
 				})
 			},
 			// 删除
@@ -958,9 +953,17 @@
 				this.productRowId = row.id;
 				this.getProductData(this.productPage, this.productRow, row.id);
 			},
+			// 格式化表格数据
+			getProductIdStr(row, column, idList){
+				return idList.join(',')
+			},
+			getProductColorStr(row, column, colorList){
+				return colorList.join(',')
+			},
 			addProduct() {
 				this.addProductDialogVisible = true;
-				this.getColorProductData(1, 10)
+				this.getColorProductData(1, 10);
+				// productColorOptions
 			},
 			cancelAddProduct() {
 				this.addProductDialogVisible = false;
@@ -999,17 +1002,34 @@
 				})
 			},
 			editProduct(index, row) {
+				let _this=this;
 				this.editProductDialogVisible = true;
-				this.getColorProductData(1, 10);
+				console.log(row)
+				row.productColor.map(item=>{
+					this.getColorProductData(1,10,item)
+				})
+				this.getColorProductData(1,10)
+				let tempList=[];
+				row.productColor.forEach(item=>{
+					tempList.push({
+						id:'',
+						name:item
+					})
+				})
+				row.productId.forEach((item,index)=>{
+					tempList[index].id=item
+				})
+				// 异步填充表格数据
 				this.innerProductRowId = row.id;
-				this.editProductForm.productColor = [];
-				if (row.productId.length > 0) {
-					for (let i = 0; i < row.productId.length; i++) {
-						this.editProductForm.productColor.push(Number(row.productId[i]))
+				setTimeout(function(){
+					_this.editProductForm.productColor = [];
+					if (row.productId.length > 0) {
+						for (let i = 0; i < row.productId.length; i++) {
+							_this.editProductForm.productColor.push(Number(row.productId[i]))
+						}
 					}
-				}
+				},500)
 				this.editProductForm.name = row.colorName;
-
 			},
 			cancelEditProduct() {
 				this.editProductDialogVisible = false;
@@ -1239,15 +1259,14 @@
 			},
 			// 色号数据
 			getColorProductData(page, row, text) {
-				this.$axios.get('/management/admin/beauty-color!comboGridlist.action', {
-					params: {
+				this.$axios.post('/management/admin/beauty-color!comboGridlist.action', this.$qs.stringify({
 						page: page,
 						rows: row,
 						q: text
-					}
-				}).then(res => {
+					})).then(res => {
 					this.colorTotalNum = res.data.total
 					this.productColorOptions = res.data.rows
+					console.log(this.productColorOptions)
 				})
 			},
 			// 获取标签列表

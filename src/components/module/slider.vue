@@ -29,7 +29,6 @@
 			},
 			addTab(path, pathName) {
 				let tempArr = this.editableTabs2.map(item => {
-					console.log(item)
 					return item.title
 
 				})
@@ -46,8 +45,7 @@
 				}
 			},
 			removeTab(targetName) {
-				let tabs = this.editableTabs2;
-				console.log(tabs)
+				let tabs = [...this.editableTabs2];
 				let activeName = this.editableTabsValue2;
 				if (tabs.length == 1) {
 					this.$router.push('/workspace');

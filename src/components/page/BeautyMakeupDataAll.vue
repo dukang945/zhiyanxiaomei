@@ -2,15 +2,12 @@
   <div>
     <el-table :data="labelCountList" border style="width: 100%" align="center">
       <el-table-column prop="id" label="编号"></el-table-column>
-      <el-table-column prop="labelId" label="标签id" align="center"></el-table-column>
-      <el-table-column prop="labelName" label="标签名称" align="center"></el-table-column>
+      <el-table-column prop="docId" label="文章id" align="center"></el-table-column>
+      <el-table-column prop="docName" label="文章名称" align="center" show-overflow-tooltip></el-table-column>
       <el-table-column prop="creatTime" label="时间" align="center" width="100"></el-table-column>
-      <el-table-column prop="articleNum" label="文章数量" align="center"></el-table-column>
       <el-table-column prop="readNum" label="阅读次数" align="center"></el-table-column>
-      <el-table-column prop="enshrine" label="收藏量" align="center"></el-table-column>
-      <el-table-column prop="likeNum" label="点赞量" align="center"></el-table-column>
-      <el-table-column prop="commentNum" label="评论数" align="center"></el-table-column>
-      <el-table-column prop="shareNum" label="分享次数 " align="center"></el-table-column>
+      <el-table-column prop="userReadNum" label="评论次数" align="center"></el-table-column>
+      <el-table-column prop="userShareNum" label="分享次数" align="center"></el-table-column>
       <el-table-column label="操作" align="center" width="150">
         <template slot-scope="scope">
           <el-button
@@ -20,7 +17,7 @@
             @click="handleClick(scope.row)"
             v-has
           >查看历史数据</el-button>
-          <el-dialog title="收货地址" :visible.sync="TableVisible" width="80%">
+          <el-dialog title="历史数据" :visible.sync="TableVisible" width="80%">
             <div class="search">
               <el-date-picker
                 v-model="dateVal"
@@ -33,15 +30,13 @@
               <el-button type="primary" icon="el-icon-search" @click="daySearch(page2,row2)">搜索</el-button>
             </div>
             <el-table :data="detailList" border>
-              <el-table-column property="creatTime" label="时间" min-width="100"></el-table-column>
-              <el-table-column property="id" label="编号"></el-table-column>
-              <el-table-column property="labelName" label="标签名称"></el-table-column>
-              <el-table-column property="articleNum" label="文章量"></el-table-column>
-              <el-table-column property="readNum" label="阅读次数"></el-table-column>
-              <el-table-column property="enshrine" label="收藏量"></el-table-column>
-              <el-table-column property="likeNum" label="点赞量"></el-table-column>
-              <el-table-column property="commentNum" label="评论数"></el-table-column>
-              <el-table-column property="shareNum" label="分享次数"></el-table-column>
+              <el-table-column prop="id" label="编号"></el-table-column>
+              <el-table-column prop="docId" label="文章id" align="center"></el-table-column>
+              <el-table-column prop="docName" label="文章名称" align="center" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="creatTime" label="时间" align="center" ></el-table-column>
+              <el-table-column prop="readNum" label="阅读次数" align="center"></el-table-column>
+              <el-table-column prop="userReadNum" label="评论次数" align="center"></el-table-column>
+              <el-table-column prop="userShareNum" label="分享次数" align="center"></el-table-column>
             </el-table>
           </el-dialog>
         </template>
@@ -117,6 +112,7 @@ export default {
         })
         .then(res => {
           if (res.status == 200) {
+            console.log(res);
             this.labelCountList = res.data.rows;
             this.totalNum1 = res.data.total;
           }
@@ -125,30 +121,36 @@ export default {
 
     handleClick(row) {
       this.TableVisible = true;
-      this.idx = row.labelId;
+      this.idx = row.docId;
       this.$axios
         .get(
-          `/management/admin/beauty-makeup-data!list.action?docId=${this.idx}`
+          `/management/admin/beauty-makeup-data!list.action?docId=${
+            this.idx
+          }`
         )
         .then(res => {
-          console.log(res.status == 200);
-          this.detailList = res.data.rows;
-          this.totalNum2 = res.data.total;
+          if (res.status == 200) {
+            console.log(res)
+            this.detailList = res.data.rows;
+            this.totalNum2 = res.data.total;
+          }
         });
     },
     //搜索
-    daySearch(page,row) {
-      this.$axios.post(
-        "/management/admin/label-count-day!list.action",
-        this.$qs.stringify({
-          labelId: this.idx,
-          time: this.dateVal,
-          page: page,
-          rows: row
-        })
-      ).then(res => {
-          if(res.status == 200){
-            this.detailList =res.data.rows
+    daySearch(page, row) {
+      this.$axios
+        .post(
+          "/management/admin/beauty-makeup-data!list.action",
+          this.$qs.stringify({
+            docId: this.idx,
+            time: this.dateVal,
+            page: page,
+            rows: row
+          })
+        )
+        .then(res => {
+          if (res.status == 200) {
+            this.detailList = res.data.rows;
           }
         });
     },
