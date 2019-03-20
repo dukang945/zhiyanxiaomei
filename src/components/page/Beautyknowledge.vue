@@ -673,7 +673,7 @@
 							idString += `labelId=${this.choosedLabelList[i].id}&`
 						}
 					}
-					this.$axios.post(`/management/admin/beauty-knowledge!batchAddLabel.action?ids=${this.checkedRowId}`, idString).then(
+					this.$axios.post(`/management/admin/beauty-knowledge!batchAddLabel.action`, idString+`&ids=${this.checkedRowId}`).then(
 						res => {
 							if (res.status === 200) {
 								this.choosedLabelList = [];
