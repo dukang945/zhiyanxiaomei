@@ -114,8 +114,9 @@
 						</el-form>
 						<span slot="footer" class="dialog-footer">
 							<el-button @click="cancelAdd">取 消</el-button>
-							<el-button type="primary" plain @click="saveDraft">保存草稿</el-button>
-							<el-button type="primary" @click="handleAdd">提交审核</el-button>
+							<el-button type="primary" plain @click="saveDraft">提交</el-button>
+							<!-- <el-button type="primary" plain @click="saveDraft">保存草稿</el-button>
+							<el-button type="primary" @click="handleAdd">提交审核</el-button> -->
 						</span>
 					</el-dialog>
 				</div>
@@ -1081,6 +1082,7 @@
 					this.$axios.post(`/management/admin/beauty-details!batchAddLabel.action?ids=${this.checkedRowId}`, idString).then(
 						res => {
 							if (res.status === 200) {
+								this.getTableData('/management/admin/beauty-details!list.action', this.page, this.row, this.tempId);
 								this.choosedLabelList = [];
 								this.searchLabel = '';
 								this.batchAddLabelDialogVisible = false;
@@ -1202,12 +1204,6 @@
 						})
 					}
 				})
-				console.log('以下是编辑表单步骤数组')
-				console.log(this.editFormData.beautyDetailsRelationList)
-				console.log('以下是编辑tab列表')
-				console.log(this.stepEditList)
-				console.log('以下是步骤图片列表')
-				console.log(this.editStepfileList)
 				// 格式化标签数据并填充
 				if (row.labelId) {
 					let tempIdArr = row.labelId.split(',');

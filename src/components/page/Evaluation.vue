@@ -681,6 +681,7 @@
 					this.$axios.post(`/management/admin/beauty-appraisal!batchAddLabel.action?ids=${this.checkedRowId}`, idString).then(
 						res => {
 							if (res.status === 200) {
+								this.getTableData(`/management/admin/beauty-appraisal!list.action`, this.page, this.row, this.tempId)
 								this.choosedLabelList = [];
 								this.searchLabel = '';
 								this.batchAddLabelDialogVisible = false;
@@ -865,10 +866,11 @@
 					for (let i = 0; i < this.choosedLabelList.length; i++) {
 						labelIdString += `&labelId=${this.choosedLabelList[i].id}`
 					}
-				}else{
-					this.$message.error('请至少绑定一个标签');
-					return;
 				}
+// 				else{
+// 					this.$message.error('请至少绑定一个标签');
+// 					return;
+// 				}
 				let paramsStr = this.$qs.stringify(testObj) + labelIdString
 				console.log(testObj)
 				this.$axios.post(`/management/admin/beauty-appraisal!save.action?id=${this.editFormData.id}`, paramsStr).then(res => {
