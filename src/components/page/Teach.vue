@@ -200,7 +200,6 @@
 				<el-form-item label="浏览量">
 					<el-input v-model="editFormData.pageView"></el-input>
 				</el-form-item>
-
 				<el-form-item label="搜索产品">
 					<el-input v-model='searchBeautiColor' @change='getBeautiColorList' clearable></el-input>
 					<el-table :data="beautiColorTableData" @row-click='selectBeautiColor' border style="width: 100%" v-loading="loading"
@@ -224,7 +223,11 @@
 					</el-select>
 				</el-form-item>
 				<el-form-item label="视频">
-
+					<el-upload action="/management/admin/kcupload!uploadVideo.action?type=makeupvideo_path&dir=media"
+					 :before-upload='beforeUploadVideo' :on-success="uploadSuccessVideo" :on-remove="handleRemoveVideo" :file-list='editVideo'>
+						<el-button size="small" type="primary">点击上传</el-button>
+						<span slot="tip" class="el-upload__tip" style="margin-left: 20px;">只能上传mp4或flv格式文件，为保证速度，请尽量压缩文件</span>
+					</el-upload>
 				</el-form-item>
 				<el-form-item label="简介">
 					<el-input type="textarea" autosize v-model="editFormData.about"></el-input>
@@ -649,7 +652,10 @@
 					imgFile: null
 				},
 				imgPlace: '', //点击上传的位置
-				videoData: {},
+				videoData: {
+					imgFileFileName:'',
+					imgFile: null
+				},
 				tempImgUrl: '',
 				tempRowId: '',
 				loading: true,
@@ -657,6 +663,7 @@
 				addFileList: [],
 				editFileList: [],
 				editStepfileList: [],
+				editVideo:[],
 				dialogImageUrl: '',
 				imgDialogVisible: false,
 				commentDetailId: '',
@@ -1053,6 +1060,7 @@
 			batchLabel() {
 				if (this.checkedRowId) {
 					this.batchAddLabelDialogVisible = true
+					this.choosedLabelList=[];
 				} else {
 					this.$message.error('没有选中的行')
 				}
@@ -1135,21 +1143,20 @@
 			},
 			// 视频上传
 			beforeUploadVideo(file) {
-				// 				this.imgData.FileName = file.name;
-				// 				this.imgData.imgFile = file
+				this.videoData.imgFileFileName = file.name;
+				this.videoData.imgFile = file
 				console.log(file)
 			},
 			handleRemoveVideo(file, fileList) {
 				// this.tempImgUrl = '';
+				this.formLabelAdd.videoUrl=''
 				console.log(file)
 			},
 			uploadSuccessVideo(res, file, fileList) {
-				// 				this.tempImgUrl = res.url;
-				// 				// 清空上传图片参数
-				// 				this.imgData = {
-				// 					FileName: '',
-				// 					imgFile: null
-				// 				}
+				this.videoData.imgFileFileName = '';
+				this.videoData.imgFile = null
+				this.formLabelAdd.videoUrl=res.data
+				// 清空上传图片参数
 				console.log(res)
 				console.log(file)
 			},
