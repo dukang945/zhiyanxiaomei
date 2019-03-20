@@ -2,6 +2,7 @@
   <div>
     <div class="handle-box">
       <el-button type="primary" @click="AddVisible = true" v-has size="small">新增</el-button>
+      <el-button type="primary" @click="refresh" v-has size="small">刷新缓存</el-button>
       <el-dialog title="新增" :visible.sync="AddVisible" width="80%" @opened="addOPen">
         <el-form :model="formAdd">
           <el-form-item label="答案文本" label-width="120px">
@@ -140,6 +141,14 @@ export default {
             }
           });
       });
+    },
+    //刷新缓存
+    refresh(){
+      this.$axios.get('/management/admin/answers-book!cache.action').then(res=>{
+        if(res.status==200){
+           this.$message.success("刷新成功");
+        }
+      })
     },
     //分页
     handleSizeChange(val) {

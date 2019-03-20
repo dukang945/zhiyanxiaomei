@@ -308,6 +308,7 @@ export default {
     },
     // 点击单选
     selectBeautiColor(row) {
+      // console.log(row,this.choosedBeautiColorList)
       this.choosedBeautiColorList.push(row);
     },
     getlabelCountList(page1, row1) {
@@ -730,6 +731,7 @@ export default {
     },
     //编辑
     handleEdit(row) {
+      this.choosedBeautiColorList=[]
       console.log(row);
       this.TableVisible = true;
       this.idx = row.id;
@@ -755,14 +757,16 @@ export default {
         .post(
           `/management/admin/beauty-color-to-label!getSelectDetail.action`,
           this.$qs.stringify({
-            id: row.id,
+            id: row.labels,
             type: 1
           })
         )
         .then(res => {
           if (res.status == 200) {
             console.log(res);
-            this.choosedBeautiColorList = res.data.color;
+            if(res.data.color){
+              this.choosedBeautiColorList = res.data.color;
+            }
           }
         });
       setTimeout(() => {
@@ -782,9 +786,11 @@ export default {
       this.formEdit.contourMethod = CKEDITOR.instances.faceMake.getData();
       this.formEdit.browDescribe = CKEDITOR.instances.faceBrows.getData();
       console.log(this.formEdit);
-      var colorId = "";
+      if(this.choosedBeautiColorList){
+        var colorId = "";
       for (let i = 0; i < this.choosedBeautiColorList.length; i++) {
         colorId += `&productColor1=` + this.choosedBeautiColorList[i].id;
+      }
       }
       this.$axios
         .post(
@@ -810,6 +816,7 @@ export default {
               this.fileList2 = [];
               this.fileList3 = [];
               this.formEdit = {};
+              this.choosedBeautiColorList=[]
               this.getlabelCountList();
             }
           }
@@ -841,33 +848,15 @@ export default {
       // console.log(this.formLabelAdd,file,fileList)
     },
     beforeUpload1(file) {
-      this.imgData1.FileName ='zmxy/uploadFiles/'+
-        new Date().valueOf() +
-        "_" +
-        sessionStorage.getItem("id") +
-        "_" +
-        Math.round(Math.random() * 999999) +
-        ".jpg";
+      this.imgData1.FileName =file.name
       this.imgData1.imgFile = file;
     },
     beforeUpload2(file) {
-      this.imgData2.FileName ='zmxy/uploadFiles/'+
-        new Date().valueOf() +
-        "_" +
-        sessionStorage.getItem("id") +
-        "_" +
-        Math.round(Math.random() * 999999) +
-        ".jpg";
+      this.imgData2.FileName =file.name
       this.imgData2.imgFile = file;
     },
     beforeUpload3(file) {
-      this.imgData3.FileName ='zmxy/uploadFiles/'+
-        new Date().valueOf() +
-        "_" +
-        sessionStorage.getItem("id") +
-        "_" +
-        Math.round(Math.random() * 999999) +
-        ".jpg";
+      this.imgData3.FileName =file.name
       this.imgData3.imgFile = file;
     },
     handleSuccess1(res) {

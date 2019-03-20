@@ -104,7 +104,7 @@
 					},
 					{
 						value: 1,
-						label: "妆容教程"
+						label: "妆容评测"
 					},
 					{
 						value: 2,

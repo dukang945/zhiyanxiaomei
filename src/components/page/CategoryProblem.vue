@@ -4,11 +4,14 @@
       <el-button type="primary" @click="AddVisible = true" v-has size="small">新增</el-button>
       <el-dialog title="新增" :visible.sync="AddVisible" width="80%" @opened="addOPen">
         <el-form :model="formAdd">
+          <el-form-item label="产品分类" label-width="120px">
+            <el-input v-model="formAdd.categoryId"></el-input>
+          </el-form-item>
           <el-form-item label="问题列表" label-width="120px">
             <el-input v-model="formAdd.problem"></el-input>
           </el-form-item>
           <el-form-item label="答案" label-width="120px">
-            <el-input v-model="formAdd.answer"></el-input>
+            <el-input type="textarea" v-model="formAdd.answer"></el-input>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -18,7 +21,7 @@
       </el-dialog>
     </div>
     <el-table :data="labelCountList" border style="width: 100%" align="center">
-      <el-table-column prop="id" label="产品id" align="center"></el-table-column>
+      <el-table-column prop="categoryId" label="产品id" align="center"></el-table-column>
       <el-table-column prop="problem" label="问题列表" align="center" show-overflow-tooltip></el-table-column>
       <el-table-column prop="answer" label="答案" align="center" show-overflow-tooltip></el-table-column>
       <el-table-column label="操作" align="center">
@@ -34,19 +37,22 @@
       </el-table-column>
     </el-table>
     <el-dialog title="编辑" :visible.sync="EditVisible" width="80%" @opened="addOPen">
-        <el-form :model="formEdit">
-          <el-form-item label="问题列表" label-width="120px">
-            <el-input v-model="formEdit.problem"></el-input>
-          </el-form-item>
-          <el-form-item label="答案" label-width="120px">
-            <el-input v-model="formEdit.answer"></el-input>
-          </el-form-item>
-        </el-form>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="EditVisible = false">取 消</el-button>
-          <el-button type="primary" @click="saveEdit('formEdit')">确 定</el-button>
-        </span>
-      </el-dialog>
+      <el-form :model="formEdit">
+        <el-form-item label="产品分类" label-width="120px">
+          <el-input v-model="formEdit.categoryId"></el-input>
+        </el-form-item>
+        <el-form-item label="问题列表" label-width="120px">
+          <el-input v-model="formEdit.problem"></el-input>
+        </el-form-item>
+        <el-form-item label="答案" label-width="120px">
+          <el-input type="textarea" v-model="formEdit.answer"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="EditVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveEdit('formEdit')">确 定</el-button>
+      </span>
+    </el-dialog>
     <el-pagination
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
@@ -113,23 +119,30 @@ export default {
         });
     },
     //编辑
-    handleEdit(row){
-        this.formEdit = row
-        this.EditVisible =true
-        this.idx = row.id;
+    handleEdit(row) {
+      this.formEdit = row;
+      this.EditVisible = true;
+      this.idx = row.id;
     },
     //保存编辑
-    saveEdit(){
-        this.$axios.post(`/management/admin/category-problem!save.action?id=${this.idx}`,this.$qs.stringify(
-           { answer:this.formEdit.answer,problem:this.formEdit.problem}
-        )).then(res=>{
-            if (res.status == 200) {
-              this.EditVisible = false;
-              this.$message.success(`修改成功`);
-              this.formEdit = {};
-              this.getlabelCountList();
-            }
-        })
+    saveEdit() {
+      this.$axios
+        .post(
+          `/management/admin/category-problem!save.action?id=${this.idx}`,
+          this.$qs.stringify({
+            answer: this.formEdit.answer,
+            problem: this.formEdit.problem,
+            categoryId:this.formEdit.categoryId
+          })
+        )
+        .then(res => {
+          if (res.status == 200) {
+            this.EditVisible = false;
+            this.$message.success(`修改成功`);
+            this.formEdit = {};
+            this.getlabelCountList();
+          }
+        });
     },
     //删除
     deleteRow(index, rows) {
@@ -139,7 +152,11 @@ export default {
         type: "warning"
       }).then(() => {
         this.$axios
-          .get(`/management/admin/category-problem!delete.action?id=${rows[index].id}`)
+          .get(
+            `/management/admin/category-problem!delete.action?id=${
+              rows[index].id
+            }`
+          )
           .then(res => {
             if (res.status == 200) {
               this.$message.success("删除成功");

@@ -60,7 +60,7 @@ import Answer from '@/components/page/Answer'
 import ShareDescribe from '@/components/page/ShareDescribe'
 import InterestedTest from '@/components/page/InterestedTest'
 import CategoryProblem from '@/components/page/CategoryProblem'
-// import KnowledgeMes from '@/components/page/KnowledgeMes'
+import KnowledgeMes from '@/components/page/KnowledgeMes'
 
 Vue.use(Router)
 
@@ -325,11 +325,11 @@ export default new Router({
 					name:'文章数据统计',
 					component: BeautyMakeupDataAll,
 				},
-// 				{
-// 					path: '/knowledgeMes',
-// 					name:'文章数据统计',
-// 					component: KnowledgeMes,
-// 				},
+				{
+					path: '/knowledgeMes',
+					name:'文章数据统计',
+					component: KnowledgeMes,
+				},
         {
           path: '/vipMsg',
 					name:'会员信息管理',

@@ -1073,6 +1073,12 @@ export default {
     },
     //编辑
     handleEdit(row) {
+      this.searchBeautiColor = "";
+      this.searchBeautiColor2 = "";
+      this.searchBeautiColor3 = "";
+      this.choosedBeautiColorList = [];
+      this.choosedBeautiColorList2 = [];
+      this.choosedBeautiColorList3 = [];
       console.log(row);
       this.TableVisible = true;
       this.idx = row.id;
@@ -1098,13 +1104,14 @@ export default {
         .post(
           `/management/admin/beauty-color-to-label!getSelectDetail.action`,
           this.$qs.stringify({
-            id: row.id,
+            id: row.labels,
             type: 1
           })
         )
         .then(res => {
           if (res.status == 200) {
             if (res.data.color) {
+              console.log(res);
               this.choosedBeautiColorList = res.data.color;
             } else {
               this.choosedBeautiColorList = [];
@@ -1115,13 +1122,14 @@ export default {
         .post(
           `/management/admin/beauty-color-to-label!getSelectDetail.action`,
           this.$qs.stringify({
-            id: row.id,
+            id: row.labels,
             type: 2
           })
         )
         .then(res => {
           if (res.status == 200) {
             if (res.data.color) {
+              console.log(res);
               this.choosedBeautiColorList2 = res.data.color;
             } else {
               this.choosedBeautiColorList2 = [];
@@ -1132,13 +1140,14 @@ export default {
         .post(
           `/management/admin/beauty-color-to-label!getSelectDetail.action`,
           this.$qs.stringify({
-            id: row.id,
+            id: row.labels,
             type: 3
           })
         )
         .then(res => {
           if (res.status == 200) {
             if (res.data.color) {
+              console.log(res);
               this.choosedBeautiColorList3 = res.data.color;
             } else {
               this.choosedBeautiColorList3 = [];
@@ -1209,6 +1218,9 @@ export default {
               this.fileList1 = [];
               this.fileList2 = [];
               this.fileList3 = [];
+              this.choosedBeautiColorList = [];
+              this.choosedBeautiColorList2 = [];
+              this.choosedBeautiColorList3 = [];
               this.formEdit = {};
               this.getlabelCountList();
             }
