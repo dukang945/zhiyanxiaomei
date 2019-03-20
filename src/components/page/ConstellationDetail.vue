@@ -44,7 +44,7 @@
           <el-form-item label="今日运势详情">
             <el-input v-model="formLabelAdd.details" type="textarea" autosize></el-input>
           </el-form-item>
-          
+
           <el-form-item label="爱情运势">
             <el-input v-model="formLabelAdd.message1" type="textarea" autosize></el-input>
           </el-form-item>
@@ -76,7 +76,8 @@
         </span>
       </el-dialog>
     </div>
-    <el-table :data="tableData" border style="width: 100%">
+    <el-table :data="tableData" border style="width: 100%" @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="id" label="编号" width="100" align="center"></el-table-column>
       <el-table-column prop="constellation" label="星座名(日期-日期)" width="250" align="center"></el-table-column>
       <el-table-column prop="date" label="日期" width="200" align="center"></el-table-column>
@@ -112,7 +113,7 @@
                 <el-select v-model="formLabelAlign.constellationId" placeholder="请选择">
                   <el-option
                     v-for="item in constellationList"
-                    :key="item.id"  
+                    :key="item.id"
                     :label="item.text"
                     :value="item.id"
                   ></el-option>
@@ -127,13 +128,13 @@
                   style="width: 100%;"
                 ></el-date-picker>
               </el-form-item>
-              <el-form-item label="今日运势分数" >
+              <el-form-item label="今日运势分数">
                 <el-input v-model="formLabelAlign.luckScore"></el-input>
               </el-form-item>
               <el-form-item label="今日运势详情">
                 <el-input v-model="formLabelAlign.details" type="textarea" autosize></el-input>
               </el-form-item>
-              
+
               <el-form-item label="爱情运势">
                 <el-input v-model="formLabelAlign.message1" type="textarea" autosize></el-input>
               </el-form-item>
@@ -259,7 +260,9 @@ export default {
         if (valid) {
           this.$axios
             .post(
-              `/management/admin/constellation-details!save.action?id=${this.idx}`,
+              `/management/admin/constellation-details!save.action?id=${
+                this.idx
+              }`,
               this.$qs.stringify({
                 constellationId: this.formLabelAlign.constellationId,
                 luckScore: this.formLabelAlign.luckScore,
@@ -343,8 +346,8 @@ export default {
               this.$message.error(`出了点问题-.-!`);
             });
           this.AddVisible = false;
-		  this.formLabelAdd = {};
-		  this.$refs["formLabelAdd"].resetFields();
+          this.formLabelAdd = {};
+          this.$refs["formLabelAdd"].resetFields();
         } else {
           console.log("error submit!!");
           return false;
@@ -395,6 +398,10 @@ export default {
           done();
         })
         .catch(_ => {});
+    },
+    //多选
+    handleSelectionChange(val){
+      this.multipleSelection = val;
     },
     // 分页
     changePage(val) {
