@@ -8,7 +8,7 @@
 					<el-button type="primary" size='small' @click="batchOffline">批量下线</el-button>
 					<el-button type="primary" size='small' @click="batchLabel">批量加标签</el-button>
 					<el-button type="danger" size='small' @click="batchDelete">批量删除</el-button>
-					<el-dialog title="新增美妆知识" :visible="AddVisible" width="60%" @close='AddVisible=false'>
+					<el-dialog title="新增美妆知识" :visible="AddVisible" width="60%" @close='AddVisible=false' :close-on-click-modal='false'>
 						<el-form :label-position="labelPosition" label-width="120px" :model="formLabelAdd">
 							<el-form-item label="标题">
 								<el-input v-model="formLabelAdd.name"></el-input>
@@ -125,7 +125,7 @@
 			</el-col>
 		</el-row>
 		<!-- 编辑表单 -->
-		<el-dialog title="编辑" :visible.sync="editDialogVisible" width="60%" :before-close="handleClose">
+		<el-dialog title="编辑" :visible.sync="editDialogVisible" width="60%" :before-close="handleClose" :close-on-click-modal='false'>
 			<el-form :label-position="labelPosition" label-width="120px" :model="editFormData">
 				<el-form-item label="标题">
 					<el-input v-model="editFormData.name"></el-input>
@@ -514,8 +514,8 @@
 							items: ['productname', 'title', 'img', 'text', 'texteffects', 'bold']
 						}, //将自定义插件加入toolbar
 					],
-					// contentsCss: './static/ckeditor/style.css',
-					contentsCss: '../../../static/ckeditor/style.css',
+					contentsCss: './static/ckeditor/style.css',
+					// contentsCss: '../../../static/ckeditor/style.css',
 					templates_replaceContent: false,
 					autoUpdateElement: true,
 					//编辑器中回车产生的标签

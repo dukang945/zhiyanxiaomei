@@ -70,7 +70,7 @@
     </div>
     <el-table :data="labelCountList" border align="center">
       <el-table-column prop="id" label="id" align="center"></el-table-column>
-      <el-table-column prop="id" label="明星名称" align="center"></el-table-column>
+      <el-table-column prop="name" label="明星名称" align="center"></el-table-column>
       <el-table-column prop="beautyDetailsId" label="教程id" align="center"></el-table-column>
       <el-table-column prop="labelName" label="标签名称" align="center"></el-table-column>
       <el-table-column label="操作" align="center">

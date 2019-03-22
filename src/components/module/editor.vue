@@ -62,8 +62,8 @@
 							items: ['productname', 'title', 'img', 'text', 'texteffects', 'bold']
 						}, //将自定义插件加入toolbar
 					],
-					// contentsCss: './static/ckeditor/style.css',
-					contentsCss: '../../../static/ckeditor/style.css',
+					contentsCss: './static/ckeditor/style.css',
+					// contentsCss: '../../../static/ckeditor/style.css',
 					templates_replaceContent: false,
 					autoUpdateElement: true,
 					//编辑器中回车产生的标签

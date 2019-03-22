@@ -2,6 +2,40 @@
   <div>
     <div class="handle-box">
       <el-button type="primary" @click="AddVisible = true" v-has size="small">新增</el-button>
+      <el-dialog title="图片预览" :visible.sync="imgVisible" append-to-body>
+					<img :src="img" alt="" style="width:100%">
+				</el-dialog>
+      <el-dialog title="产品预览" :visible.sync="viewVisible" append-to-body width="80%" top="30px">
+				<div class="content">
+          	<img class="phoneBorder productBox" src="../../images/viewPage.png" alt="">
+				<div class="productContent">
+					<div class="productTitle">基础画法</div>
+					<div class="productItem" v-for="(item,index) in viewPageColorList">
+						<img :src="getImgUrl(item.colorImage)" alt="">
+						<p>{{item.name}} {{item.colorPrice}}</p>
+						<p>参考价格 ：￥{{item.price}}</p>
+					</div>
+				</div>
+         	<img class="phoneBorder productBox pro2" src="../../images/viewPage.png" alt="">
+				<div class="productContent cont2">
+					<div class="productTitle">桃花妆画法</div>
+					<div class="productItem" v-for="(item,index) in viewPageColorList2">
+						<img :src="getImgUrl(item.colorImage)" alt="">
+						<p>{{item.name}} {{item.specification}}</p>
+						<p>参考价格 ：￥{{item.colorPrice}}</p>
+					</div>
+				</div>
+         	<img class="phoneBorder productBox pro3" src="../../images/viewPage.png" alt="">
+				<div class="productContent cont3">
+					<div class="productTitle">财运妆画法</div>
+					<div class="productItem" v-for="(item,index) in viewPageColorList3">
+						<img :src="getImgUrl(item.image)" alt="">
+						<p>{{item.name}} {{item.colorImage}}</p>
+						<p>参考价格 ：￥{{item.colorPrice}}</p>
+					</div>
+				</div>
+        </div>
+				</el-dialog>
       <el-dialog title="新增" :visible.sync="AddVisible" width="80%" @opened="addOPen">
         <el-form :model="formAdd">
           <el-form-item label="标签" label-width="120px">
@@ -25,6 +59,7 @@
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
               :data="imgData1"
+              :on-preview="handlePreview"
               :on-remove="handleRemove1"
               :on-success="handleSuccess1"
               :file-list="fileList1"
@@ -70,6 +105,7 @@
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
               :data="imgData2"
+              :on-preview="handlePreview"
               :on-remove="handleRemove2"
               :on-success="handleSuccess2"
               :file-list="fileList2"
@@ -115,6 +151,7 @@
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
               :data="imgData3"
+              :on-preview="handlePreview"
               :on-remove="handleRemove3"
               :on-success="handleSuccess3"
               :file-list="fileList3"
@@ -168,6 +205,7 @@
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button size="small" type="primary" @click="handleEdit(scope.row)" v-has>编辑</el-button>
+          <el-button size="small" type="primary" @click="handleView(scope.row)" v-has>预览</el-button>
           <el-button
             @click.native.prevent="deleteRow(scope.$index, labelCountList)"
             type="danger"
@@ -178,7 +216,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog title="编辑" :visible.sync="TableVisible" width="80%">
+    <el-dialog title="编辑" :visible.sync="TableVisible" width="80%" :close-on-click-modal="false">
       <el-form :model="formEdit">
         <el-form-item label="标签" label-width="120px">
           <el-select v-model="formEdit.labels" placeholder="请选择标签">
@@ -201,6 +239,7 @@
             class="upload-demo"
             action="/management/admin/kcupload!uploadImage.action?type=goods_path"
             :data="imgData1"
+            :on-preview="handlePreview"
             :on-remove="handleRemove1"
             :on-success="handleSuccess1"
             :file-list="fileList1"
@@ -246,6 +285,7 @@
             class="upload-demo"
             action="/management/admin/kcupload!uploadImage.action?type=goods_path"
             :data="imgData2"
+            :on-preview="handlePreview"
             :on-remove="handleRemove2"
             :on-success="handleSuccess2"
             :file-list="fileList2"
@@ -258,7 +298,7 @@
         <el-form-item label="教程id" label-width="120px">
           <el-input v-model="formEdit.beautyDetailsId2"></el-input>
         </el-form-item>
-        <el-form-item label="搜索产品2" label-width="120px">
+        <el-form-item label="搜索产品" label-width="120px">
           <el-input v-model="searchBeautiColor2" @input="getBeautiColorList2" clearable></el-input>
           <el-table
             :data="beautiColorTableData2"
@@ -291,6 +331,7 @@
             class="upload-demo"
             action="/management/admin/kcupload!uploadImage.action?type=goods_path"
             :data="imgData3"
+            :on-preview="handlePreview"
             :on-remove="handleRemove3"
             :on-success="handleSuccess3"
             :file-list="fileList3"
@@ -303,7 +344,7 @@
         <el-form-item label="教程id" label-width="120px">
           <el-input v-model="formEdit.beautyDetailsId3"></el-input>
         </el-form-item>
-        <el-form-item label="搜索产品3" label-width="120px">
+        <el-form-item label="搜索产品" label-width="120px">
           <el-input v-model="searchBeautiColor3" @input="getBeautiColorList3" clearable></el-input>
           <el-table
             :data="beautiColorTableData3"
@@ -363,10 +404,13 @@ export default {
       imgData3: {},
       TableVisible: false,
       AddVisible: false,
+      imgVisible: false,
+      viewVisible: false,
       editor: false,
       editorAdd: false,
       loading: true,
       dateVal: "",
+      img:"",
       eyesDescribe: "",
       idx: -1,
       currentPage1: 1,
@@ -382,6 +426,9 @@ export default {
         beautyDetailsId2: 2,
         beautyDetailsId3: 3
       },
+      viewPageColorList:[],//产品预览列表
+      viewPageColorList2:[],//产品预览列表
+      viewPageColorList3:[],//产品预览列表
       labelTableData: [], //标签表格数据
       searchLabel: "", //搜索标签输入框
       choosedLabelList: [], //已选中标签列表
@@ -407,6 +454,12 @@ export default {
     this.getlabelList();
   },
   methods: {
+    getImgUrl(str) {
+				let testExp = /http.*?(\.png|\.jpg|\.gif)/gi;
+				if (str) {
+					return str.match(testExp)[0]
+				}
+			},
     getlabelCountList(page1, row1) {
       this.$axios.post("/management/admin/eyes!list.action", this.$qs.stringify({
             page: page1,
@@ -466,8 +519,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: './static/ckeditor/style.css',
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -511,8 +564,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: './static/ckeditor/style.css',
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -555,8 +608,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: './static/ckeditor/style.css',
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -599,8 +652,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: './static/ckeditor/style.css',
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -645,8 +698,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: './static/ckeditor/style.css',
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -690,8 +743,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: './static/ckeditor/style.css',
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -734,8 +787,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: './static/ckeditor/style.css',
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -778,8 +831,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: './static/ckeditor/style.css',
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -861,13 +914,13 @@ export default {
           if (res.status == 200) {
             this.formEdit = res.data;
             this.formEdit.eyesImg
-              ? (this.fileList1 = [{ url: this.formEdit.eyesImg }])
+              ? (this.fileList1 = [{ url: this.formEdit.eyesImg,name:"图片1" }])
               : (this.fileList1 = []);
             this.formEdit.eyesImg2
-              ? (this.fileList2 = [{ url: this.formEdit.eyesImg2 }])
+              ? (this.fileList2 = [{ url: this.formEdit.eyesImg2,name:"图片2" }])
               : (this.fileList2 = []);
             this.formEdit.eyesImg3
-              ? (this.fileList3 = [{ url: this.formEdit.eyesImg3 }])
+              ? (this.fileList3 = [{ url: this.formEdit.eyesImg3,name:"图片3" }])
               : (this.fileList3 = []);
           }
         });
@@ -1006,6 +1059,30 @@ export default {
           });
       });
     },
+    //预览
+    handleView(row){
+      console.log(row)
+				this.viewVisible = true;
+				// 色号数据
+				this.$axios.post(`/management/admin/beauty-color-to-label!comboGridlist.action`,this.$qs.stringify({ labelId: row.labels,
+            type: 1})).then(res1 => {
+					if (Object.keys(res1.data).length != 0) {
+						this.viewPageColorList = [...res1.data.rows]
+					}
+				})
+				this.$axios.post(`/management/admin/beauty-color-to-label!comboGridlist.action`,this.$qs.stringify({ labelId: row.labels,
+            type: 2})).then(res2 => {
+					if (Object.keys(res2.data).length != 0) {
+						this.viewPageColorList2 = [...res2.data.rows]
+					}
+				})
+				this.$axios.post(`/management/admin/beauty-color-to-label!comboGridlist.action`,this.$qs.stringify({ labelId: row.labels,
+            type: 3})).then(res3 => {
+					if (Object.keys(res3.data).length != 0) {
+						this.viewPageColorList3 = [...res3.data.rows]
+					}
+				})
+    },
     // 色号操作
 
     // 获取色号列表
@@ -1082,6 +1159,10 @@ export default {
     handleRemove1(file, fileList) {},
     handleRemove2(file, fileList) {},
     handleRemove3(file, fileList) {},
+    handlePreview(file) {
+				this.img= file.url
+				this.imgVisible = true
+			},
     beforeUpload1(file) {
       console.log(file);
       this.imgData1.FileName ='zmxy/uploadFiles/'+
@@ -1103,9 +1184,9 @@ export default {
     },
     handleSuccess1(res) {
       console.log(res);
-      this.formEdit.eyesImg1 = res.url;
+      this.formEdit.eyesImg = res.url;
       if (this.AddVisible) {
-        this.formAdd.eyesImg1 = res.url;
+        this.formAdd.eyesImg = res.url;
       }
     },
     handleSuccess2(res) {
@@ -1180,4 +1261,101 @@ export default {
 .labelChoosed span:hover {
   background: #eeeeee;
 }
+/* 产品清单预览 */
+.content {
+		width: 100%;
+		height: 770px;
+		position: relative;
+		min-width: 1000px;
+	}
+.phoneBorder {
+		position: absolute;
+		width: 300px;
+		height: auto;
+		left: 5%;
+	}
+	.content .productBox {
+		position: absolute;
+		width: 300px;
+		height: auto;
+		display: block;
+		/* left: 60%; */
+	}
+
+	.content .productContent {
+		    position: absolute;
+    height: 460px;
+    width: 258px;
+    top: 76px;
+    left: 6.5%;
+    overflow-y: auto;
+	}
+
+	.productContent .productTitle {
+		text-align: center;
+		line-height: 40px;
+		font-size: 16px;
+		border-bottom: 1px solid #ccc;
+	}
+
+	.productContent .productItem {
+		padding: 10px;
+		box-sizing: border-box;
+		border-bottom: 1px solid #eee;
+		position: relative;
+		padding-left: 110px;
+		min-height: 100px;
+	}
+
+	.productItem img {
+		position: absolute;
+		top: 15px;
+		left: 10px;
+		width: 80px;
+		height: 80px;
+	}
+.pro2{
+  left:37%
+}
+.content .cont2{
+  left:38.5%
+}
+.pro3{
+  left:70%
+}
+.content .cont3{
+  left:71.5%
+}
+	.productItem p:nth-of-type(1) {
+		font-size: 12px;
+		line-height: 16px;
+	}
+
+	.productItem p:nth-of-type(2) {
+		font-size: 10px;
+		line-height: 16px;
+	}
+  .pageContent::-webkit-scrollbar,
+	.productContent::-webkit-scrollbar {
+		/*滚动条整体样式*/
+		width: 3px;
+		/*高宽分别对应横竖滚动条的尺寸*/
+		height: 3px;
+	}
+
+	.pageContent::-webkit-scrollbar-thumb,
+	.productContent::-webkit-scrollbar-thumb {
+		/*滚动条里面小方块*/
+		border-radius: 5px;
+		-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+		background: rgba(255, 255, 255, 0.7);
+	}
+
+	.pageContent::-webkit-scrollbar-track,
+	.productContent::-webkit-scrollbar-track {
+		/*滚动条里面轨道*/
+		-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+		border-radius: 0;
+		background: rgba(0, 0, 0, 0.2);
+	}
 </style>

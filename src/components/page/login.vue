@@ -115,7 +115,7 @@
 		border-radius: 5px;
 		background: rgba(0, 0, 0, 0.15);
 		overflow: hidden;
-		z-index: 9;
+		z-index: 999;
 	}
 
 	.ms-content {

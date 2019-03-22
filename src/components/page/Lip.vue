@@ -20,12 +20,13 @@
           <el-form-item label="基础画法" label-width="120px">
             <textarea id="lipMakeAdd" rows="10" cols="80"></textarea>
           </el-form-item>
-          <el-form-item label="唇部图片" label-width="120px">
+          <el-form-item label="基础画法图片" label-width="120px">
             <el-upload
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
               :data="imgData1"
               :on-remove="handleRemove1"
+              :on-preview="handlePreview"
               :on-success="handleSuccess1"
               :file-list="fileList1"
               :before-upload="beforeUpload1"
@@ -71,6 +72,7 @@
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
               :data="imgData2"
+              :on-preview="handlePreview"
               :on-remove="handleRemove2"
               :on-success="handleSuccess2"
               :file-list="fileList2"
@@ -83,7 +85,7 @@
           <el-form-item label="教程id" label-width="120px">
             <el-input v-model="formAdd.beautyDetailsId2"></el-input>
           </el-form-item>
-          <el-form-item label="搜索产品2" label-width="120px">
+          <el-form-item label="搜索产品" label-width="120px">
             <el-input v-model="searchBeautiColor2" @input="getBeautiColorList2" clearable></el-input>
             <el-table
               :data="beautiColorTableData2"
@@ -117,6 +119,7 @@
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
               :data="imgData3"
+              :on-preview="handlePreview"
               :on-remove="handleRemove3"
               :on-success="handleSuccess3"
               :file-list="fileList3"
@@ -129,7 +132,7 @@
           <el-form-item label="教程id" label-width="120px">
             <el-input v-model="formAdd.beautyDetailsId3"></el-input>
           </el-form-item>
-          <el-form-item label="搜索产品3" label-width="120px">
+          <el-form-item label="搜索产品" label-width="120px">
             <el-input v-model="searchBeautiColor3" @input="getBeautiColorList3" clearable></el-input>
             <el-table
               :data="beautiColorTableData3"
@@ -167,7 +170,7 @@
       <el-table-column prop="id" label="id" align="center"></el-table-column>
       <el-table-column prop="labelName" label="标签名称" align="center"></el-table-column>
       <el-table-column prop="labelName" label="创建人" align="center"></el-table-column>
-      <el-table-column prop="status" label="状态" align="center">
+      <!-- <el-table-column prop="status" label="状态" align="center">
         <template slot-scope="scope">
           <span v-if="scope.row.status == 0">下线</span>
           <span v-else-if="scope.row.status == 1">上线</span>
@@ -176,7 +179,7 @@
           <span v-else-if="scope.row.status == 4">已审核</span>
           <span v-else-if="scope.row.status == 5">不通过</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button size="small" type="primary" @click="handleEdit(scope.row)" v-has>编辑</el-button>
@@ -186,15 +189,15 @@
             size="small"
             v-del
           >删除</el-button>
-          <el-button size="small" v-if="scope.row.status==0">上线</el-button>
+          <!-- <el-button size="small" v-if="scope.row.status==0">上线</el-button>
           <el-button size="small" v-else-if="scope.row.status==1">下线</el-button>
           <el-button size="small" v-else-if="scope.row.status==2">提交审核</el-button>
           <el-button size="small" v-show="scope.row.status==3">通过</el-button>
-          <el-button size="small" v-show="scope.row.status==3">拒绝</el-button>
+          <el-button size="small" v-show="scope.row.status==3">拒绝</el-button> -->
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog title="编辑" :visible.sync="TableVisible" width="80%">
+    <el-dialog title="编辑" :visible.sync="TableVisible" width="80%" :close-on-click-modal="false">
       <el-form :model="formEdit">
         <el-form-item label="标签" label-width="120px">
           <el-select v-model="formEdit.labels" placeholder="请选择标签">
@@ -217,6 +220,7 @@
             class="upload-demo"
             action="/management/admin/kcupload!uploadImage.action?type=goods_path"
             :data="imgData1"
+            :on-preview="handlePreview"
             :on-remove="handleRemove1"
             :on-success="handleSuccess1"
             :file-list="fileList1"
@@ -263,6 +267,7 @@
             class="upload-demo"
             action="/management/admin/kcupload!uploadImage.action?type=goods_path"
             :data="imgData2"
+            :on-preview="handlePreview"
             :on-remove="handleRemove2"
             :on-success="handleSuccess2"
             :file-list="fileList2"
@@ -309,6 +314,7 @@
             class="upload-demo"
             action="/management/admin/kcupload!uploadImage.action?type=goods_path"
             :data="imgData3"
+            :on-preview="handlePreview"
             :on-remove="handleRemove3"
             :on-success="handleSuccess3"
             :file-list="fileList3"
@@ -354,6 +360,9 @@
         <el-button type="primary" @click="saveEdit('formEdit')">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog title="图片预览" :visible.sync="imgVisible" append-to-body>
+					<img :src="img" alt="" style="width:100%">
+				</el-dialog>
     <el-pagination
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
@@ -382,10 +391,12 @@ export default {
       imgData3: {},
       TableVisible: false,
       AddVisible: false,
+      imgVisible: false,
       editor: false,
       editorAdd: false,
       loading: true,
       dateVal: "",
+      img:"",
       eyesDescribe: "",
       idx: -1,
       currentPage1: 1,
@@ -486,8 +497,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: './static/ckeditor/style.css',
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -531,8 +542,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: './static/ckeditor/style.css',
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -575,8 +586,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: './static/ckeditor/style.css',
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -619,8 +630,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: './static/ckeditor/style.css',
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -665,8 +676,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: './static/ckeditor/style.css',
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -710,8 +721,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: './static/ckeditor/style.css',
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -754,8 +765,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: './static/ckeditor/style.css',
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -798,8 +809,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: './static/ckeditor/style.css',
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -895,15 +906,16 @@ export default {
         .get(`/management/admin/lip!input.action?id=${this.idx}`)
         .then(res => {
           if (res.status == 200) {
+            console.log(res)
             this.formEdit = res.data;
             this.formEdit.lipImage
-              ? (this.fileList1 = [{ url: this.formEdit.lipImage }])
+              ? (this.fileList1 = [{ url: this.formEdit.lipImage,name:'图片1' }])
               : (this.fileList1 = []);
             this.formEdit.lipImage2
-              ? (this.fileList2 = [{ url: this.formEdit.lipImage2 }])
+              ? (this.fileList2 = [{ url: this.formEdit.lipImage2,name:'图片2' }])
               : (this.fileList2 = []);
             this.formEdit.lipImage3
-              ? (this.fileList3 = [{ url: this.formEdit.lipImage3 }])
+              ? (this.fileList3 = [{ url: this.formEdit.lipImage3,name:'图片3' }])
               : (this.fileList3 = []);
           }
         });
@@ -1168,9 +1180,9 @@ export default {
     },
     handleSuccess1(res) {
       console.log(res);
-      this.formEdit.lipImage2 = res.url;
+      this.formEdit.lipImage = res.url;
       if (this.AddVisible) {
-        this.formAdd.lipImage2 = res.url;
+        this.formAdd.lipImage = res.url;
       }
     },
     handleSuccess2(res) {
@@ -1185,6 +1197,10 @@ export default {
         this.formAdd.lipImage3 = res.url;
       }
     },
+    handlePreview(file) {
+				this.img= file.url
+				this.imgVisible = true
+			},
     //分页
     handleSizeChange(val) {
       this.row1 = val;

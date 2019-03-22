@@ -146,12 +146,6 @@
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
-            @click.native.prevent="deleteRow(scope.$index, makeupList)"
-            type="danger"
-            size="small"
-            v-del
-          >删除</el-button>
-          <el-button
             size="small"
             type="primary"
             @click="handleEdit(scope.$index, scope.row)"
@@ -159,6 +153,12 @@
           >编辑</el-button>
           <el-button size="small" @click="online(scope.row)" v-if="scope.row.online==1">上线</el-button>
           <el-button size="small" v-else-if="scope.row.online==0" @click="online(scope.row)">下线</el-button>
+          <el-button
+            @click.native.prevent="deleteRow(scope.$index, makeupList)"
+            type="danger"
+            size="small"
+            v-del
+          >删除</el-button>
         </template>
       </el-table-column>
     </el-table>

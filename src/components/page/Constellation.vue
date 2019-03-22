@@ -85,7 +85,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+    <el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose" :close-on-click-modal='false'>
       <el-form
         :label-position="labelPosition"
         :rules="rules"

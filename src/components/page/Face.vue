@@ -2,6 +2,9 @@
   <div>
     <div class="handle-box">
       <el-button type="primary" @click="AddVisible = true" v-has size="small">新增</el-button>
+      <el-dialog title="图片预览" :visible.sync="imgVisible" append-to-body>
+					<img :src="img" alt="" style="width:100%">
+				</el-dialog>
       <el-dialog title="新增" :visible.sync="AddVisible" width="80%" @opened="addOPen">
         <el-form :model="formAdd">
           <el-form-item label="标签" label-width="120px">
@@ -25,6 +28,7 @@
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
               :data="imgData1"
+              :on-preview="handlePreview"
               :on-remove="handleRemove1"
               :on-success="handleSuccess1"
               :file-list="fileList1"
@@ -42,6 +46,7 @@
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
               :data="imgData2"
+              :on-preview="handlePreview"
               :on-remove="handleRemove2"
               :on-success="handleSuccess2"
               :file-list="fileList2"
@@ -59,6 +64,7 @@
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
               :data="imgData3"
+              :on-preview="handlePreview"
               :on-remove="handleRemove3"
               :on-success="handleSuccess3"
               :file-list="fileList3"
@@ -126,7 +132,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog title="编辑" :visible.sync="TableVisible" width="80%">
+    <el-dialog title="编辑" :visible.sync="TableVisible" width="80%" :close-on-click-modal="false">
       <el-form :model="formEdit">
         <el-form-item label="标签" label-width="120px">
           <el-select v-model="formEdit.labels" placeholder="请选择标签">
@@ -149,9 +155,10 @@
             class="upload-demo"
             action="/management/admin/kcupload!uploadImage.action?type=goods_path"
             :data="imgData1"
+            :on-preview="handlePreview"
             :on-remove="handleRemove1"
             :on-success="handleSuccess1"
-            :file-list="fileList1"
+             :file-list="fileList1"
             :before-upload="beforeUpload1"
             list-type="picture"
           >
@@ -166,6 +173,7 @@
             class="upload-demo"
             action="/management/admin/kcupload!uploadImage.action?type=goods_path"
             :data="imgData2"
+            :on-preview="handlePreview"
             :on-remove="handleRemove2"
             :on-success="handleSuccess2"
             :file-list="fileList2"
@@ -183,6 +191,7 @@
             class="upload-demo"
             action="/management/admin/kcupload!uploadImage.action?type=goods_path"
             :data="imgData3"
+            :on-preview="handlePreview"
             :on-remove="handleRemove3"
             :on-success="handleSuccess3"
             :file-list="fileList3"
@@ -255,10 +264,12 @@ export default {
       imgData3: {},
       TableVisible: false,
       AddVisible: false,
+      imgVisible: false,
       editor: false,
       editorAdd: false,
       loading: true,
       dateVal: "",
+      img:"",
       eyesDescribe: "",
       idx: -1,
       currentPage1: 1,
@@ -742,13 +753,13 @@ export default {
             console.log(res);
             this.formEdit = res.data;
             this.formEdit.contourImage
-              ? (this.fileList1 = [{ url: this.formEdit.contourImage }])
+              ? (this.fileList1 = [{ url: this.formEdit.contourImage,name:'图片1' }])
               : (this.fileList1 = []);
             this.formEdit.cheekColorImage
-              ? (this.fileList2 = [{ url: this.formEdit.cheekColorImage }])
+              ? (this.fileList2 = [{ url: this.formEdit.cheekColorImage,name:'图片2' }])
               : (this.fileList2 = []);
             this.formEdit.browImage
-              ? (this.fileList3 = [{ url: this.formEdit.browImage }])
+              ? (this.fileList3 = [{ url: this.formEdit.browImage,name:'图片3' }])
               : (this.fileList3 = []);
           }
         });
@@ -847,6 +858,10 @@ export default {
     handleRemove3(file, fileList) {
       // console.log(this.formLabelAdd,file,fileList)
     },
+    handlePreview(file) {
+				this.img= file.url
+				this.imgVisible = true
+			},
     beforeUpload1(file) {
       this.imgData1.FileName =file.name
       this.imgData1.imgFile = file;

@@ -61,6 +61,8 @@ import ShareDescribe from '@/components/page/ShareDescribe'
 import InterestedTest from '@/components/page/InterestedTest'
 import CategoryProblem from '@/components/page/CategoryProblem'
 import KnowledgeMes from '@/components/page/KnowledgeMes'
+import NewProduct from '@/components/page/NewProduct'
+import NewIngredient from '@/components/page/NewIngredient'
 
 Vue.use(Router)
 
@@ -229,6 +231,16 @@ export default new Router({
           path: '/makeup',
 					name:'化妆产品管理',
           component: Makeup
+        },
+        {
+          path: '/newProduct',
+					name:'新产品分类管理',
+          component: NewProduct
+        },
+        {
+          path: '/newIngredient',
+					name:'新产品成分管理',
+          component: NewIngredient
         },
         {
           path: '/marking',

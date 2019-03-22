@@ -140,6 +140,9 @@
 </script>
 
 <style lang="scss">
+html{
+	touch-action: none;
+}
 	/deep/ .el-scrollbar__wrap {
 		overflow-x: hidden;
 	}

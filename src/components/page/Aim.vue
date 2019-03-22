@@ -2,7 +2,7 @@
 	<div class="aimContent">
 		<div class="handle-box">
 			<el-button type="primary" @click="AddVisible = true" size='small'>新增</el-button>
-			<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
+			<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose" :close-on-click-modal='false'>
 				<el-form :label-position="labelPosition" label-width="100px" :model="formLabelAdd" :rules="rules" ref="formLabelAdd" >
 					<el-form-item label="目的名称" prop='name'>
 						<el-input v-model="formLabelAdd.name"></el-input>
