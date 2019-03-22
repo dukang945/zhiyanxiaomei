@@ -2,7 +2,7 @@
 	<div class="aimContent">
 		<div class="handle-box">
 			<el-button type="primary" @click="AddVisible = true" size='small'>新增</el-button>
-			<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
+			<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose" :close-on-click-modal='false'>
 				<el-form :label-position="labelPosition" label-width="100px" :model="formLabelAdd" :rules="rules" ref="formLabelAdd" >
 					<el-form-item label="目的名称" prop='name'>
 						<el-input v-model="formLabelAdd.name"></el-input>
@@ -37,7 +37,7 @@
 				<template slot-scope="scope">
 					<el-button @click.native.prevent="deleteRow(scope.$index, tableData)" size='small' type="danger" class="el-icon-delete">删除</el-button>
 					<el-button type="primary" size='small' @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-					<el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+					<el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose" :close-on-click-modal='false'>
 						<el-form :label-position="labelPosition" label-width="100px" :model="formLabelAlign" :rules="rules" ref="formLabelAlign" >
 							<el-form-item label="目的名称" prop='name'>
 								<el-input v-model="formLabelAlign.name"></el-input>

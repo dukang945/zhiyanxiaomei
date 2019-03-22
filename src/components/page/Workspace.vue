@@ -1,64 +1,50 @@
 <template>
 	<div class="dataSpace">
 		<el-row class='topData' :gutter="30" style='margin: 0;'>
-			<el-col :span='5'>
+			<el-col :span='6'>
 				<div class="cardItem" style="background: linear-gradient(to right, rgba(255, 255, 255,1), rgba(50, 208, 136,0.2))">
 					<div class="cardLeft" style="color: #32D088;">
 						<i class="el-icon-my-xinzengrenyuan_huaban"></i>
 					</div>
 					<div class="cardRight">
-						<p class="text1">125</p>
+						<p class="text1">{{cardData.registeredData}}</p>
 						<p class="text2">昨日注册量</p>
-						<p class="text3 numberDown">环比 -25% <i class="el-icon-caret-bottom"></i></p>
-						<!-- <p class="text3 numberUp">环比+20% <i class="el-icon-caret-top"></i></p> -->
+						<p class="text3 numberDown" v-if='cardData.registeredTrend<0'>环比 - {{cardData.registeredTrend*(-1)}} % <i class="el-icon-caret-bottom"></i></p>
+						<p class="text3 numberUp" v-else>环比 + {{cardData.registeredTrend}} % <i class="el-icon-caret-top"></i></p>
 					</div>
 				</div>
 			</el-col>
-			<el-col :span='5'>
-				<div class="cardItem" style="background: linear-gradient(to right, rgba(255, 255, 255,1), rgba(50, 206, 228,0.2))">
-					<div class="cardLeft" style="color: #32CEE4;">
-						<i class="el-icon-my-renyuan"></i>
-					</div>
-					<div class="cardRight">
-						<p class="text1">2352</p>
-						<p class="text2">昨日访客量</p>
-						<!-- <p class="text3 numberDown">环比 -25% <i class="el-icon-caret-bottom"></i></p> -->
-						<p class="text3 numberUp">环比 +20% <i class="el-icon-caret-top"></i></p>
-					</div>
-				</div>
-			</el-col>
-			<el-col :span='5'>
+			<el-col :span='6'>
 				<div class="cardItem" style="background: linear-gradient(to right, rgba(255, 255, 255,1), rgba(251, 110, 81,0.2))">
 					<div class="cardLeft" style="color: #FB6E51;">
 						<i class="el-icon-my-liulanliang"></i>
 					</div>
 					<div class="cardRight">
-						<p class="text1">15204</p>
+						<p class="text1">{{cardData.readData}}</p>
 						<p class="text2">昨日阅读量</p>
-						<p class="text3 numberDown">环比 -5% <i class="el-icon-caret-bottom"></i></p>
-						<!-- <p class="text3 numberUp">环比+20% <i class="el-icon-caret-top"></i></p> -->
+						<p class="text3 numberDown" v-if='cardData.readTrend<0'>环比 - {{cardData.readTrend*(-1)}}% <i class="el-icon-caret-bottom"></i></p>
+						<p class="text3 numberUp" v-else>环比 + {{cardData.readTrend}} % <i class="el-icon-caret-top"></i></p>
 					</div>
 				</div>
 			</el-col>
-			<el-col :span='5'>
+			<el-col :span='6'>
 				<div class="cardItem" style="background: linear-gradient(to right, rgba(255, 255, 255,1), rgba(245, 178, 82,0.2))">
 					<div class="cardLeft" style="color: #F5B252;">
 						<i class="el-icon-my-pinglun"></i>
 					</div>
 					<div class="cardRight">
-						<p class="text1">452</p>
+						<p class="text1">{{cardData.commentData}}</p>
 						<p class="text2">昨日评论量</p>
-						<!-- <p class="text3 numberDown">环比 -25% <i class="el-icon-caret-bottom"></i></p> -->
-						<p class="text3 numberUp">环比 +13% <i class="el-icon-caret-top"></i></p>
+						<p class="text3 numberDown" v-if='cardData.commentDataTrend<0'>环比 - {{cardData.commentDataTrend*(-1)}} % <i class="el-icon-caret-bottom"></i></p>
+						<p class="text3 numberUp" v-else>环比 + {{cardData.commentDataTrend}} % <i class="el-icon-caret-top"></i></p>
 					</div>
 				</div>
 			</el-col>
-			<el-col :span='4'>
+			<el-col :span='6'>
 				<div class="cardItem totalNumber" style="background: linear-gradient(to right, rgba(50, 208, 136,0.2),rgba(50, 206, 228,0.2),rgba(251, 110, 81,0.2), rgba(245, 178, 82,0.2))">
-					<p>总注册量 <span>103587</span></p>
-					<p>总访客量 <span>83587</span></p>
-					<p>总阅读量 <span>2303587</span></p>
-					<p>总评论量 <span>233587</span></p>
+					<p>总注册量 <span>{{cardData.registeredAll}}</span></p>
+					<p>总阅读量 <span>{{cardData.readAll}}</span></p>
+					<p>总评论量 <span>{{cardData.commentAll}}</span></p>
 				</div>
 			</el-col>
 		</el-row>
@@ -66,12 +52,9 @@
 			<el-col :span='24' class='chartDataTitle'>
 				<p>用户组成数据分析</p>
 				<div class="timeSelect">
-					选择周期：
-					<el-date-picker
-					  v-model="userDataTime"
-					  type="date"
-					  size='mini'
-					  placeholder="选择某一天">
+					选择日期：
+					<el-date-picker v-model="userDataTime" type="date" size='mini' placeholder="选择某一天" value-format="yyyy-MM-dd"
+					 @change='chooseTimeForUser'>
 					</el-date-picker>
 					<el-button type="primary" size='mini' plain @click='checkUserYesterday'>前一天</el-button>
 					<el-button type="primary" size='mini' plain @click='checkUserLastWeek'>近七天</el-button>
@@ -94,7 +77,7 @@
 				<div ref="levelEchart" class="chart4"></div>
 			</el-col>
 		</el-row>
-		<el-row class='chartData' type="flex"  :gutter='30' justify="space-around" style='margin: 30px 0'>
+		<el-row class='chartData' type="flex" :gutter='30' justify="space-around" style='margin: 30px 0'>
 			<el-col :span='7' class='cirqueBox'>
 				<div class="title">肤质</div>
 				<div ref="skinEchart" class="chart5"></div>
@@ -104,7 +87,7 @@
 				<div ref="likeEchart" class="chart6"></div>
 			</el-col>
 			<el-col :span='7' class='cirqueBox'>
-				<div class="title">感兴趣功效</div>
+				<div class="title">感兴趣功效TOP5</div>
 				<div ref="effectEchart" class="chart7"></div>
 			</el-col>
 		</el-row>
@@ -121,11 +104,8 @@
 				</div>
 				<div class="timeSelect">
 					选择周期：
-					<el-date-picker
-					  v-model="LabelDataTime"
-					  type="date"
-					  size='mini'
-					  placeholder="选择某一天">
+					<el-date-picker v-model="LabelDataTime" type="date" size='mini' placeholder="选择某一天" value-format="yyyy-MM-dd"
+					 @change='chooseTimeForLabel'>
 					</el-date-picker>
 					<el-button type="primary" size='mini' plain @click='checkYesterday'>前一天</el-button>
 					<el-button type="primary" size='mini' plain @click='checkLastWeek'>近七天</el-button>
@@ -140,19 +120,20 @@
 				<el-table :data="objectTableData" border style="width: 80%;margin: 0 auto;">
 					<el-table-column type="index" label="排名" width="50" align='center'>
 					</el-table-column>
-					<el-table-column prop="name" label="标题" align='center' :show-overflow-tooltip="true">
+					<el-table-column prop="detailsName" label="标题" align='center' :show-overflow-tooltip="true">
 					</el-table-column>
-					<el-table-column prop="type" label="所属类目" width="200" align='center' :show-overflow-tooltip="true">
+					<!-- <el-table-column prop="type" label="所属类目" width="150" align='center' :show-overflow-tooltip="true">
+					</el-table-column> -->
+					<el-table-column prop="labelName" label="标签" width='300' align='center' :formatter='getLabel'
+					 :show-overflow-tooltip="true">
 					</el-table-column>
-					<el-table-column prop="label" label="一级标签" width='100' align='center'>
+					<el-table-column prop="readNum" label="阅读量" width="100" align='center'>
 					</el-table-column>
-					<el-table-column prop="visited" label="阅读量" width="100" align='center'>
+					<el-table-column prop="commentNum" label="评论量" width="100" align='center'>
 					</el-table-column>
-					<el-table-column prop="commit" label="评论量" width="100" align='center'>
+					<el-table-column prop="likeNum" label="点赞量" width="100" align='center'>
 					</el-table-column>
-					<el-table-column prop="like" label="点赞量" width="100" align='center'>
-					</el-table-column>
-					<el-table-column prop="name" label="收藏量" width="100" align='center'>
+					<el-table-column prop="enshrine" label="收藏量" width="100" align='center'>
 					</el-table-column>
 				</el-table>
 			</el-col>
@@ -162,25 +143,27 @@
 					切换类型：
 					<el-button type="primary" size='mini' plain @click='checkTeachPage'>美妆教程</el-button>
 					<el-button type="primary" size='mini' plain @click='checkEvaluationPage'>美妆测评</el-button>
-					<el-button type="primary" size='mini' plain @click='checkNewPage'>初学乍练</el-button>
+					<el-button type="primary" size='mini' plain @click='checkNewPage'>美妆知识</el-button>
 					<el-button type="primary" size='mini' plain @click='checkAllTypePage'>全部类型</el-button>
 				</div>
-				<el-table :data="pageTableData" border style="width: 80%;margin: 0 auto;">
+				<el-table :data="pageTableData" border style="width: 80%;margin: 0 auto;" v-loading="loading">
 					<el-table-column type="index" label="排名" width="50" align='center'>
 					</el-table-column>
-					<el-table-column prop="name" label="标题" align='center' :show-overflow-tooltip="true">
+					<el-table-column prop="detailsName" label="标题" align='center' :show-overflow-tooltip="true">
 					</el-table-column>
-					<el-table-column prop="type" label="所属类目" width="200" align='center' :show-overflow-tooltip="true">
+					<el-table-column prop="labelType" label="所属类目" width="150" align='center' :formatter='getType'
+					 :show-overflow-tooltip="true">
 					</el-table-column>
-					<el-table-column prop="label" label="一级标签" width='100' align='center'>
+					<el-table-column prop="labelName" label="标签" width='250' align='center' :formatter='getLabel'
+					 :show-overflow-tooltip="true">
 					</el-table-column>
-					<el-table-column prop="visited" label="阅读量" width="100" align='center'>
+					<el-table-column prop="readNum" label="阅读量" width="100" align='center'>
 					</el-table-column>
-					<el-table-column prop="commit" label="评论量" width="100" align='center'>
+					<el-table-column prop="commentNum" label="评论量" width="100" align='center'>
 					</el-table-column>
-					<el-table-column prop="like" label="点赞量" width="100" align='center'>
+					<el-table-column prop="likeNum" label="点赞量" width="100" align='center'>
 					</el-table-column>
-					<el-table-column prop="name" label="收藏量" width="100" align='center'>
+					<el-table-column prop="enshrine" label="收藏量" width="100" align='center'>
 					</el-table-column>
 				</el-table>
 			</el-col>
@@ -201,14 +184,39 @@
 				chart6: null,
 				chart7: null,
 				labelType: '所有类型',
+				choosedLabelType: '',
 				labelTime: '所有时间',
-				objectTableData:[],
-				pageTableData:[],
-				userDataTime:'',
-				LabelDataTime:''
+				objectTableData: [],
+				pageTableData: [],
+				userDataTime: '',
+				LabelDataTime: '',
+				cardData: {
+					registeredData: 0,
+					registeredTrend: 0,
+					readData: 0,
+					readTrend: 0,
+					commentData: 0,
+					commentDataTrend: 0,
+					registeredAll: 0,
+					readAll: 0,
+					commentAll: 0
+				},
+				loading:false
 			}
 		},
 		methods: {
+			getLabel(row, column, list) {
+				return list.join(',')
+			},
+			getType(row, column, type) {
+				if (type == 1) {
+					return '美妆教程'
+				} else if (type == 2) {
+					return '美妆测评'
+				} else if (type == 3) {
+					return '美妆知识'
+				}
+			},
 			// 初始化图表
 			initChart1(data) {
 				this.chart1 = echarts.init(this.$refs.labelEchart, 'light')
@@ -494,342 +502,312 @@
 					}]
 				})
 			},
+			// 选择时间切换人员组成数据
+			chooseTimeForUser(value) {
+				this.getUserOfData('', value)
+			},
+			// 切换不同时间段用户数据
+			checkUserYesterday() {
+				this.userDataTime = '';
+				this.getUserOfData('0', '')
+			},
+			checkUserLastWeek() {
+				this.userDataTime = '';
+				this.getUserOfData(1, '')
+			},
+			checkUserLastMonth() {
+				this.userDataTime = '';
+				this.getUserOfData(2, '')
+			},
+			checkUserAllTime() {
+				this.userDataTime = '';
+				this.getUserOfData(3, '')
+			},
 			// 切换标签统计类型及时间段
 			checkTeach() {
-				// 实例数据
-				let data = [
-					['product', '阅读次数', '收藏量', '点赞量', '评论数', '分享次数'],
-					['日常妆', 234, 125, 82, 94, 33],
-					['欧美妆', 145, 84, 92, 94, 33],
-					['宴会妆', 112, 42, 82, 94, 33],
-					['影视妆', 92, 76, 72, 34, 23],
-					['cos妆', 82, 62, 62, 34, 23],
-					['清新妆', 73, 57, 52, 34, 23],
-					['日系妆', 62, 32, 32, 24, 23],
-					['复古妆', 51, 24, 22, 24, 13],
-					['明星妆', 43, 12, 12, 14, 13],
-					['韩系妆', 28, 11, 12, 14, 13]
-				];
-				this.initChart1(data)
+				this.choosedLabelType = 1;
+				this.getLabelReadData(1, 3, '')
 				this.labelType = '美妆教程'
 			},
 			checkEvaluation() {
-				// 实例数据
-				let data = [
-					['product', '阅读次数', '收藏量', '点赞量', '评论数', '分享次数'],
-					['好物安利', 234, 125, 82, 94, 33],
-					['雷品吐槽', 145, 84, 92, 94, 33],
-					['成分党', 112, 42, 82, 94, 33],
-					['眼妆心机', 92, 76, 72, 34, 23],
-					['唇唇欲动', 82, 62, 62, 34, 23],
-					['底妆盘点', 73, 57, 52, 34, 23],
-					['护肤品', 62, 32, 32, 24, 23]
-				];
-				this.initChart1(data)
+				this.choosedLabelType = 2;
+				this.getLabelReadData(2, 3, '')
 				this.labelType = '美妆测评'
 			},
 			checkNew() {
-				let data = [
-					['product', '阅读次数', '收藏量', '点赞量', '评论数', '分享次数'],
-					['妆品选择', 234, 125, 82, 94, 33],
-					['化妆步骤', 145, 84, 92, 94, 33],
-					['美妆工具', 112, 42, 82, 94, 33],
-					['新手教学', 92, 76, 72, 34, 23]
-				];
-				this.initChart1(data)
+				this.choosedLabelType = 7;
+				this.getLabelReadData(7, 3, '')
 				this.labelType = '初学乍练'
 			},
 			checkAllType() {
-				let data = [
-					['product', '阅读次数', '收藏量', '点赞量', '评论数', '分享次数'],
-					['好物安利', 200, 157, 123, 140, 134],
-					['日系妆', 178, 145, 125, 114, 103],
-					['宴会妆', 152, 122, 112, 94, 53],
-					['影视妆', 132, 126, 102, 84, 35],
-					['妆品选择', 92, 57, 52, 64, 37],
-					['清新妆', 83, 74, 52, 54, 53],
-					['欧美妆', 62, 32, 42, 34, 34],
-					['化妆步骤', 51, 44, 32, 14, 23],
-					['明星妆', 43, 29, 32, 14, 23],
-					['新手教学', 28, 13, 12, 14, 13]
-				];
-				this.initChart1(data)
+				this.choosedLabelType = '';
+				this.getLabelReadData('', 3, '')
 				this.labelType = '全部类型'
 			},
+			chooseTimeForLabel(value) {
+				this.getLabelReadData(this.choosedLabelType, '', value)
+				this.labelTime = value
+			},
 			checkYesterday() {
-				// 实例数据
-				let data = [
-					['product', '阅读次数', '收藏量', '点赞量', '评论数', '分享次数'],
-					['日常妆', 234, 125, 82, 94, 33],
-					['欧美妆', 145, 84, 92, 94, 33],
-					['宴会妆', 112, 42, 82, 94, 33],
-					['影视妆', 92, 76, 72, 34, 23],
-					['cos妆', 82, 62, 62, 34, 23],
-					['清新妆', 73, 57, 52, 34, 23],
-					['日系妆', 62, 32, 32, 24, 23],
-					['复古妆', 51, 24, 22, 24, 13],
-					['明星妆', 43, 12, 12, 14, 13],
-					['韩系妆', 28, 11, 12, 14, 13]
-				];
-				this.initChart1(data)
+				this.LabelDataTime = '';
+				this.getLabelReadData(this.choosedLabelType, '0', '')
 				this.labelTime = '前一天'
 			},
 			checkLastWeek() {
-				// 实例数据
-				let data = [
-					['product', '阅读次数', '收藏量', '点赞量', '评论数', '分享次数'],
-					['好物安利', 200, 157, 123, 140, 134],
-					['日系妆', 178, 145, 125, 114, 103],
-					['宴会妆', 152, 122, 112, 94, 53],
-					['影视妆', 132, 126, 102, 84, 35],
-					['妆品选择', 92, 57, 52, 64, 37],
-					['清新妆', 83, 74, 52, 54, 53],
-					['欧美妆', 62, 32, 42, 34, 34],
-					['化妆步骤', 51, 44, 32, 14, 23],
-					['明星妆', 43, 29, 32, 14, 23],
-					['新手教学', 28, 13, 12, 14, 13]
-				];
-				this.initChart1(data)
+				this.LabelDataTime = '';
+				this.getLabelReadData(this.choosedLabelType, 1, '')
 				this.labelTime = '近七天'
 			},
 			checkLastMonth() {
-				// 实例数据
-				let data = [
-					['product', '阅读次数', '收藏量', '点赞量', '评论数', '分享次数'],
-					['日常妆', 234, 125, 82, 94, 33],
-					['欧美妆', 145, 84, 92, 94, 33],
-					['宴会妆', 112, 42, 82, 94, 33],
-					['影视妆', 92, 76, 72, 34, 23],
-					['cos妆', 82, 62, 62, 34, 23],
-					['清新妆', 73, 57, 52, 34, 23],
-					['日系妆', 62, 32, 32, 24, 23],
-					['复古妆', 51, 24, 22, 24, 13],
-					['明星妆', 43, 12, 12, 14, 13],
-					['韩系妆', 28, 11, 12, 14, 13]
-				];
-				this.initChart1(data)
+				this.LabelDataTime = '';
+				this.getLabelReadData(this.choosedLabelType, 2, '')
 				this.labelTime = '近一个月'
 			},
 			checkAllTime() {
-				// 实例数据
-				let data = [
-					['product', '阅读次数', '收藏量', '点赞量', '评论数', '分享次数'],
-					['好物安利', 200, 157, 123, 140, 134],
-					['日系妆', 178, 145, 125, 114, 103],
-					['宴会妆', 152, 122, 112, 94, 53],
-					['影视妆', 132, 126, 102, 84, 35],
-					['妆品选择', 92, 57, 52, 64, 37],
-					['清新妆', 83, 74, 52, 54, 53],
-					['欧美妆', 62, 32, 42, 34, 34],
-					['化妆步骤', 51, 44, 32, 14, 23],
-					['明星妆', 43, 29, 32, 14, 23],
-					['新手教学', 28, 13, 12, 14, 13]
-				];
-				this.initChart1(data)
+				this.LabelDataTime = '';
+				this.getLabelReadData(this.choosedLabelType, 3, '')
 				this.labelTime = '所有时间'
 			},
-			// 切换用户数据
-			checkUserYesterday(){
-				
-			},
-			checkUserLastWeek(){
-				
-			},
-			checkUserLastMonth(){
-				
-			},
-			checkUserAllTime(){
-				
-			},
 			// 切换文章类型
-			checkTeachPage(){
-				
+			checkTeachPage() {
+				this.getPageReadData(1)
 			},
-			checkEvaluationPage(){
-				
+			checkEvaluationPage() {
+				this.getPageReadData(2)
 			},
-			checkNewPage(){
-				
+			checkNewPage() {
+				this.getPageReadData(3)
 			},
-			checkAllTypePage(){
-				
+			checkAllTypePage() {
+				this.getPageReadData()
+			},
+			// 获取注册组成数据
+			getUserOfData(time, date) {
+				var http
+				if (time != '' && date == '') {
+					http = `/management/admin/homepage!userOfData.action?selectType=${time}`;
+				};
+				if (date != '' && time == '') {
+					http = `/management/admin/homepage!userOfData.action?selectTime=${date}`;
+				}
+				if (http) {
+					this.$axios.get(http).then(res => {
+						let data2 = [{
+								value: 1,
+								name: '手机号注册'
+							},
+							{
+								value: 1,
+								name: '微信注册'
+							},
+							{
+								value: 1,
+								name: 'QQ注册'
+							},
+							{
+								value: 1,
+								name: '微博注册'
+							}
+						];
+						data2[0].value = res.data.registered.registerNumPhone
+						data2[1].value = res.data.registered.registerNumWx
+						data2[2].value = res.data.registered.registerNumQq
+						data2[3].value = res.data.registered.registerNumWb
+						this.initChart2(data2)
+					})
+				}
+			},
+			// 获取标签TOP10数据
+			getLabelReadData(type, time, date) {
+				var httpLabel
+				if (type && time != '') {
+					httpLabel = `/management/admin/homepage!labelReadNumData.action?labelType=${type}&selectType=${time}`
+				} else if (type && date != '') {
+					httpLabel = `/management/admin/homepage!labelReadNumData.action?labelType=${type}&selectTime=${date}`
+				} else if (type == '' && time != '') {
+					httpLabel = `/management/admin/homepage!labelReadNumData.action?selectType=${time}`
+				} else if (type == '' && date != '') {
+					httpLabel = `/management/admin/homepage!labelReadNumData.action?selectTime=${date}`
+				}
+				if (httpLabel) {
+					this.$axios.get(httpLabel).then(res => {
+						let data1 = [
+							['product', '阅读次数', '收藏量', '点赞量', '评论数', '分享次数']
+						];
+						res.data.forEach(item => {
+							data1.push([item.name, item.readNum, item.enshrine, item.likeNum, item.commentNum, item.shareNum])
+						})
+						this.initChart1(data1)
+					})
+				}
+			},
+			// 获取文章阅读top10
+			getPageReadData(type) {
+				this.loading=true
+				if (type) {
+					this.$axios.get(`/management/admin/homepage!getBeautyDetailsTop10.action?labelType=${type}`).then(res => {
+						this.pageTableData = res.data
+						this.loading=false
+					})
+				} else {
+					this.$axios.get(`/management/admin/homepage!getBeautyDetailsTop10.action`).then(res => {
+						this.pageTableData = res.data
+						this.loading=false
+					})
+				}
 			}
+
 		},
 		mounted() {
-			// 获取数据
-			let data1 = [
-				['product', '阅读次数', '收藏量', '点赞量', '评论数', '分享次数'],
-				['好物安利', 200, 157, 123, 140, 134],
-				['日系妆', 178, 145, 125, 114, 103],
-				['宴会妆', 152, 122, 112, 94, 53],
-				['影视妆', 132, 126, 102, 84, 35],
-				['妆品选择', 92, 57, 52, 64, 37],
-				['清新妆', 83, 74, 52, 54, 53],
-				['欧美妆', 62, 32, 42, 34, 34],
-				['化妆步骤', 51, 44, 32, 14, 23],
-				['明星妆', 43, 29, 32, 14, 23],
-				['新手教学', 28, 13, 12, 14, 13]
-			];
-			let data2 = [{
-					value: 1335,
-					name: '手机号注册'
-				},
-				{
-					value: 310,
-					name: '微信注册'
-				},
-				{
-					value: 234,
-					name: 'QQ注册'
-				},
-				{
-					value: 135,
-					name: '微博注册'
+			// 获取卡片数据
+			this.$axios.get('/management/admin/homepage!getSequentialData.action').then(res => {
+				// 格式化数据
+				this.cardData.registeredData = res.data.registeredYesterday;
+				if (res.data.registeredYesterday > 0) {
+					this.cardData.registeredTrend = Math.round((res.data.registeredYesterday - res.data.registeredvVrgestern) / res.data
+						.registeredYesterday * 100);
+				} else {
+					this.cardData.registeredTrend = -res.data.registeredvVrgestern * 100
 				}
-			];
-			let data3 = [{
-					value: 335,
-					name: '18岁以下'
-				},
-				{
-					value: 1310,
-					name: '18岁-22岁'
-				},
-				{
-					value: 1234,
-					name: '23岁-26岁'
-				},
-				{
-					value: 1135,
-					name: '27岁-30岁'
-				}, {
-					value: 130,
-					name: '30岁-35岁'
-				}, {
-					value: 6,
-					name: '36岁以上'
-				},
-			];
-			let data4 = [{
-					value: 1335,
-					name: '新手'
-				},
-				{
-					value: 510,
-					name: '一般'
-				},
-				{
-					value: 734,
-					name: '大神'
+				this.cardData.readData = res.data.yesterdayRead;
+				if (res.data.yesterdayRead > 0) {
+					this.cardData.readTrend = Math.round((res.data.yesterdayRead - res.data.vorgesternRead) / res.data.yesterdayRead *
+						100);
+				} else {
+					this.cardData.readTrend = -res.data.vorgesternRead * 100
 				}
-			];
-			let data5 = [{
-					value: 1335,
-					name: '混合型'
-				},
-				{
-					value: 2658,
-					name: '干性'
-				},
-				{
-					value: 3734,
-					name: '油性'
-				},
-				{
-					value: 734,
-					name: '中性'
-				},
-				{
-					value: 572,
-					name: '敏感肌'
+				this.cardData.commentData = res.data.yesterdayCommentNum;
+				if (res.data.vorgesternCommentNum > 0) {
+					this.cardData.commentDataTrend = Math.round((res.data.yesterdayCommentNum - res.data.vorgesternCommentNum) / res
+						.data
+						.yesterdayCommentNum * 100);
+				} else {
+					this.cardData.commentDataTrend = -res.data.vorgesternCommentNum * 100
 				}
-			];
-			let data6 = [{
-					value: 2345,
-					name: '清新妆'
-				},
-				{
-					value: 2178,
-					name: '森女妆'
-				},
-				{
-					value: 1980,
-					name: '约会妆'
-				},
-				{
-					value: 1567,
-					name: '韩系妆'
-				},
-				{
-					value: 1460,
-					name: '日系妆'
-				},
-				{
-					value: 3578,
-					name: '其他'
+				this.cardData.registeredAll = res.data.registeredAllNum;
+				this.cardData.readAll = res.data.allRead;
+				this.cardData.commentAll = res.data.allCommentNum;
+			})
+			// 获取柱状图默认数据
+			this.getLabelReadData('', '3', '')
+			// 获取人员组成默认数据
+			this.getUserOfData(3, '')
+			// 获取其他用户信息
+			this.$axios.get('/management/admin/homepage!userOfData1.action').then(res => {
+				if (res.data) {
+					// 格式化数据
+					let data3 = [{
+							value: res.data.age.age1,
+							name: '18岁以下'
+						},
+						{
+							value: res.data.age.age2,
+							name: '18岁-22岁'
+						},
+						{
+							value: res.data.age.age3,
+							name: '23岁-26岁'
+						},
+						{
+							value: res.data.age.age4,
+							name: '27岁-30岁'
+						}, {
+							value: res.data.age.age5,
+							name: '30岁-35岁'
+						}, {
+							value: res.data.age.age6,
+							name: '36岁以上'
+						},
+					];
+					let data4 = [{
+							value: res.data.level.makeUpNoob,
+							name: '新手'
+						},
+						{
+							value: res.data.level.makeUpGeneral,
+							name: '一般'
+						},
+						{
+							value: res.data.level.makeUpGod,
+							name: '大神'
+						}
+					];
+					let data5 = [{
+							value: res.data.skinTexture.skinTextureType1,
+							name: '混合型'
+						},
+						{
+							value: res.data.skinTexture.skinTextureType2,
+							name: '干性'
+						},
+						{
+							value: res.data.skinTexture.skinTextureType3,
+							name: '油性'
+						},
+						{
+							value: res.data.skinTexture.skinTextureType4,
+							name: '中性'
+						},
+						{
+							value: res.data.skinTexture.skinTextureType5,
+							name: '敏感肌'
+						}
+					];
+					let data6 = [{
+							value: res.data.interestedStatisticsListZr[0].num,
+							name: res.data.interestedStatisticsListZr[0].name
+						},
+						{
+							value: res.data.interestedStatisticsListZr[1].num,
+							name: res.data.interestedStatisticsListZr[1].name
+						},
+						{
+							value: res.data.interestedStatisticsListZr[2].num,
+							name: res.data.interestedStatisticsListZr[2].name
+						},
+						{
+							value: res.data.interestedStatisticsListZr[3].num,
+							name: res.data.interestedStatisticsListZr[3].name
+						},
+						{
+							value: res.data.interestedStatisticsListZr[4].num,
+							name: res.data.interestedStatisticsListZr[4].name
+						}
+					];
+					let data7 = [{
+							value: res.data.interestedStatisticsListGx[0].num,
+							name: res.data.interestedStatisticsListGx[0].name
+						},
+						{
+							value: res.data.interestedStatisticsListGx[1].num,
+							name: res.data.interestedStatisticsListGx[1].name
+						},
+						{
+							value: res.data.interestedStatisticsListGx[2].num,
+							name: res.data.interestedStatisticsListGx[2].name
+						},
+						{
+							value: res.data.interestedStatisticsListGx[3].num,
+							name: res.data.interestedStatisticsListGx[3].name
+						},
+						{
+							value: res.data.interestedStatisticsListGx[4].num,
+							name: res.data.interestedStatisticsListGx[4].name
+						},
+					];
+					this.initChart3(data3)
+					this.initChart4(data4)
+					this.initChart5(data5)
+					this.initChart6(data6)
+					this.initChart7(data7)
 				}
-			];
-			let data7 = [{
-					value: 17,
-					name: '美白'
-				},
-				{
-					value: 15,
-					name: '保湿'
-				},
-				{
-					value: 13,
-					name: '毛孔粗大'
-				},
-				{
-					value: 12,
-					name: '黑眼圈'
-				},
-				{
-					value: 23,
-					name: '控油'
-				},
-				{
-					value: 31,
-					name: '祛痘'
-				},
-				{
-					value: 25,
-					name: '黑头'
-				},
-				{
-					value: 13,
-					name: '祛斑'
-				},
-				{
-					value: 45,
-					name: '防晒'
-				},
-				{
-					value: 23,
-					name: '抗衰老'
-				}
-			];
-			let data8 = [
-				['product', '阅读次数', '收藏量', '点赞量', '评论数', '分享次数'],
-				['十小时都不脱妆？！兰蔻这个粉底液真的美skr人', 89, 5, 2, 14, 3],
-				['请把我和Canmake的腮红锁死！怎么可以这么好看呜呜', 78, 4, 2, 14, 3],
-				['你离完美底妆，就差这一步神器了！', 67, 2, 2, 14, 3],
-				['报告！雅诗兰黛新沁水粉底液来抢钱了！', 56, 6, 2, 14, 3],
-				['选对一款底妆一年不用愁——娇兰金钻粉底液', 45, 2, 2, 14, 3],
-				['润唇膏合集 |6款好用的唇膏，让你的嘴巴和起皮say goodbye！', 34, 7, 2, 14, 3],
-				['黄皮救星 | 杨幂带火的雅诗兰黛唇釉307', 23, 2, 2, 14, 3],
-				['YSL “小金条”美到让人哭泣，这几个色号敲推荐你买！', 20, 4, 2, 14, 3],
-				['吃土也要剁手！2018最畅销口红榜单', 17, 2, 2, 14, 3],
-				['国货初体验——玛丽黛佳黑流苏睫毛膏', 15, 1, 2, 14, 3]
-			];
-			this.initChart1(data1)
-			this.initChart2(data2)
-			this.initChart3(data3)
-			this.initChart4(data4)
-			this.initChart5(data5)
-			this.initChart6(data6)
-			this.initChart7(data7)
+			})
+			// 获取专题top10信息
+			this.$axios.get('/management/admin/homepage!getZtTop10.action').then(res => {
+				this.objectTableData = res.data
+			})
+			// 获取文章阅读量
+			this.getPageReadData(3);
 		}
 	}
 </script>
@@ -845,6 +823,7 @@
 			height: 140px;
 			padding: 10px;
 			box-sizing: border-box;
+
 			.cardItem {
 				transition: all .5s;
 				display: flex;
@@ -852,6 +831,7 @@
 				cursor: pointer;
 				border-radius: 5px;
 				box-shadow: 0 0 20px rgba(0, 0, 0, 0.28);
+
 				.cardLeft {
 					flex: 40%;
 					text-align: center;
@@ -914,17 +894,21 @@
 
 				p {
 					height: 65px;
-					flex: 50%;
+					flex: 33%;
 					text-align: center;
-					font-size: 14px;
+					font-size: 18px;
 					padding: 10px 0;
 					box-sizing: border-box;
 					margin: 0;
+					margin-top: 20px;
+					line-height: 20px;
 
 					span {
 						display: block;
 						font-size: 20px;
 						color: #5983e8;
+						line-height: 20px;
+						margin-top: 20px
 					}
 				}
 			}
@@ -933,18 +917,22 @@
 
 	.chartData {
 		position: relative;
-		.cirqueBox{
-			box-shadow: 0 0 20px 0 rgba(0,0,0,0.28);
+
+		.cirqueBox {
+			box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.28);
 			border-radius: 5px;
 			margin: 20px auto;
 			transition: all .5s;
 		}
-		.cirqueBox:hover{
-			box-shadow: 0 0 20px 0 rgba(0,0,0,0.68);
+
+		.cirqueBox:hover {
+			box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.68);
 		}
-		.chartDataTitle{
+
+		.chartDataTitle {
 			position: relative;
-			p{
+
+			p {
 				margin: 50px 0 20px;
 				font-size: 40px;
 				padding-left: 30px;
@@ -953,6 +941,7 @@
 				font-size: 26px;
 			}
 		}
+
 		.title {
 			width: 100%;
 			font-size: 22px;
@@ -990,26 +979,31 @@
 			right: 65px;
 		}
 	}
-	.chartData.labelChart{
-		.title{
+
+	.chartData.labelChart {
+		.title {
 			height: 90px;
 			font-size: 26px;
 			padding-left: 30px;
 			box-sizing: border-box;
 		}
 	}
-	.tableHead{
+
+	.tableHead {
 		text-align: center;
 		font-size: 26px;
 		margin: 50px 0 20px;
 	}
-	.pageBox{
-		.tableHead{
+
+	.pageBox {
+		.tableHead {
 			margin-top: 20px
 		}
 	}
-	.tableBox{
+
+	.tableBox {
 		position: relative;
+
 		.typeSelect {
 			position: absolute;
 			z-index: 9;

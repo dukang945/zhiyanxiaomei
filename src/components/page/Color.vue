@@ -11,17 +11,20 @@
             <el-input v-model="formLabelAdd.productName"></el-input>
           </el-form-item>
           <el-form-item label="产品">
-            <el-select v-model="formLabelAdd.productId" placeholder="请选择产品" filterable>
-              <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item.id"></el-option>
-              <el-pagination
-                @size-change="changeSize3"
-                @current-change="changePage3"
-                :current-page="page3"
-                :page-sizes="[10, 20]"
-                :page-size="10"
-                layout="total, sizes, prev, pager, next, jumper"
-                :total="totalNum3"
-              ></el-pagination>
+            <el-select
+              v-model="formLabelAdd.productId"
+              filterable
+              remote
+              reserve-keyword
+              placeholder="请选择产品"
+              :remote-method="proSearch"
+            >
+              <el-option
+                v-for="(item) in options"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="色号名称">
@@ -55,48 +58,50 @@
       </el-table-column>
       <el-table-column prop="name" label="产品名称" align="center"></el-table-column>
       <el-table-column prop="colorName" label="色号名称" align="center"></el-table-column>
-      <el-table-column prop="creatUser" label="创建人" align="center"></el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column prop="status" label="状态" align="center">
         <template slot-scope="scope">
+          <el-tag type="success" v-if="scope.row.online==0">上线</el-tag>
+          <el-tag type="danger" v-else-if="scope.row.online==1">下线</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="creatUser" label="创建人" align="center"></el-table-column>
+      <el-table-column label="操作" align="center" width="250">
+        <template slot-scope="scope">
+          <el-button
+            size="small"
+            type="primary"
+            @click="handleEdit(scope.$index, scope.row)"
+            v-has
+          >编辑</el-button>
+          <el-button size="small" @click="online(scope.row)" v-if="scope.row.online==1">上线</el-button>
+          <el-button size="small" v-else-if="scope.row.online==0" @click="online(scope.row)">下线</el-button>
           <el-button
             @click.native.prevent="deleteRow(scope.$index, colorList)"
             type="danger"
             size="small"
-            class="el-icon-delete"
             v-del
           >删除</el-button>
-          <el-button
-            size="small"
-            type="primary"
-            icon="el-icon-edit"
-            @click="handleEdit(scope.$index, scope.row)"
-            v-has
-          >编辑</el-button>
           <el-dialog title="编辑" :visible.sync="dialogVisible">
             <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
               <el-form-item label="产品及色号名称">
                 <el-input v-model="formLabelAlign.productName"></el-input>
               </el-form-item>
               <el-form-item label="产品">
-                <el-select v-model="formLabelAlign.productId" placeholder="请选择产品" filterable>
-                  <el-option
-                    v-for="item in options"
-                    :key="item.id"
-                    filterable
-                    allow-create
-                    :label="item.name"
-                    :value="item.id"
-                  ></el-option>
-                  <el-pagination
-                    @size-change="changeSize2"
-                    @current-change="changePage2"
-                    :current-page="page2"
-                    :page-sizes="[10, 20]"
-                    :page-size="10"
-                    layout="total, sizes, prev, pager, next, jumper"
-                    :total="totalNum2"
-                  ></el-pagination>
-                </el-select>
+                <el-select
+              v-model="formLabelAlign.productId"
+              filterable
+              remote
+              reserve-keyword
+              placeholder="请选择产品"
+              :remote-method="proSearch"
+            >
+              <el-option
+                v-for="(item) in options"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
               </el-form-item>
               <el-form-item label="色号名称">
                 <el-input v-model="formLabelAlign.colorName"></el-input>
@@ -140,6 +145,7 @@ export default {
       options1: [],
       imgData: {},
       imgData1: {},
+      loading:true,
       page1: 1,
       page2: 1,
       page3: 1,
@@ -207,6 +213,8 @@ export default {
     },
     //新增
     handleAdd() {
+      this.formLabelAdd={}
+      this.options=[]
       let image = "";
       for (let i = 0; i < this.formLabelAdd.image.length; i++) {
         image += `<img src="` + this.formLabelAdd.image[i] + `"  alt='' />`;
@@ -239,7 +247,7 @@ export default {
         .get(`/management/admin/beauty-color!input.action?id=${this.idx}`)
         .then(res => {
           if (res.status == 200) {
-            // console.log(res);
+            console.log(res);
             this.formLabelAlign = res.data;
             let str = this.formLabelAlign.image;
             let srcReg = /[a-zA-z]+:\/\/[^\s]*/g;
@@ -263,7 +271,7 @@ export default {
                 if (res.status == 200) {
                   console.log(res);
                   this.formLabelAlign.name = res.data.name;
-                  console.log(this.formLabelAlign);
+                  this.options = [{name:res.data.name,id:res.data.productId}]
                   this.dialogVisible = true;
                 }
               });
@@ -313,6 +321,39 @@ export default {
           });
       });
     },
+     // 上下线
+    online(rows) {
+      this.$confirm(`是否${rows.online == 0 ? "禁用" : "启用"}该记录`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$axios
+            .post(
+              `/management/admin/beauty-color!online.action`,
+              this.$qs.stringify({
+                id: rows.id,
+                online: rows.online == 0 ? 1 : 0
+              })
+            )
+            .then(res => {
+              if (res.status == 200) {
+                this.$message({
+                  type: "success",
+                  message: `${rows.online == 0 ? "禁用" : "启用"}成功!`
+                });
+                this.getColorList(this.page1, this.row1);
+              }
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消"
+          });
+        });
+    },
     //搜索
     colorSearch(page1, row1) {
       this.$axios
@@ -330,6 +371,32 @@ export default {
             this.totalNum1 = res.data.total;
           }
         });
+    },
+    //产品搜索
+    proSearch(q){
+      if (q !== "") {
+        this.loading = true;
+        setTimeout(() => {
+          this.$axios
+            .post(
+              "/management/admin/beauty-product!comboGridlist.action",
+              this.$qs.stringify({
+                page: 1,
+                rows: 50,
+                q: q
+              })
+            )
+            .then(res => {
+              if (res.status == 200) {
+                console.log(res)
+                this.options = res.data.rows;
+                this.loading = false;
+              }
+            });
+        }, 200);
+      } else {
+        this.gridList = [];
+      }
     },
     //图片
     handleRemove(file, fileList) {

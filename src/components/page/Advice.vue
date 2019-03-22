@@ -2,7 +2,7 @@
 	<div class="adviceContent">
 		<div class="handle-box">
 			<el-button type="primary" @click="AddVisible = true" size='small'>新增</el-button>
-			<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
+			<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose" :close-on-click-modal='false'>
 				<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAdd" label-width="120px" :model="formLabelAdd">
 					<el-form-item label="化妆建议内容" prop='text'>
 						<el-input type="textarea" autosize v-model="formLabelAdd.text"></el-input>
@@ -38,7 +38,7 @@
 				</template>
 			</el-table-column>
 		</el-table>
-		<el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+		<el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose" :close-on-click-modal='false'>
 			<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAlign" label-width="120px" :model="formLabelAlign">
 				<el-form-item label="化妆建议内容" prop='text'>
 					<el-input type="textarea" autosize v-model="formLabelAlign.text"></el-input>

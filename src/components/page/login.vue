@@ -1,6 +1,6 @@
 <template>
-	<div class="login-wrap">
-		<!-- <div class="login-wrap" style="background-image: url(./static/img/loginBg.jpg);"> -->
+		<div class="login-wrap">
+			<img class="bgPic" src="../../images/loginBg.jpg">
 		<div class="ms-login">
 			<div class="ms-title">后台管理系统</div>
 			<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="ms-content">
@@ -51,40 +51,15 @@
 					if (valid) {
 						let that = this;
 						that.$axios
-							.get("/management/admin/public!doLogin.action", {
-								params: {
-									loginName: that.ruleForm.username,
+							.post("/management/admin/public!doLogin.action", this.$qs.stringify({
+								loginName: that.ruleForm.username,
 									password: that.ruleForm.password,
 									rememberMe: "1"
-								}
-							})
+							}))
 							.then(function(res) {
 								if (res.status == 200) {
 									console.log(res)
-									let menuList = [];
-									res.data.menu.forEach(item => {
-										if (item.parentId == 2 || item.parentId == 3 || item.parentId == 4 || item.parentId == 5) {
-											menuList.push({
-												id: item.id,
-												name: item.name,
-												enname: item.enname,
-												icon: item.icon,
-												children: []
-											})
-										}
-									})
-									menuList.forEach(item => {
-										let pId = item.id
-										res.data.menu.forEach(item2 => {
-											if (item2.parentId == pId) {
-												item.children.push({
-													id: item2.id,
-													name: item2.name,
-													enname: item2.enname
-												})
-											}
-										})
-									})
+									let menuList = res.data.menu;
 									that.$router.push('/welcome');
 									sessionStorage.setItem("ms_username", that.ruleForm.username);
 									sessionStorage.setItem("menuList", JSON.stringify(menuList))
@@ -112,9 +87,16 @@
 		position: relative;
 		width: 100%;
 		height: 100%;
-		background: url(../../images/loginBg.jpg) center/cover;
+		/* background: url(../../images/loginBg.jpg) center/cover; */
 	}
-
+.login-wrap .bgPic{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
 	.ms-title {
 		width: 100%;
 		line-height: 50px;
@@ -131,8 +113,9 @@
 		width: 350px;
 		margin: -190px 0 0 -175px;
 		border-radius: 5px;
-		background: rgba(64, 158, 255, 0.3);
+		background: rgba(0, 0, 0, 0.15);
 		overflow: hidden;
+		z-index: 999;
 	}
 
 	.ms-content {

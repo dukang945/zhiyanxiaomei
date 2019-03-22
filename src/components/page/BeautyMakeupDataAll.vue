@@ -3,7 +3,7 @@
     <el-table :data="labelCountList" border style="width: 100%" align="center">
       <el-table-column prop="id" label="编号"></el-table-column>
       <el-table-column prop="docId" label="文章id" align="center"></el-table-column>
-      <el-table-column prop="docName" label="文章名称" align="center"></el-table-column>
+      <el-table-column prop="docName" label="文章名称" align="center" show-overflow-tooltip></el-table-column>
       <el-table-column prop="creatTime" label="时间" align="center" width="100"></el-table-column>
       <el-table-column prop="readNum" label="阅读次数" align="center"></el-table-column>
       <el-table-column prop="userReadNum" label="评论次数" align="center"></el-table-column>
@@ -17,7 +17,7 @@
             @click="handleClick(scope.row)"
             v-has
           >查看历史数据</el-button>
-          <el-dialog title="历史数据" :visible.sync="TableVisible" width="80%">
+          <el-dialog title="历史数据" :visible.sync="TableVisible" width="80%" :close-on-click-modal='false'>
             <div class="search">
               <el-date-picker
                 v-model="dateVal"
@@ -32,8 +32,8 @@
             <el-table :data="detailList" border>
               <el-table-column prop="id" label="编号"></el-table-column>
               <el-table-column prop="docId" label="文章id" align="center"></el-table-column>
-              <el-table-column prop="docName" label="文章名称" align="center"></el-table-column>
-              <el-table-column prop="creatTime" label="时间" align="center" width="100"></el-table-column>
+              <el-table-column prop="docName" label="文章名称" align="center" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="creatTime" label="时间" align="center" ></el-table-column>
               <el-table-column prop="readNum" label="阅读次数" align="center"></el-table-column>
               <el-table-column prop="userReadNum" label="评论次数" align="center"></el-table-column>
               <el-table-column prop="userShareNum" label="分享次数" align="center"></el-table-column>
