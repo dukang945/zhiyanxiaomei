@@ -6,7 +6,7 @@
 					<el-button type="primary" @click="AddVisible = true" size='small'>新增</el-button>
 					<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
 						<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAdd" label-width="100px" :model="formLabelAdd">
-							<el-form-item label="标签名称" prop='name'>
+							<el-form-item label="标签名称">
 								<el-input v-model="formLabelAdd.name"></el-input>
 							</el-form-item>
 							<el-form-item label="英文名称">
@@ -16,7 +16,7 @@
 								<el-input v-model="formLabelAdd.lableName" readonly></el-input>
 							</el-form-item>
 							<el-form-item label="排序号">
-								<el-input v-model="formLabelAdd.sort"></el-input>
+								<el-input v-model="formLabelAdd.sort" placeholder="感兴趣内容排序"></el-input>
 							</el-form-item>
 							<el-form-item label="类型">
 								<el-select v-model="formLabelAdd.type" placeholder="请选择类型">
@@ -29,14 +29,14 @@
 									<el-option label="初学乍练" value="7"></el-option>
 								</el-select>
 							</el-form-item>
-							<el-form-item label="客户端显示">
-								<el-select v-model="formLabelAdd.sta" placeholder="请选择是否显示">
+							<el-form-item label="内容显示">
+								<el-select v-model="formLabelAdd.sta" placeholder="感兴趣内容显示">
 									<el-option label="显示" :value="0-0"></el-option>
 									<el-option label="不显示" :value="1-0"></el-option>
 								</el-select>
 							</el-form-item>
-							<el-form-item label="当做标签显示">
-								<el-select v-model="formLabelAdd.labelIsShow" placeholder="请选择是否显示">
+							<el-form-item label="标签显示">
+								<el-select v-model="formLabelAdd.labelIsShow" placeholder="内容页标签显示">
 									<el-option label="显示" :value="0-0"></el-option>
 									<el-option label="不显示" :value="1-0"></el-option>
 								</el-select>
@@ -57,12 +57,12 @@
 				</el-col>
 				<el-col :span='18'>
 					<el-form :inline="true" :model="searchForm" class="right-search">
-						<el-form-item>
+						<!-- <el-form-item>
 							<el-input v-model="searchForm.text" size='small' placeholder="请输入标签名"></el-input>
 						</el-form-item>
 						<el-form-item>
 							<el-button type="primary" size='small' @click="onSubmitSearch" icon="el-icon-search">搜索</el-button>
-						</el-form-item>
+						</el-form-item> -->
 					</el-form>
 				</el-col>
 			</el-row>
@@ -73,14 +73,14 @@
 			 @handlerExpand="handlerExpand" @clickRow='clickRow'></TableTree>
 			<el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
 				<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAlign" label-width="100px" :model="formLabelAlign">
-					<el-form-item label="标签名称" prop='name'>
+					<el-form-item label="标签名称">
 						<el-input v-model="formLabelAlign.name"></el-input>
 					</el-form-item>
 					<el-form-item label="英文名称">
 						<el-input v-model="formLabelAlign.enname"></el-input>
 					</el-form-item>
 					<el-form-item label="排序号">
-						<el-input v-model="formLabelAlign.sort"></el-input>
+						<el-input v-model="formLabelAlign.sort" placeholder="感兴趣内容排序"></el-input>
 					</el-form-item>
 					<el-form-item label="类型">
 						<el-select v-model="formLabelAlign.type" placeholder="请选择类型">
@@ -93,14 +93,14 @@
 							<el-option label="初学乍练" value="7"></el-option>
 						</el-select>
 					</el-form-item>
-					<el-form-item label="客户端显示">
-						<el-select v-model="formLabelAlign.sta" placeholder="请选择是否显示">
+					<el-form-item label="内容显示">
+						<el-select v-model="formLabelAlign.sta" placeholder="感兴趣内容显示">
 							<el-option label="显示" :value="0-0"></el-option>
 							<el-option label="不显示" :value="1-0"></el-option>
 						</el-select>
 					</el-form-item>
-					<el-form-item label="当做标签显示">
-						<el-select v-model="formLabelAlign.labelIsShow" placeholder="请选择是否显示">
+					<el-form-item label="标签显示">
+						<el-select v-model="formLabelAlign.labelIsShow" placeholder="内容标签显示">
 							<el-option label="显示" :value="0-0"></el-option>
 							<el-option label="不显示" :value="1-0"></el-option>
 						</el-select>
@@ -467,6 +467,28 @@
 <style scoped>
 	.tableBox {
 		background-color: #fff;
+		max-height: 717px;
+		overflow-y: auto;
+	}
+	.tableBox::-webkit-scrollbar {
+		/*滚动条整体样式*/
+		width: 6px;
+		/*高宽分别对应横竖滚动条的尺寸*/
+		height: 4px;
+	}
+	
+	.tableBox::-webkit-scrollbar-thumb {
+		/*滚动条里面小方块*/
+		border-radius: 5px;
+		-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+		background: rgba(0, 0, 0, 0.4);
+	}
+	
+	.tableBox::-webkit-scrollbar-track {
+		/*滚动条里面轨道*/
+		-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+		border-radius: 0;
+		background: rgba(0, 0, 0, 0.2);
 	}
 
 	.right-search {

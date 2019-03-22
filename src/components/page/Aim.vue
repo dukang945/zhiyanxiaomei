@@ -35,8 +35,8 @@
 			</el-table-column>
 			<el-table-column label="操作" width="200" align='center'>
 				<template slot-scope="scope">
-					<el-button @click.native.prevent="deleteRow(scope.$index, tableData)" size='small' type="danger" class="el-icon-delete">删除</el-button>
 					<el-button type="primary" size='small' @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+					<el-button @click.native.prevent="deleteRow(scope.$index, tableData)" size='small' type="danger" class="el-icon-delete">删除</el-button>
 					<el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
 						<el-form :label-position="labelPosition" label-width="100px" :model="formLabelAlign" :rules="rules" ref="formLabelAlign" >
 							<el-form-item label="目的名称" prop='name'>

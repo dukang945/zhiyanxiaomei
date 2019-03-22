@@ -1,5 +1,6 @@
 <template>
-		<div class="login-wrap">
+	<div class="login-wrap">
+		<img class="bgPic" src="../../images/loginBg.jpg">
 		<div class="ms-login">
 			<div class="ms-title">后台管理系统</div>
 			<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="ms-content">
@@ -88,9 +89,16 @@
 		position: relative;
 		width: 100%;
 		height: 100%;
-		background: url(../../images/loginBg.jpg) center/cover;
+		/* background: url(../../images/loginBg.jpg) center/cover; */
 	}
-
+	.login-wrap .bgPic{
+		position: absolute;
+		height: 100%;
+		width: 100%;
+		top: 0;
+		left: 0;
+		z-index: 1;
+	}
 	.ms-title {
 		width: 100%;
 		line-height: 50px;
@@ -109,6 +117,7 @@
 		border-radius: 5px;
 		background: rgba(0, 0, 0, 0.15);
 		overflow: hidden;
+		z-index: 9;
 	}
 
 	.ms-content {

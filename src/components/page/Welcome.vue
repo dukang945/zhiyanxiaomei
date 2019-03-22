@@ -25,17 +25,13 @@
 								<i :class="item.icon"></i>
 								<span>{{item.menuname}}</span>
 							</template>
-							<!-- <el-menu-item :index="(itemMenu.menuid).toString()" v-for='(itemMenu) in item.menus.filter((val)=>{return val.menus.length == 0})' :key='itemMenu.menuid' :class="$route.path=='/'+itemMenu.enname?'is-active':''">{{itemMenu.menuname}}</el-menu-item> -->
 							<el-menu-item :index="itemMenu.enname" v-for='(itemMenu) in item.menus.filter((val)=>{return val.menus.length == 0})' :key='itemMenu.menuid' :class="$route.path=='/'+itemMenu.enname?'is-active':''">{{itemMenu.menuname}}</el-menu-item>
 							<el-submenu :index="(itemMenu2.menuid).toString()"  v-for='(itemMenu2) in item.menus.filter((val)=>{return val.menus.length > 0})' :key='itemMenu2.menuid'>
 								<template slot="title">
-									<!-- <i :class="itemMenu.icon"></i> -->
+									<i :class="itemMenu2.icon"></i>
 									<span>{{itemMenu2.menuname}}</span>
 								</template>
-								
 								<el-menu-item :index="k.enname" v-for='(k) in itemMenu2.menus' :key='k.menuid' :class="$route.path=='/'+k.enname?'is-active':''">{{k.menuname}}</el-menu-item>
-								<!-- <el-menu-item :index="(k.menuid).toString()" v-for='(k) in itemMenu2.menus' :key='k.menuid' :class="$route.path=='/'+k.enname?'is-active':''">{{k.menuname}}</el-menu-item> -->
-								
 							</el-submenu>
 						</el-submenu>
 					</el-menu>
@@ -176,7 +172,7 @@
 
 	.el-aside {
 		background-color: #d3dce6;
-		color: #333;
+		color: #686a76;
 		text-align: center;
 		line-height: 200px;
 		min-height: 100%;
@@ -228,7 +224,12 @@
 	.el-container:nth-child(7) .el-aside {
 		line-height: 320px;
 	}
-
+	
+	// 左侧菜单栏样式自定义
+	.el-submenu.is-opened > .el-submenu__title{
+		background-color: #ecf5ff;
+	}
+	
 	.el-header {
 		height: 100px !important;
 		background: linear-gradient(120deg, #ffffff, #5983e8);
