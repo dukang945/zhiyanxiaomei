@@ -14,11 +14,11 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="教程id" label-width="120px">
-            <el-input v-model="formAdd.beautyDetailsId1"></el-input>
-          </el-form-item>
           <el-form-item label="唇部描述" label-width="120px">
             <textarea id="lipDescAdd" rows="10" cols="80"></textarea>
+          </el-form-item>
+          <el-form-item label="基础画法" label-width="120px">
+            <textarea id="lipMakeAdd" rows="10" cols="80"></textarea>
           </el-form-item>
           <el-form-item label="唇部图片" label-width="120px">
             <el-upload
@@ -34,8 +34,8 @@
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
           </el-form-item>
-          <el-form-item label="唇妆画法" label-width="120px">
-            <textarea id="lipMakeAdd" rows="10" cols="80"></textarea>
+          <el-form-item label="教程id" label-width="120px">
+            <el-input v-model="formAdd.beautyDetailsId1"></el-input>
           </el-form-item>
           <el-form-item label="搜索产品" label-width="120px">
             <el-input v-model="searchBeautiColor" @input="getBeautiColorList" clearable></el-input>
@@ -63,13 +63,10 @@
               </span>
             </div>
           </el-form-item>
-          <el-form-item label="教程id" label-width="120px">
-            <el-input v-model="formAdd.beautyDetailsId2"></el-input>
+          <el-form-item label="桃花妆画法" label-width="120px">
+            <textarea id="lipMakeAdd2" rows="10" cols="80"></textarea>
           </el-form-item>
-          <el-form-item label="唇部描述2" label-width="120px">
-            <textarea id="lipDescAdd2" rows="10" cols="80"></textarea>
-          </el-form-item>
-          <el-form-item label="唇部图片2" label-width="120px">
+          <el-form-item label="桃花妆图片" label-width="120px">
             <el-upload
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
@@ -83,8 +80,8 @@
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
           </el-form-item>
-          <el-form-item label="唇妆画法2" label-width="120px">
-            <textarea id="lipMakeAdd2" rows="10" cols="80"></textarea>
+          <el-form-item label="教程id" label-width="120px">
+            <el-input v-model="formAdd.beautyDetailsId2"></el-input>
           </el-form-item>
           <el-form-item label="搜索产品2" label-width="120px">
             <el-input v-model="searchBeautiColor2" @input="getBeautiColorList2" clearable></el-input>
@@ -112,13 +109,10 @@
               </span>
             </div>
           </el-form-item>
-          <el-form-item label="教程id" label-width="120px">
-            <el-input v-model="formAdd.beautyDetailsId3"></el-input>
+          <el-form-item label="财运妆画法" label-width="120px">
+            <textarea id="lipMakeAdd3" rows="10" cols="80"></textarea>
           </el-form-item>
-          <el-form-item label="唇部描述3" label-width="120px">
-            <textarea id="lipDescAdd3" rows="10" cols="80"></textarea>
-          </el-form-item>
-          <el-form-item label="唇妆图片3" label-width="120px">
+          <el-form-item label="财运妆图片" label-width="120px">
             <el-upload
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
@@ -132,8 +126,8 @@
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
           </el-form-item>
-          <el-form-item label="唇妆画法3" label-width="120px">
-            <textarea id="lipMakeAdd3" rows="10" cols="80"></textarea>
+          <el-form-item label="教程id" label-width="120px">
+            <el-input v-model="formAdd.beautyDetailsId3"></el-input>
           </el-form-item>
           <el-form-item label="搜索产品3" label-width="120px">
             <el-input v-model="searchBeautiColor3" @input="getBeautiColorList3" clearable></el-input>
@@ -212,11 +206,11 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="教程id" label-width="120px">
-          <el-input v-model="formEdit.beautyDetailsId1"></el-input>
-        </el-form-item>
         <el-form-item label="唇部描述" label-width="120px">
           <textarea id="lipDesc" rows="10" cols="80"></textarea>
+        </el-form-item>
+        <el-form-item label="基础画法" label-width="120px">
+          <textarea id="lipMake" rows="10" cols="80"></textarea>
         </el-form-item>
         <el-form-item label="唇部图片" label-width="120px">
           <el-upload
@@ -232,8 +226,8 @@
             <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
         </el-form-item>
-        <el-form-item label="唇妆画法" label-width="120px">
-          <textarea id="lipMake" rows="10" cols="80"></textarea>
+        <el-form-item label="教程id" label-width="120px">
+          <el-input v-model="formEdit.beautyDetailsId1"></el-input>
         </el-form-item>
         <el-form-item label="搜索产品" label-width="120px">
           <el-input v-model="searchBeautiColor" @input="getBeautiColorList" clearable></el-input>
@@ -261,13 +255,10 @@
             </span>
           </div>
         </el-form-item>
-        <el-form-item label="教程id" label-width="120px">
-          <el-input v-model="formEdit.beautyDetailsId2"></el-input>
+        <el-form-item label="桃花妆画法" label-width="120px">
+          <textarea id="lipMake2" rows="10" cols="80"></textarea>
         </el-form-item>
-        <el-form-item label="唇部描述2" label-width="120px">
-          <textarea id="lipDesc2" rows="10" cols="80"></textarea>
-        </el-form-item>
-        <el-form-item label="唇部图片2" label-width="120px">
+        <el-form-item label="桃花妆图片" label-width="120px">
           <el-upload
             class="upload-demo"
             action="/management/admin/kcupload!uploadImage.action?type=goods_path"
@@ -281,8 +272,8 @@
             <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
         </el-form-item>
-        <el-form-item label="唇妆画法2" label-width="120px">
-          <textarea id="lipMake2" rows="10" cols="80"></textarea>
+        <el-form-item label="教程id" label-width="120px">
+          <el-input v-model="formEdit.beautyDetailsId2"></el-input>
         </el-form-item>
         <el-form-item label="搜索产品2" label-width="120px">
           <el-input v-model="searchBeautiColor2" @input="getBeautiColorList2" clearable></el-input>
@@ -310,13 +301,10 @@
             </span>
           </div>
         </el-form-item>
-        <el-form-item label="教程id" label-width="120px">
-          <el-input v-model="formEdit.beautyDetailsId3"></el-input>
+        <el-form-item label="财运妆画法" label-width="120px">
+          <textarea id="lipMake3" rows="10" cols="80"></textarea>
         </el-form-item>
-        <el-form-item label="唇部描述3" label-width="120px">
-          <textarea id="lipDesc3" rows="10" cols="80"></textarea>
-        </el-form-item>
-        <el-form-item label="唇部图片3" label-width="120px">
+        <el-form-item label="财运妆图片" label-width="120px">
           <el-upload
             class="upload-demo"
             action="/management/admin/kcupload!uploadImage.action?type=goods_path"
@@ -330,8 +318,8 @@
             <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
         </el-form-item>
-        <el-form-item label="唇妆画法3" label-width="120px">
-          <textarea id="lipMake3" rows="10" cols="80"></textarea>
+        <el-form-item label="教程id" label-width="120px">
+          <el-input v-model="formEdit.beautyDetailsId3"></el-input>
         </el-form-item>
         <el-form-item label="搜索产品3" label-width="120px">
           <el-input v-model="searchBeautiColor3" @input="getBeautiColorList3" clearable></el-input>
@@ -463,94 +451,6 @@ export default {
     //初始化文本编辑器
     getCkeditor() {
       CKEDITOR.replace("lipDesc", {
-        height: 100,
-        resize_maxHeight: 3000,
-        filebrowserImageUploadUrl:
-          "/management/admin/kcupload!uploadImg.action?type=goods_path",
-        filebrowserBrowseUrl:
-          "/management/admin/kcupload!getImages.action?type=cosmetics_img",
-        extraPlugins: "beautyappraisal",
-        toolbar: [
-          {
-            name: "document",
-            items: ["Source", "-", "Templates"]
-          },
-          {
-            name: "clipboard",
-            items: ["-", "Undo", "Redo"]
-          },
-          {
-            name: "insert",
-            items: ["-", "Image"]
-          },
-          {
-            name: "paragraph",
-            items: [
-              "-",
-              "JustifyLeft",
-              "JustifyCenter",
-              "JustifyRight",
-              "JustifyBlock"
-            ]
-          },
-          {
-            name: "colors",
-            items: ["-", "TextColor"]
-          }
-        ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
-        templates_replaceContent: false,
-        autoUpdateElement: true,
-        //编辑器中回车产生的标签
-        enterMode: CKEDITOR.ENTER_BR, //可选：CKEDITOR.ENTER_BR或CKEDITOR.ENTER_P
-        shiftEnterMode: CKEDITOR.ENTER_P
-      });
-      CKEDITOR.replace("lipDesc2", {
-        height: 100,
-        resize_maxHeight: 3000,
-        filebrowserImageUploadUrl:
-          "/management/admin/kcupload!uploadImg.action?type=goods_path",
-        filebrowserBrowseUrl:
-          "/management/admin/kcupload!getImages.action?type=cosmetics_img",
-        extraPlugins: "beautyappraisal",
-        toolbar: [
-          {
-            name: "document",
-            items: ["Source", "-", "Templates"]
-          },
-          {
-            name: "clipboard",
-            items: ["-", "Undo", "Redo"]
-          },
-          {
-            name: "insert",
-            items: ["-", "Image"]
-          },
-          {
-            name: "paragraph",
-            items: [
-              "-",
-              "JustifyLeft",
-              "JustifyCenter",
-              "JustifyRight",
-              "JustifyBlock"
-            ]
-          },
-          {
-            name: "colors",
-            items: ["-", "TextColor"]
-          }
-        ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
-        templates_replaceContent: false,
-        autoUpdateElement: true,
-        //编辑器中回车产生的标签
-        enterMode: CKEDITOR.ENTER_BR, //可选：CKEDITOR.ENTER_BR或CKEDITOR.ENTER_P
-        shiftEnterMode: CKEDITOR.ENTER_P
-      });
-      CKEDITOR.replace("lipDesc3", {
         height: 100,
         resize_maxHeight: 3000,
         filebrowserImageUploadUrl:
@@ -773,94 +673,6 @@ export default {
         enterMode: CKEDITOR.ENTER_BR, //可选：CKEDITOR.ENTER_BR或CKEDITOR.ENTER_P
         shiftEnterMode: CKEDITOR.ENTER_P
       });
-      CKEDITOR.replace("lipDescAdd2", {
-        height: 100,
-        resize_maxHeight: 3000,
-        filebrowserImageUploadUrl:
-          "/management/admin/kcupload!uploadImg.action?type=goods_path",
-        filebrowserBrowseUrl:
-          "/management/admin/kcupload!getImages.action?type=cosmetics_img",
-        extraPlugins: "beautyappraisal",
-        toolbar: [
-          {
-            name: "document",
-            items: ["Source", "-", "Templates"]
-          },
-          {
-            name: "clipboard",
-            items: ["-", "Undo", "Redo"]
-          },
-          {
-            name: "insert",
-            items: ["-", "Image"]
-          },
-          {
-            name: "paragraph",
-            items: [
-              "-",
-              "JustifyLeft",
-              "JustifyCenter",
-              "JustifyRight",
-              "JustifyBlock"
-            ]
-          },
-          {
-            name: "colors",
-            items: ["-", "TextColor"]
-          }
-        ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
-        templates_replaceContent: false,
-        autoUpdateElement: true,
-        //编辑器中回车产生的标签
-        enterMode: CKEDITOR.ENTER_BR, //可选：CKEDITOR.ENTER_BR或CKEDITOR.ENTER_P
-        shiftEnterMode: CKEDITOR.ENTER_P
-      });
-      CKEDITOR.replace("lipDescAdd3", {
-        height: 100,
-        resize_maxHeight: 3000,
-        filebrowserImageUploadUrl:
-          "/management/admin/kcupload!uploadImg.action?type=goods_path",
-        filebrowserBrowseUrl:
-          "/management/admin/kcupload!getImages.action?type=cosmetics_img",
-        extraPlugins: "beautyappraisal",
-        toolbar: [
-          {
-            name: "document",
-            items: ["Source", "-", "Templates"]
-          },
-          {
-            name: "clipboard",
-            items: ["-", "Undo", "Redo"]
-          },
-          {
-            name: "insert",
-            items: ["-", "Image"]
-          },
-          {
-            name: "paragraph",
-            items: [
-              "-",
-              "JustifyLeft",
-              "JustifyCenter",
-              "JustifyRight",
-              "JustifyBlock"
-            ]
-          },
-          {
-            name: "colors",
-            items: ["-", "TextColor"]
-          }
-        ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
-        templates_replaceContent: false,
-        autoUpdateElement: true,
-        //编辑器中回车产生的标签
-        enterMode: CKEDITOR.ENTER_BR, //可选：CKEDITOR.ENTER_BR或CKEDITOR.ENTER_P
-        shiftEnterMode: CKEDITOR.ENTER_P
-      });
 
       CKEDITOR.replace("lipMakeAdd", {
         height: 100,
@@ -1033,12 +845,10 @@ export default {
         }
       }
 
-      this.formAdd.description = CKEDITOR.instances.lipDescAdd.getData();
-      this.formAdd.details = CKEDITOR.instances.lipMakeAdd.getData();
-      this.formAdd.description2 = CKEDITOR.instances.lipDescAdd2.getData();
-      this.formAdd.details2 = CKEDITOR.instances.lipMakeAdd2.getData();
-      this.formAdd.description3 = CKEDITOR.instances.lipDescAdd3.getData();
-      this.formAdd.details3 = CKEDITOR.instances.lipMakeAdd3.getData();
+      this.formAdd.details = CKEDITOR.instances.lipDescAdd.getData();
+      this.formAdd.description = CKEDITOR.instances.lipMakeAdd.getData();
+      this.formAdd.description2 = CKEDITOR.instances.lipMakeAdd2.getData();
+      this.formAdd.description3 = CKEDITOR.instances.lipMakeAdd3.getData();
       console.log(this.formAdd);
       this.$axios
         .post(
@@ -1062,9 +872,7 @@ export default {
               this.choosedBeautiColorList3 = [];
               CKEDITOR.instances.lipDescAdd.setData();
               CKEDITOR.instances.lipMakeAdd.setData();
-              CKEDITOR.instances.lipDescAdd2.setData();
               CKEDITOR.instances.lipMakeAdd2.setData();
-              CKEDITOR.instances.lipDescAdd3.setData();
               CKEDITOR.instances.lipMakeAdd3.setData();
               this.getlabelCountList();
             }
@@ -1161,21 +969,17 @@ export default {
           this.editor = true;
         }
         // 设置文本编辑器内容
-        CKEDITOR.instances.lipDesc.setData(row.description);
-        CKEDITOR.instances.lipMake.setData(row.details);
-        CKEDITOR.instances.lipDesc2.setData(row.description2);
-        CKEDITOR.instances.lipMake2.setData(row.details2);
-        CKEDITOR.instances.lipDesc3.setData(row.description3);
-        CKEDITOR.instances.lipMake3.setData(row.details3);
+        CKEDITOR.instances.lipDesc.setData(row.details);
+        CKEDITOR.instances.lipMake.setData(row.description);
+        CKEDITOR.instances.lipMake2.setData(row.description2);
+        CKEDITOR.instances.lipMake3.setData(row.description3);
       }, 10);
     },
     saveEdit() {
-      this.formEdit.description = CKEDITOR.instances.lipDesc.getData();
-      this.formEdit.details = CKEDITOR.instances.lipMake.getData();
-      this.formEdit.description2 = CKEDITOR.instances.lipDesc2.getData();
-      this.formEdit.details2 = CKEDITOR.instances.lipMake2.getData();
-      this.formEdit.description3 = CKEDITOR.instances.lipDesc3.getData();
-      this.formEdit.details3 = CKEDITOR.instances.lipMake3.getData();
+      this.formEdit.details = CKEDITOR.instances.lipDesc.getData();
+      this.formEdit.description = CKEDITOR.instances.lipMake.getData();
+      this.formEdit.description2 = CKEDITOR.instances.lipMake2.getData();
+      this.formEdit.description3 = CKEDITOR.instances.lipMake3.getData();
       var colorId = "";
       for (let i = 0; i < this.choosedBeautiColorList.length; i++) {
         colorId += `&productColor1=` + this.choosedBeautiColorList[i].id;
@@ -1199,10 +1003,8 @@ export default {
           details: this.formEdit.details,
           description2: this.formEdit.description2,
           lipImage2: this.formEdit.lipImage2,
-          details2: this.formEdit.details2,
           description3: this.formEdit.description3,
           lipImage3: this.formEdit.lipImage3,
-          details3: this.formEdit.details3
         }) +
         colorId +
         colorId2 +

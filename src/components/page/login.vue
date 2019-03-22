@@ -51,13 +51,11 @@
 					if (valid) {
 						let that = this;
 						that.$axios
-							.get("/management/admin/public!doLogin.action", {
-								params: {
-									loginName: that.ruleForm.username,
+							.post("/management/admin/public!doLogin.action", this.$qs.stringify({
+								loginName: that.ruleForm.username,
 									password: that.ruleForm.password,
 									rememberMe: "1"
-								}
-							})
+							}))
 							.then(function(res) {
 								if (res.status == 200) {
 									console.log(res)
