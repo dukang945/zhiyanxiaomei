@@ -38,6 +38,9 @@
 									<el-option label="否" :value="Number(1)"></el-option>
 								</el-select>
 							</el-form-item>
+							<el-form-item label="来源">
+								<el-input v-model="formLabelAdd.source"></el-input>
+							</el-form-item>
 							<el-form-item label="列表图片">
 								<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
 								 :before-upload='beforeUpload' :on-success="uploadListImgSuccess" :on-preview="handlePictureCardPreview"
@@ -72,7 +75,7 @@
 			<el-col :span="6">
 				<el-form :inline="true" :model="searchForm" class="right-search">
 					<el-form-item>
-						<el-input v-model="searchForm.text" placeholder="请输入搜索内容"></el-input>
+						<el-input v-model="searchForm.text" placeholder="请输入搜索内容" @keyup.enter.native='onSubmitSearch'></el-input>
 					</el-form-item>
 					<el-form-item>
 						<el-button type="primary" size='small' @click="onSubmitSearch" icon="el-icon-search">搜索</el-button>
@@ -93,7 +96,7 @@
 					</el-table-column>
 					<el-table-column prop="name" label="标题" align='center' :show-overflow-tooltip="true">
 					</el-table-column>
-					<el-table-column prop="labelName" label="标签" width="150" align='center' :show-overflow-tooltip="true">
+					<el-table-column prop="labelName" label="标签" width="200" align='center' :show-overflow-tooltip="true">
 					</el-table-column>
 					<el-table-column prop="creatUser" label="创建人" width="100" align='center' :filters="userList" :filter-method="filterUser"
 					 filter-placement="bottom-end">
@@ -101,18 +104,18 @@
 					<el-table-column prop="online" label="审核状态" width="100" align='center' :formatter='getStatus' :filters="satusList"
 					 :filter-method="filterStatus" filter-placement="bottom-end">
 					</el-table-column>
-					<el-table-column prop="collectNumber" label="点赞次数" width="100" align='center'>
+					<el-table-column prop="pageView" label="浏览量" width="100" align='center'>
 					</el-table-column>
 					<el-table-column prop="createTime" label="创建时间" width="100" align='center' :formatter='getTime' :show-overflow-tooltip="true">
 					</el-table-column>
-					<el-table-column label="操作" fixed="right" align='center' width='670'>
+					<el-table-column label="操作" fixed="right" align='center' width='580'>
 						<template slot-scope="scope">
-							<el-button @click.native.prevent="deleteRow(scope.$index, scope.row)" size='small' type="danger" class="el-icon-delete">删除</el-button>
 							<el-button size="small" type="primary" @click="edit(scope.$index, scope.row)" icon='el-icon-edit'>编辑</el-button>
+							<el-button size="small" type="primary" @click="checkH5(scope.$index, scope.row)" icon='el-icon-edit-outline'>预览</el-button>
 							<el-button size="small" type="primary" @click="switchOnline(scope.$index, scope.row)" class="el-icon-sort">{{tableData[scope.$index].online==0?'下线':'上线'}}</el-button>
 							<!-- <el-button size="small" type="success" @click="switchTop(scope.$index, scope.row)">{{tableData[scope.$index].sticky==0?'置顶':'取消置顶'}}</el-button> -->
-							<el-button size="small" type="primary" @click="checkH5(scope.$index, scope.row)" icon='el-icon-edit-outline'>预览H5</el-button>
-							<el-button size="small" type="primary" @click="updataSort(scope.$index, scope.row)" icon='el-icon-sort'>更新排序</el-button>
+							<!-- <el-button size="small" type="primary" @click="updataSort(scope.$index, scope.row)" icon='el-icon-sort'>更新排序</el-button> -->
+							<el-button @click.native.prevent="deleteRow(scope.$index, scope.row)" size='small' type="danger" class="el-icon-delete">删除</el-button>
 							<el-button size="small" type="primary" @click="checkProduct(scope.$index, scope.row)">产品管理</el-button>
 							<el-button size="small" type="primary" @click="checkComment(scope.$index, scope.row)">查看评论</el-button>
 						</template>
@@ -152,7 +155,9 @@
 						<el-option label="否" :value="Number(1)"></el-option>
 					</el-select>
 				</el-form-item>
-
+				<el-form-item label="来源">
+					<el-input v-model="editFormData.source"></el-input>
+				</el-form-item>
 				<el-form-item label="列表图片">
 					<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData' :before-upload='beforeUpload'
 					 :on-success="uploadListImgSuccess" :on-remove="handleRemoveListPic" :file-list="editListPicFileList" :on-preview="handlePictureCardPreview"
@@ -337,7 +342,7 @@
 		<el-dialog title="批量增加标签" :visible.sync="batchAddLabelDialogVisible" width="50%">
 			<el-form :label-position="labelPosition" label-width="80px">
 				<el-form-item label="搜索标签">
-					<el-input v-model='searchLabel' @change='getLabelList' clearable></el-input>
+					<el-input v-model='searchLabel' @input='getLabelList' clearable></el-input>
 					<el-table :data="labelTableData" @row-click='selectLabel' border style="width: 100%" v-loading="loading" v-if='searchLabel'
 					 class='labelTable'>
 						<el-table-column prop="id" label="id" width="50" align='center'>
