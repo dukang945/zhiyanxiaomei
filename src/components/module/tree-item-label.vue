@@ -14,10 +14,11 @@
 									<span v-if="model.children.length > 0" class="tree-close" :class="{'tree-open':model.isExpand}" @click="handlerExpand(model)"></span>
 									<a class="ellipsis">
 										<i class="el-icon-message icon"></i>
-										<span :title="model.text">{{model.text}}</span>
+										<span :title="model.name">{{model.name}}</span>
 									</a>
 								</div>
 							</td>
+							<td class="td3">{{model.enname}}</td>
 							<td class="td4">{{model.type}}</td>
 							<td class="td5">{{model.sta}}</td>
 							<td class="td6">{{model.labelIsShow}}</td>

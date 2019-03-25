@@ -143,7 +143,7 @@
 					}]
 				},
 				treeData: [],
-				headList: ['id', '美妆类型名称', '类型', '客户端显示', '标签显示', '操作'],
+				headList: ['id', '美妆类型名称','英文名称', '类型', '客户端显示', '标签显示', '操作'],
 				imgData: {
 					FileName: '',
 					imgFile: null
@@ -378,6 +378,7 @@
 						return {
 							id: item.id,
 							name: item.name,
+							enname: item.enname,
 							text: item.text,
 							type: this.formatType(item.type),
 							labelIsShow: this.formatLabelShow(item.labelIsShow),
@@ -395,6 +396,7 @@
 										return {
 											id: item.id,
 											name: item.name,
+											enname: item.enname,
 											text: item.text,
 											type: this.formatType(item.type),
 											labelIsShow: this.formatLabelShow(item.labelIsShow),
@@ -413,6 +415,7 @@
 														return {
 															id: item.id,
 															name: item.name,
+															enname: item.enname,
 															text: item.text,
 															type: this.formatType(item.type),
 															labelIsShow: this.formatLabelShow(item.labelIsShow),
@@ -431,6 +434,7 @@
 																		return {
 																			id: item.id,
 																			name: item.name,
+																			enname: item.enname,
 																			text: item.text,
 																			type: this.formatType(item.type),
 																			labelIsShow: this.formatLabelShow(item.labelIsShow),
@@ -454,6 +458,7 @@
 						}
 					}
 					this.treeData = tempList;
+					console.log(this.treeData)
 				})
 			}
 		},

@@ -778,6 +778,7 @@
 					greatNumber: row.greatNumber,
 					original: row.original,
 					image: row.image,
+					source:row.source,
 					bannerImage: row.bannerImage,
 					text: row.text,
 					labelId: row.labelName
