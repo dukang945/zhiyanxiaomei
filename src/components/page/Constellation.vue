@@ -83,9 +83,10 @@
       <el-table-column prop="yinAndYang" label="阴阳性" :show-overflow-tooltip="true"></el-table-column> -->
       <el-table-column prop="luckyColor" label="幸运色" width="100" align="center"></el-table-column>
       <el-table-column prop="luckyAcc" label="幸运配饰" width="180" align="center"></el-table-column>
-      <el-table-column label="操作" width="100" align="center">
+      <el-table-column label="操作" width="200" align="center">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button type="danger" size="small" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -311,6 +312,10 @@ export default {
         }
       });
     },
+		// 删除
+		handleDelete(){
+			
+		},
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then(_ => {

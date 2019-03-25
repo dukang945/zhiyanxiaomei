@@ -474,7 +474,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped="scoped">
 .el-tree {
   max-height: 500px;
   overflow-y: scroll;

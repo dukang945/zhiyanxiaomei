@@ -24,9 +24,9 @@
 			</el-table-column>
 			<el-table-column label="操作" width="200" align='center'>
 				<template slot-scope="scope">
-					<el-button @click.native.prevent="deleteRow(scope.$index, tableData)" size='small' type="danger" class="el-icon-delete">删除</el-button>
 					<el-button type="primary" size='small' @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-					<el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose" :close-on-click-modal='false'>
+					<el-button @click.native.prevent="deleteRow(scope.$index, tableData)" size='small' type="danger" class="el-icon-delete">删除</el-button>
+					<el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
 						<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAlign" label-width="100px" :model="formLabelAlign">
 							<el-form-item label="名称">
 								<el-input v-model="formLabelAlign.name"></el-input>

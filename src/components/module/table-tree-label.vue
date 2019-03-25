@@ -145,14 +145,14 @@
   text-align: left;
 }
 .tree-table .td1 {
-  width: 100px;
+  width: 50px;
   padding-left: 30px;
 }
 .tree-table .td2 {
-  width: 300px;
+  width: 200px;
 }
 .tree-table .td3 {
-  width: 100px;
+  width: 200px;
 }
 .tree-table .td4 {
   width: 100px;

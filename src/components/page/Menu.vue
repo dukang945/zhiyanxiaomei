@@ -50,7 +50,7 @@
       <el-table-column prop="enname" label="英文名称" align="center"></el-table-column>
       <el-table-column prop="parentName" label="上级资源" align="center"></el-table-column>
       <el-table-column prop="type" label="资源类型" align="center"></el-table-column>
-      <el-table-column prop="link" label="链接" width="200" align="center"></el-table-column>
+      <el-table-column prop="link" label="链接" width="200" align="center" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="orderid" label="排序" align="center"></el-table-column>
       <el-table-column label="操作" width="200" align="center">
         <template slot-scope="scope">
@@ -336,7 +336,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped="scoped">
 .el-tree {
   max-height: 500px;
   overflow-y: scroll;

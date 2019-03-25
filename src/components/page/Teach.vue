@@ -15,13 +15,14 @@
 								<el-input v-model="formLabelAdd.name"></el-input>
 							</el-form-item>
 							<el-form-item label="搜索标签">
-
-								<el-input v-model='searchLabel' @change='getLabelList' clearable></el-input>
+								<el-input v-model='searchLabel' @input='getLabelList' clearable></el-input>
 								<el-table :data="labelTableData" @row-click='selectLabel' border style="width: 100%" v-loading="loading" v-if='searchLabel'
 								 class='labelTable'>
 									<el-table-column prop="id" label="id" width="50" align='center'>
 									</el-table-column>
-									<el-table-column prop="name" label="标题" align='center'>
+									<el-table-column prop="name" label="中文标题" align='center'>
+									</el-table-column>
+									<el-table-column prop="enname" label="英文标题" align='center'>
 									</el-table-column>
 									<el-table-column prop="labelName" label="上级标签" align='center'>
 									</el-table-column>
@@ -37,7 +38,9 @@
 							<el-form-item label="浏览量">
 								<el-input v-model="formLabelAdd.pageView"></el-input>
 							</el-form-item>
-
+							<el-form-item label="来源">
+								<el-input v-model="formLabelAdd.source"></el-input>
+							</el-form-item>
 							<el-form-item label="搜索产品">
 								<el-input v-model='searchBeautiColor' @change='getBeautiColorList' clearable></el-input>
 								<el-table :data="beautiColorTableData" @row-click='selectBeautiColor' border style="width: 100%" v-loading="loading"
@@ -124,7 +127,7 @@
 			<el-col :span="8">
 				<el-form :inline="true" :model="searchForm" class="right-search">
 					<el-form-item>
-						<el-input v-model="searchForm.text" size='small' placeholder="请输入搜索内容"></el-input>
+						<el-input v-model="searchForm.text" size='small' placeholder="请输入搜索内容" @keyup.enter.native='onSubmitSearch'></el-input>
 					</el-form-item>
 					<el-form-item>
 						<el-button type="primary" size='small' @click="onSubmitSearch" icon="el-icon-search">搜索</el-button>
@@ -145,7 +148,7 @@
 					</el-table-column>
 					<el-table-column prop="name" label="标题" align='center' :show-overflow-tooltip="true">
 					</el-table-column>
-					<el-table-column prop="labelName" label="标签" width="150" align='center' :show-overflow-tooltip="true">
+					<el-table-column prop="labelName" label="标签" width="200" align='center' :show-overflow-tooltip="true">
 					</el-table-column>
 					<el-table-column prop="creatUser" label="创建人" width="100" align='center' :filters="userList" :filter-method="filterUser"
 					 filter-placement="bottom-end">
@@ -153,19 +156,19 @@
 					<el-table-column prop="online" label="审核状态" width="100" align='center' :formatter='getStatus' :filters="satusList"
 					 :filter-method="filterStatus" filter-placement="bottom-end">
 					</el-table-column>
-					<el-table-column prop="collectNumber" label="点赞次数" width="100" align='center'>
+					<el-table-column prop="pageView" label="浏览量" width="100" align='center'>
 					</el-table-column>
 					<el-table-column prop="createTime" label="创建时间" width="100" align='center' :formatter='getTime'
 					 :show-overflow-tooltip="true">
 					</el-table-column>
-					<el-table-column label="操作" fixed="right" align='center' width='620'>
+					<el-table-column label="操作" fixed="right" align='center' width='450'>
 						<template slot-scope="scope">
-							<el-button @click.native.prevent="deleteRow(scope.$index, scope.row)" size='small' type="danger" class="el-icon-delete">删除</el-button>
 							<el-button size="small" type="primary" @click="edit(scope.$index, scope.row)" icon='el-icon-edit'>编辑</el-button>
+							<el-button size="small" type="primary" @click="checkH5(scope.$index, scope.row)">预览</el-button>
 							<el-button size="small" type="primary" @click="switchOnline(scope.$index, scope.row)" class="el-icon-sort">{{tableData[scope.$index].online==0?'下线':'上线'}}</el-button>
-							<el-button size="small" type="primary" @click="updataSort(scope.$index, scope.row)" icon='el-icon-sort'>更新排序</el-button>
-							<el-button size="small" type="primary" @click="push(scope.$index, scope.row)">推送</el-button>
-							<el-button size="small" type="primary" @click="checkH5(scope.$index, scope.row)">预览H5</el-button>
+							<!-- <el-button size="small" type="primary" @click="updataSort(scope.$index, scope.row)" icon='el-icon-sort'>更新排序</el-button>
+							<el-button size="small" type="primary" @click="push(scope.$index, scope.row)">推送</el-button> -->
+							<el-button @click.native.prevent="deleteRow(scope.$index, scope.row)" size='small' type="danger" class="el-icon-delete">删除</el-button>
 							<el-button size="small" type="primary" @click="checkComment(scope.$index, scope.row)">评论管理</el-button>
 						</template>
 					</el-table-column>
@@ -180,12 +183,14 @@
 					<el-input v-model="editFormData.name"></el-input>
 				</el-form-item>
 				<el-form-item label="搜索标签">
-					<el-input v-model='searchLabel' @change='getLabelList' clearable></el-input>
+					<el-input v-model='searchLabel' @input='getLabelList' clearable></el-input>
 					<el-table :data="labelTableData" @row-click='selectLabel' border style="width: 100%" v-loading="loading" v-if='searchLabel'
 					 class='labelTable'>
 						<el-table-column prop="id" label="id" width="50" align='center'>
 						</el-table-column>
-						<el-table-column prop="name" label="标题" align='center'>
+						<el-table-column prop="name" label="中文标题" align='center'>
+						</el-table-column>
+						<el-table-column prop="enname" label="英文标题" align='center'>
 						</el-table-column>
 						<el-table-column prop="labelName" label="上级标签" align='center'>
 						</el-table-column>
@@ -200,6 +205,9 @@
 				</el-form-item>
 				<el-form-item label="浏览量">
 					<el-input v-model="editFormData.pageView"></el-input>
+				</el-form-item>
+				<el-form-item label="来源">
+					<el-input v-model="editFormData.source"></el-input>
 				</el-form-item>
 				<el-form-item label="搜索产品">
 					<el-input v-model='searchBeautiColor' @change='getBeautiColorList' clearable></el-input>
@@ -477,12 +485,14 @@
 		<el-dialog title="批量增加标签" :visible.sync="batchAddLabelDialogVisible" width="50%">
 			<el-form :label-position="labelPosition" label-width="80px">
 				<el-form-item label="搜索标签">
-					<el-input v-model='searchLabel' @change='getLabelList' clearable></el-input>
+					<el-input v-model='searchLabel' @input='getLabelList' clearable></el-input>
 					<el-table :data="labelTableData" @row-click='selectLabel' border style="width: 100%" v-loading="loading" v-if='searchLabel'
 					 class='labelTable'>
 						<el-table-column prop="id" label="id" width="50" align='center'>
 						</el-table-column>
-						<el-table-column prop="name" label="标题" align='center'>
+						<el-table-column prop="name" label="中文标题" align='center'>
+						</el-table-column>
+						<el-table-column prop="enname" label="英文标题" align='center'>
 						</el-table-column>
 						<el-table-column prop="labelName" label="上级标签" align='center'>
 						</el-table-column>
@@ -566,6 +576,7 @@
 					pageView: '',
 					moduleId: '',
 					videoUrl: '',
+					source:'',
 					star: '',
 					about: '',
 					image: '',
@@ -590,6 +601,7 @@
 					moduleId: '',
 					videoUrl: '',
 					star: '',
+					source:'',
 					about: '',
 					image: '',
 					beautyDetailsRelationList: [{
@@ -788,6 +800,7 @@
 					videoUrl: '',
 					star: '',
 					about: '',
+					source:'',
 					image: '',
 					beautyDetailsRelationList: [{
 						procedureName: '',
@@ -813,6 +826,7 @@
 					videoUrl: '',
 					star: '',
 					about: '',
+					source:'',
 					image: '',
 					beautyDetailsRelationList: [{
 						procedureName: '',
@@ -893,6 +907,7 @@
 								moduleId: '',
 								videoUrl: '',
 								star: '',
+								source:'',
 								about: '',
 								image: '',
 								beautyDetailsRelationList: [{
@@ -953,6 +968,7 @@
 						moduleId: '',
 						videoUrl: '',
 						about: '',
+						source:'',
 						image: '',
 						beautyDetailsRelationList: [{
 							procedureName: '',
@@ -980,6 +996,7 @@
 					moduleId: '',
 					videoUrl: '',
 					about: '',
+					source:'',
 					image: '',
 					beautyDetailsRelationList: [{
 						procedureName: '',
@@ -1180,6 +1197,7 @@
 				tempObj.moduleId = row.moduleId;
 				tempObj.videoUrl = row.videoUrl;
 				tempObj.about = row.about;
+				tempObj.source = row.source,
 				tempObj.image = row.image;
 				tempObj.beautyDetailsRelationList = row.beautyDetailsRelationList
 				this.editFormData = tempObj
@@ -1241,6 +1259,7 @@
 					moduleId: '',
 					videoUrl: '',
 					star: '',
+					source:'',
 					about: '',
 					image: '',
 					beautyDetailsRelationList: [{
@@ -1299,6 +1318,7 @@
 								moduleId: '',
 								videoUrl: '',
 								star: '',
+								source:'',
 								about: '',
 								image: '',
 								beautyDetailsRelationList: [{
