@@ -7,10 +7,10 @@
 					<el-form-item label="品牌名称:" prop="name">
 						<el-input v-model="formLabelAdd.name"></el-input>
 					</el-form-item>
-					<el-form-item label="简介:" prop="synopsis">
+					<el-form-item label="简介:">
 						<el-input v-model="formLabelAdd.synopsis"></el-input>
 					</el-form-item>
-					<el-form-item label="主打:" prop="theMain">
+					<el-form-item label="主打:">
 						<el-input v-model="formLabelAdd.theMain"></el-input>
 					</el-form-item>
 				</el-form>
@@ -29,18 +29,18 @@
 			<el-table-column prop="theMain" label="主打" align="center"></el-table-column>
 			<el-table-column label="操作" align="center">
 				<template slot-scope="scope">
+					<el-button size="small" type="primary" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)" v-has>编辑</el-button>
 					<el-button @click.native.prevent="deleteRow(scope.$index, brandList)" type="danger" size="small" class="el-icon-delete"
 					 v-del>删除</el-button>
-					<el-button size="small" type="primary" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)" v-has>编辑</el-button>
 					<el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
 						<el-form :label-position="labelPosition" label-width="120px" :model="formLabelAlign" :rules="rules" ref="formLabelAlign">
 							<el-form-item label="品牌名称:" prop="name">
 								<el-input v-model="formLabelAlign.name"></el-input>
 							</el-form-item>
-							<el-form-item label="简介:" prop="synopsis">
+							<el-form-item label="简介:">
 								<el-input v-model="formLabelAlign.synopsis"></el-input>
 							</el-form-item>
-							<el-form-item label="主打:" prop="theMain">
+							<el-form-item label="主打:">
 								<el-input v-model="formLabelAlign.theMain"></el-input>
 							</el-form-item>
 						</el-form>

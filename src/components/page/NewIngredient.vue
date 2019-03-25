@@ -68,7 +68,7 @@
       </el-dialog>
     </div>
     <el-table :data="ingredientList" border style="width: 100%">
-      <el-table-column prop="productId" label="产品ID" align="center" width="50"></el-table-column>
+      <el-table-column prop="id" label="成分ID" align="center" width="50"></el-table-column>
       <el-table-column prop="name" label="成分名称" align="center" width="160"></el-table-column>
       <el-table-column prop="safetyRisk" label="安全风险" align="center" width="50"></el-table-column>
       <el-table-column prop="activeIngredients" label="活性成分" align="center" width="50"></el-table-column>
@@ -165,7 +165,6 @@ export default {
         .then(res => {
           if (res.status == 200) {
             this.formLabelAlign = res.data;
-            this.fileList = [{ url: res.data.img, name: "图片" }];
           }
         });
     },
@@ -175,8 +174,14 @@ export default {
         .post(
           `/management/admin/ingredient!save.action?id=${this.idx}`,
           this.$qs.stringify({
+              id:this.formLabelAdd.id,
+            productId: this.formLabelAlign.productId,
+            riskBlain: this.formLabelAlign.riskBlain,
+            safetyRisk: this.formLabelAlign.safetyRisk,
             name: this.formLabelAlign.name,
-            effect: this.formLabelAlign.effect
+            intendedUse: this.formLabelAlign.intendedUse,
+            ingredientOverview: this.formLabelAlign.ingredientOverview,
+            activeIngredients: this.formLabelAlign.activeIngredients,
           })
         )
         .then(res => {
