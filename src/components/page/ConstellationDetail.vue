@@ -2,9 +2,9 @@
   <div class="constellationDetailContent">
     <div class="handle-box">
       <el-button type="primary" @click="AddVisible = true" size="small">新增</el-button>
-      <el-button type="primary" @click="onlineAll(0)" size="small">批量上线</el-button>
-      <el-button type="primary" @click="onlineAll(1)" size="small">批量下线</el-button>
-      <el-button type="primary" @click="deleteAll" size="small">批量删除</el-button>
+      <el-button type="primary" @click="onlineAll(0)" size="small" v-online>批量上线</el-button>
+      <el-button type="primary" @click="onlineAll(1)" size="small" v-online>批量下线</el-button>
+      <el-button type="primary" @click="deleteAll" size="small" v-del>批量删除</el-button>
       <el-date-picker
         v-model="value2"
         align="right"
@@ -104,7 +104,11 @@
             size="small"
             type="danger"
           >删除</el-button>
-          <el-dialog title="编辑" :visible.sync="dialogVisible" width="50%" :close-on-click-modal='false'>
+         
+        </template>
+      </el-table-column>
+    </el-table>
+     <el-dialog title="编辑" :visible.sync="dialogVisible" width="50%" :close-on-click-modal='false'>
             <el-form
               :label-position="labelPosition"
               :rules="rules"
@@ -172,9 +176,6 @@
               <el-button type="primary" @click="saveEdit('formLabelAlign')">确 定</el-button>
             </span>
           </el-dialog>
-        </template>
-      </el-table-column>
-    </el-table>
     <Pagination :totalNum="totalNum" @change_Page="changePage" @change_Size="changeSize"></Pagination>
   </div>
 </template>

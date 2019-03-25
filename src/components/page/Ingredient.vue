@@ -29,9 +29,9 @@
 			<el-table-column prop="effect" label="功效作用" align="center"></el-table-column>
 			<el-table-column label="操作" align="center">
 				<template slot-scope="scope">
+					<el-button size="small" type="primary" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)" v-has>编辑</el-button>
 					<el-button @click.native.prevent="deleteRow(scope.$index, ingredientList)" type="danger" size="small" class="el-icon-delete"
 					 v-del>删除</el-button>
-					<el-button size="small" type="primary" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)" v-has>编辑</el-button>
 					<el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
 						<el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
 							<el-form-item label="成分名称">
