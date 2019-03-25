@@ -28,8 +28,8 @@
 		data: function() {
 			return {
 				ruleForm: {
-					username: "admin",
-					password: "888888"
+					username: "",
+					password: ""
 				},
 				rules: {
 					username: [{
@@ -57,8 +57,7 @@
 									rememberMe: "1"
 							}))
 							.then(function(res) {
-								if (res.status == 200) {
-									console.log(res)
+								if (res.data.status == 1) {
 									let menuList = res.data.menu;
 									that.$router.push('/welcome');
 									sessionStorage.setItem("ms_username", that.ruleForm.username);
@@ -115,7 +114,7 @@
 		border-radius: 5px;
 		background: rgba(0, 0, 0, 0.15);
 		overflow: hidden;
-		z-index: 9;
+		z-index: 999;
 	}
 
 	.ms-content {

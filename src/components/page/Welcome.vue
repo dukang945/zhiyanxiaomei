@@ -143,7 +143,10 @@
 	};
 </script>
 
-<style lang="scss" scoped="scoped">
+<style lang="scss" scoped>
+html{
+	touch-action: none;
+}
 	/deep/ .el-scrollbar__wrap {
 		overflow-x: hidden;
 	}
@@ -196,13 +199,16 @@
 	.el-menu-item-group {
 		max-height: 400px;
 	}
-
+.el-menu.el-menu--inline{
+	max-height: 100%;
+	overflow: auto;
+}
 	.mainback {
 		padding: 20px;
 		padding-bottom: 0;
 		box-sizing: border-box;
 		color: #666;
-		// overflow: hidden;
+		overflow: hidden;
 	}
 
 	.mainback .mainBox {

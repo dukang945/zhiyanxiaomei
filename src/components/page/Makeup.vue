@@ -12,7 +12,7 @@
       >
         <el-button slot="append" icon="el-icon-search" @click="productSearch"></el-button>
       </el-input>
-      <el-dialog title="新增产品" :visible.sync="AddVisible">
+      <el-dialog title="新增产品" :visible.sync="AddVisible" :close-on-click-modal='false'>
         <el-form
           :label-position="labelPosition"
           label-width="120px"
@@ -24,13 +24,13 @@
           <el-form-item label="产品名称" prop="name">
             <el-input v-model="formLabelAdd.name"></el-input>
           </el-form-item>
-          <el-form-item label="产品规格" prop="specification">
+          <el-form-item label="产品规格" >
             <el-input v-model="formLabelAdd.specification"></el-input>
           </el-form-item>
           <!-- <el-form-item label="新增品牌">
             <el-button type="primary" icon="el-icon-circle-plus-outline" size="small" class="add">新增</el-button>
           </el-form-item>-->
-          <el-form-item label="品牌" prop="brandId">
+          <el-form-item label="品牌">
             <el-select
               v-model="formLabelAdd.brandId"
               filterable
@@ -146,12 +146,6 @@
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
-            @click.native.prevent="deleteRow(scope.$index, makeupList)"
-            type="danger"
-            size="small"
-            v-del
-          >删除</el-button>
-          <el-button
             size="small"
             type="primary"
             @click="handleEdit(scope.$index, scope.row)"
@@ -159,10 +153,16 @@
           >编辑</el-button>
           <el-button size="small" @click="online(scope.row)" v-if="scope.row.online==1">上线</el-button>
           <el-button size="small" v-else-if="scope.row.online==0" @click="online(scope.row)">下线</el-button>
+          <el-button
+            @click.native.prevent="deleteRow(scope.$index, makeupList)"
+            type="danger"
+            size="small"
+            v-del
+          >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog title="编辑" :visible.sync="dialogVisible">
+    <el-dialog title="编辑" :visible.sync="dialogVisible" :close-on-click-modal='false'>
       <el-form
         :label-position="labelPosition"
         label-width="120px"
@@ -174,10 +174,10 @@
         <el-form-item label="产品名称" prop="name">
           <el-input v-model="formLabelAlign.name"></el-input>
         </el-form-item>
-        <el-form-item label="产品规格" prop="specification">
+        <el-form-item label="产品规格">
           <el-input v-model="formLabelAlign.specification"></el-input>
         </el-form-item>
-        <el-form-item label="品牌" prop="brandId">
+        <el-form-item label="品牌">
           <el-select
             v-model="formLabelAlign.brandId"
             filterable
@@ -279,6 +279,9 @@
         <el-button type="primary" @click="saveEdit('formLabelAlign')">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog title="图片预览" :visible.sync="imgVisible" append-to-body>
+      <img :src="img" alt style="width:100%">
+    </el-dialog>
     <Pagination :totalNum="totalNum3" @change_Page="changePage3" @change_Size="changeSize3"></Pagination>
   </div>
 </template>
@@ -299,8 +302,10 @@ export default {
       makeup_Search: "",
       dialogVisible: false,
       AddVisible: false,
+      imgVisible: false,
       AddGrid: false,
       loading: false,
+      img:'',
       labelPosition: "left",
       idx: -1,
       formLabelAlign: {},
@@ -699,7 +704,10 @@ export default {
     // 图片
     handleRemove(file, fileList) {},
     handleRemove1(file, fileList) {},
-    handlePreview(file) {},
+    handlePreview(file) {
+      this.img = file.url;
+      this.imgVisible = true;
+    },
     beforeUpload(file) {
       this.imgData.FileName = file.name;
       this.imgData.imgFile = file;

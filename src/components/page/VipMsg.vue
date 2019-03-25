@@ -52,13 +52,13 @@
       <el-table-column label="用户生日" align="center">
         <template slot-scope="scope">{{ scope.row.birthday }}</template>
       </el-table-column>
-      <el-table-column label="第三方token" align="center">
+      <el-table-column label="第三方token" align="center" width='270'>
         <template slot-scope="scope">{{ scope.row.token }}</template>
       </el-table-column>
-      <el-table-column label="注册时间" width='200' align="center">
+      <el-table-column label="注册时间" width='250' align="center">
         <template slot-scope="scope">{{ scope.row.createTime | formatTime('YMDHMS') }}</template>
       </el-table-column>
-      <el-table-column label="最后登录时间" width='200' align="center">
+      <el-table-column label="最后登录时间" width='250' align="center">
         <template slot-scope="scope">{{ scope.row.loginTime | formatTime('YMDHMS')}}</template>
       </el-table-column>
       <el-table-column label="操作" align="center">
@@ -176,9 +176,9 @@ export default {
 </script>
 
 <style scoped>
-.el-table {
+/* .el-table {
   margin-left: 20px;
-}
+} */
 .el-switch {
   margin-left: 10px;
 }

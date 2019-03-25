@@ -2,6 +2,9 @@
   <div class="constellationDetailContent">
     <div class="handle-box">
       <el-button type="primary" @click="AddVisible = true" size="small">新增</el-button>
+      <el-button type="primary" @click="onlineAll(0)" size="small" v-online>批量上线</el-button>
+      <el-button type="primary" @click="onlineAll(1)" size="small" v-online>批量下线</el-button>
+      <el-button type="primary" @click="deleteAll" size="small" v-del>批量删除</el-button>
       <el-date-picker
         v-model="value2"
         align="right"
@@ -11,7 +14,7 @@
         placeholder="选择日期"
         size="small"
       ></el-date-picker>
-      <el-dialog title="新增" :visible.sync="AddVisible" width="50%" :before-close="handleClose">
+      <el-dialog title="新增" :visible.sync="AddVisible" width="50%" :before-close="handleClose" :close-on-click-modal='false'>
         <el-form
           :label-position="labelPosition"
           label-width="150px"
@@ -72,7 +75,7 @@
         </el-form>
         <span slot="footer" class="dialog-footer">
           <el-button @click="AddVisible = false">取 消</el-button>
-          <el-button type="primary" @click="handleAdd">确 定</el-button>
+          <el-button type="primary" @click="handleAdd('formLabelAdd')">确 定</el-button>
         </span>
       </el-dialog>
     </div>
@@ -92,16 +95,20 @@
       <el-table-column prop="creatUser" label="创建人" width="120" align="center"></el-table-column>
       <el-table-column label="操作" width="300" align="center">
         <template slot-scope="scope">
+          
+          <el-button type="primary" size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button size="small" @click="online(scope.row)" v-if="scope.row.online==1">上线</el-button>
+          <el-button size="small" v-else-if="scope.row.online==0" @click="online(scope.row)">下线</el-button>
           <el-button
             @click.native.prevent="deleteRow(scope.$index, tableData)"
             size="small"
             type="danger"
-            class="el-icon-delete"
           >删除</el-button>
-          <el-button type="primary" size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-          <el-button size="small" @click="online(scope.row)" v-if="scope.row.online==1">上线</el-button>
-          <el-button size="small" v-else-if="scope.row.online==0" @click="online(scope.row)">下线</el-button>
-          <el-dialog title="编辑" :visible.sync="dialogVisible" width="50%">
+         
+        </template>
+      </el-table-column>
+    </el-table>
+     <el-dialog title="编辑" :visible.sync="dialogVisible" width="50%" :close-on-click-modal='false'>
             <el-form
               :label-position="labelPosition"
               :rules="rules"
@@ -166,12 +173,9 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
               <el-button @click="dialogVisible = false">取 消</el-button>
-              <el-button type="primary" @click="saveEdit">确 定</el-button>
+              <el-button type="primary" @click="saveEdit('formLabelAlign')">确 定</el-button>
             </span>
           </el-dialog>
-        </template>
-      </el-table-column>
-    </el-table>
     <Pagination :totalNum="totalNum" @change_Page="changePage" @change_Size="changeSize"></Pagination>
   </div>
 </template>
@@ -218,7 +222,8 @@ export default {
       page: 1,
       row: 10,
       totalNum: 1,
-      constellationList: []
+      constellationList: [],
+      multipleSelection: []
     };
   },
   components: {
@@ -255,8 +260,8 @@ export default {
       this.dialogVisible = true;
     },
     //保存编辑
-    saveEdit() {
-      this.$refs["formLabelAlign"].validate(valid => {
+    saveEdit(formLabelAlign) {
+      this.$refs[formLabelAlign].validate(valid => {
         if (valid) {
           this.$axios
             .post(
@@ -313,10 +318,18 @@ export default {
         })
         .catch(_ => {});
     },
+    deleteAll(){
+      this.$axios.get(`/management/admin/constellation-details!batchDelete.action?ids=${this.multipleSelection}`).then(res=>{
+        if(res.status==200){
+          this.$message.success(`删除成功`);
+          this.getData(this.page, this.row);
+        }
+      })
+    },
     // 新增
-    handleAdd() {
+    handleAdd(formLabelAdd) {
       console.log(this.formLabelAdd);
-      this.$refs["formLabelAdd"].validate(valid => {
+      this.$refs[formLabelAdd].validate(valid => {
         if (valid) {
           this.$axios
             .post(
@@ -347,7 +360,7 @@ export default {
             });
           this.AddVisible = false;
           this.formLabelAdd = {};
-          this.$refs["formLabelAdd"].resetFields();
+          this.$refs[formLabelAdd].resetFields();
         } else {
           console.log("error submit!!");
           return false;
@@ -387,6 +400,17 @@ export default {
           });
         });
     },
+    onlineAll(number){
+      this.$axios.get(`/management/admin/constellation-details!batchOnLine.action?ids=${this.multipleSelection}&online=${number}`).then(res=>{
+        if(res.status==200){
+          this.$message({
+                  type: "success",
+                  message: `${number == 0 ? "上线" : "下线"}成功!`
+                });
+                this.getData(this.page, this.row);
+        }
+      })
+    },
     //日期搜索
     onchange(val) {
       console.log(val);
@@ -401,7 +425,12 @@ export default {
     },
     //多选
     handleSelectionChange(val){
-      this.multipleSelection = val;
+      let chooseArr = []
+      for (let index = 0; index < val.length; index++) {
+        chooseArr.push(val[index].id)
+      }
+      this.multipleSelection = chooseArr.join(',')
+      console.log(this.multipleSelection)
     },
     // 分页
     changePage(val) {
