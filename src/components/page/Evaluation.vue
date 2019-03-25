@@ -803,6 +803,7 @@
 					image: row.image,
 					bannerImage: row.bannerImage,
 					text: row.text,
+					source:row.source,
 					labelId: row.labelName
 				};
 				setTimeout(function() {

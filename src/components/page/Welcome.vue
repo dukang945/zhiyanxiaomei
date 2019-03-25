@@ -87,6 +87,10 @@
 		mounted() {
 			var _this = this;
 			this.$refs.slider.addTab(this.$route.path, this.$route.name);
+			// 格式化所有img标签
+// 			this.$axios.get('/management/admin/beauty-details!dataConvert.action').then(res=>{
+// 				console.log(res)
+// 			})
 		},
 		methods: {
 			getPath(path) {
@@ -139,7 +143,7 @@
 	};
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped="scoped">
 	/deep/ .el-scrollbar__wrap {
 		overflow-x: hidden;
 	}

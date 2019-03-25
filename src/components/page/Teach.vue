@@ -15,12 +15,14 @@
 								<el-input v-model="formLabelAdd.name"></el-input>
 							</el-form-item>
 							<el-form-item label="搜索标签">
-								<el-input v-model='searchLabel' @change='getLabelList' clearable></el-input>
+								<el-input v-model='searchLabel' @input='getLabelList' clearable></el-input>
 								<el-table :data="labelTableData" @row-click='selectLabel' border style="width: 100%" v-loading="loading" v-if='searchLabel'
 								 class='labelTable'>
 									<el-table-column prop="id" label="id" width="50" align='center'>
 									</el-table-column>
-									<el-table-column prop="name" label="标题" align='center'>
+									<el-table-column prop="name" label="中文标题" align='center'>
+									</el-table-column>
+									<el-table-column prop="enname" label="英文标题" align='center'>
 									</el-table-column>
 									<el-table-column prop="labelName" label="上级标签" align='center'>
 									</el-table-column>
@@ -181,12 +183,14 @@
 					<el-input v-model="editFormData.name"></el-input>
 				</el-form-item>
 				<el-form-item label="搜索标签">
-					<el-input v-model='searchLabel' @change='getLabelList' clearable></el-input>
+					<el-input v-model='searchLabel' @input='getLabelList' clearable></el-input>
 					<el-table :data="labelTableData" @row-click='selectLabel' border style="width: 100%" v-loading="loading" v-if='searchLabel'
 					 class='labelTable'>
 						<el-table-column prop="id" label="id" width="50" align='center'>
 						</el-table-column>
-						<el-table-column prop="name" label="标题" align='center'>
+						<el-table-column prop="name" label="中文标题" align='center'>
+						</el-table-column>
+						<el-table-column prop="enname" label="英文标题" align='center'>
 						</el-table-column>
 						<el-table-column prop="labelName" label="上级标签" align='center'>
 						</el-table-column>
@@ -486,7 +490,9 @@
 					 class='labelTable'>
 						<el-table-column prop="id" label="id" width="50" align='center'>
 						</el-table-column>
-						<el-table-column prop="name" label="标题" align='center'>
+						<el-table-column prop="name" label="中文标题" align='center'>
+						</el-table-column>
+						<el-table-column prop="enname" label="英文标题" align='center'>
 						</el-table-column>
 						<el-table-column prop="labelName" label="上级标签" align='center'>
 						</el-table-column>
@@ -1191,6 +1197,7 @@
 				tempObj.moduleId = row.moduleId;
 				tempObj.videoUrl = row.videoUrl;
 				tempObj.about = row.about;
+				tempObj.source = row.source,
 				tempObj.image = row.image;
 				tempObj.beautyDetailsRelationList = row.beautyDetailsRelationList
 				this.editFormData = tempObj
