@@ -2,6 +2,8 @@
   <div>
     <div class="handle-box">
       <el-button type="primary" @click="AddVisible = true" size="small" v-has>新增</el-button>
+      <el-button type="primary" @click="refreshElastic" size="small">刷新Elastic</el-button>
+      <el-button type="primary" @click="refreshHTML" size="small">刷新HTML</el-button>
       <!-- <el-input v-model="ingredient_Search" placeholder="请输入搜索类容" style="width: 30%" size="small" @keyup.enter.native="ingredientSearch">
 				<el-button slot="append" icon="el-icon-search" @click="ingredientSearch"></el-button>
       </el-input>-->
@@ -242,6 +244,21 @@ export default {
             this.$message.success("生成成功");
           }
         });
+    },
+    //刷新缓存
+    refreshElastic(){
+      this.$axios.get('/management/admin/ingredient!refreshElastic.action').then(res=>{
+        if(res.status==200){
+           this.$message.success("刷新成功");
+        }
+      })
+    },
+    refreshHTML(){
+      this.$axios.get('/management/admin/ingredient!refreshHTML.action').then(res=>{
+        if(res.status==200){
+           this.$message.success("刷新成功");
+        }
+      })
     },
     //图片上传
     handleRemove1(file, fileList) {},

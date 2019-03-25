@@ -15,6 +15,7 @@
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
               :data="imgData1"
+              :on-preview="handlePreview"
               :on-remove="handleRemove1"
               :on-success="handleSuccess1"
               :file-list="fileList1"
@@ -69,6 +70,7 @@
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
               :data="imgData1"
+              :on-preview="handlePreview"
               :on-remove="handleRemove1"
               :on-success="handleSuccess1"
               :file-list="fileList1"
@@ -84,6 +86,9 @@
         <el-button @click="TableVisible = false">取 消</el-button>
         <el-button type="primary" @click="saveEdit('formEdit')">确 定</el-button>
       </span>
+    </el-dialog>
+     <el-dialog title="图片预览" :visible.sync="imgVisible" append-to-body>
+      <img :src="img" alt style="width:100%">
     </el-dialog>
     <el-pagination
       @size-change="handleSizeChange"
@@ -114,8 +119,10 @@ export default {
       AddVisible: false,
       editor: false,
       editorAdd: false,
+      imgVisible: false,
       loading: true,
       dateVal: "",
+      img:"",
       eyesDescribe: "",
       idx: -1,
       currentPage1: 1,
@@ -193,7 +200,7 @@ export default {
             console.log(res);
             this.formEdit = res.data;
              this.formEdit.headImage
-              ? (this.fileList1 = [{ url: this.formEdit.headImage }])
+              ? (this.fileList1 = [{ url: this.formEdit.headImage,name:"相似名人" }])
               : (this.fileList1 = []);
           }
         });
@@ -248,6 +255,10 @@ export default {
       if (this.AddVisible) {
         this.formAdd.headImage = res.url;
       }
+    },
+    handlePreview(file) {
+      this.img = file.url;
+      this.imgVisible = true;
     },
     //分页
     handleSizeChange(val) {
