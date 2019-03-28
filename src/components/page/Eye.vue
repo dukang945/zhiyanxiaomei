@@ -2,6 +2,40 @@
   <div>
     <div class="handle-box">
       <el-button type="primary" @click="AddVisible = true" v-has size="small">新增</el-button>
+      <el-dialog title="图片预览" :visible.sync="imgVisible" append-to-body>
+        <img :src="img" alt style="width:100%">
+      </el-dialog>
+      <el-dialog title="产品预览" :visible.sync="viewVisible" append-to-body width="80%" top="30px">
+        <div class="content">
+          <img class="phoneBorder productBox" src="../../images/viewPage.png" alt>
+          <div class="productContent">
+            <div class="productTitle">基础画法</div>
+            <div class="productItem" v-for="(item,index) in viewPageColorList">
+              <img :src="getImgUrl(item.colorImage)" alt>
+              <p>{{item.name}} {{item.colorPrice}}</p>
+              <p>参考价格 ：￥{{item.colorPrice}}</p>
+            </div>
+          </div>
+          <img class="phoneBorder productBox pro2" src="../../images/viewPage.png" alt>
+          <div class="productContent cont2">
+            <div class="productTitle">桃花妆画法</div>
+            <div class="productItem" v-for="(item,index) in viewPageColorList2">
+              <img :src="getImgUrl(item.colorImage)" alt>
+              <p>{{item.name}} {{item.specification}}</p>
+              <p>参考价格 ：￥{{item.colorPrice}}</p>
+            </div>
+          </div>
+          <img class="phoneBorder productBox pro3" src="../../images/viewPage.png" alt>
+          <div class="productContent cont3">
+            <div class="productTitle">财运妆画法</div>
+            <div class="productItem" v-for="(item,index) in viewPageColorList3">
+              <img :src="getImgUrl(item.colorImage)" alt>
+              <p>{{item.name}} {{item.specification}}</p>
+              <p>参考价格 ：￥{{item.colorPrice}}</p>
+            </div>
+          </div>
+        </div>
+      </el-dialog>
       <el-dialog title="新增" :visible.sync="AddVisible" width="80%" @opened="addOPen">
         <el-form :model="formAdd">
           <el-form-item label="标签" label-width="120px">
@@ -14,17 +48,18 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="教程id" label-width="120px">
-            <el-input v-model="formAdd.beautyDetailsId1"></el-input>
-          </el-form-item>
           <el-form-item label="眼部描述" label-width="120px">
             <textarea id="eyeDescAdd" rows="10" cols="80"></textarea>
           </el-form-item>
-          <el-form-item label="眼部图片" label-width="120px">
+          <el-form-item label="基础画法" label-width="120px">
+            <textarea id="eyeMakeAdd" rows="10" cols="80"></textarea>
+          </el-form-item>
+          <el-form-item label="基础画法图片" label-width="120px">
             <el-upload
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
               :data="imgData1"
+              :on-preview="handlePreview"
               :on-remove="handleRemove1"
               :on-success="handleSuccess1"
               :file-list="fileList1"
@@ -34,8 +69,8 @@
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
           </el-form-item>
-          <el-form-item label="眼妆画法" label-width="120px">
-            <textarea id="eyeMakeAdd" rows="10" cols="80"></textarea>
+          <el-form-item label="教程id" label-width="120px">
+            <el-input v-model="formAdd.beautyDetailsId1"></el-input>
           </el-form-item>
           <el-form-item label="搜索产品" label-width="120px">
             <el-input v-model="searchBeautiColor" @input="getBeautiColorList" clearable></el-input>
@@ -52,7 +87,8 @@
               <el-table-column prop="name" label="色号名" align="center"></el-table-column>
               <el-table-column prop="productName" label="商品名" align="center"></el-table-column>
             </el-table>
-            <div class="labelChoosed">已选产品：
+            <div class="labelChoosed">
+              已选产品：
               <span
                 v-for="(item,key) in choosedBeautiColorList"
                 v-dragging="{ list: choosedBeautiColorList, item: item, group: 'name' }"
@@ -62,17 +98,15 @@
               </span>
             </div>
           </el-form-item>
-          <el-form-item label="教程id" label-width="120px">
-            <el-input v-model="formAdd.beautyDetailsId2"></el-input>
+          <el-form-item label="桃花妆画法" label-width="120px">
+            <textarea id="eyeMakeAdd2" rows="10" cols="80"></textarea>
           </el-form-item>
-          <el-form-item label="眼部描述2" label-width="120px">
-            <textarea id="eyeDescAdd2" rows="10" cols="80"></textarea>
-          </el-form-item>
-          <el-form-item label="眼部图片2" label-width="120px">
+          <el-form-item label="桃花妆图片" label-width="120px">
             <el-upload
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
               :data="imgData2"
+              :on-preview="handlePreview"
               :on-remove="handleRemove2"
               :on-success="handleSuccess2"
               :file-list="fileList2"
@@ -82,8 +116,8 @@
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
           </el-form-item>
-          <el-form-item label="眼妆画法2" label-width="120px">
-            <textarea id="eyeMakeAdd2" rows="10" cols="80"></textarea>
+          <el-form-item label="教程id" label-width="120px">
+            <el-input v-model="formAdd.beautyDetailsId2"></el-input>
           </el-form-item>
           <el-form-item label="搜索产品2" label-width="120px">
             <el-input v-model="searchBeautiColor2" @input="getBeautiColorList2" clearable></el-input>
@@ -100,7 +134,8 @@
               <el-table-column prop="name" label="色号名" align="center"></el-table-column>
               <el-table-column prop="productName" label="商品名" align="center"></el-table-column>
             </el-table>
-            <div class="labelChoosed">已选产品：
+            <div class="labelChoosed">
+              已选产品：
               <span
                 v-for="(item,key) in choosedBeautiColorList2"
                 v-dragging="{ list: choosedBeautiColorList2, item: item, group: 'name' }"
@@ -110,17 +145,15 @@
               </span>
             </div>
           </el-form-item>
-          <el-form-item label="教程id" label-width="120px">
-            <el-input v-model="formAdd.beautyDetailsId3"></el-input>
+          <el-form-item label="财运妆画法" label-width="120px">
+            <textarea id="eyeMakeAdd3" rows="10" cols="80"></textarea>
           </el-form-item>
-          <el-form-item label="眼部描述3" label-width="120px">
-            <textarea id="eyeDescAdd3" rows="10" cols="80"></textarea>
-          </el-form-item>
-          <el-form-item label="眼部图片3" label-width="120px">
+          <el-form-item label="财运妆图片" label-width="120px">
             <el-upload
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
               :data="imgData3"
+              :on-preview="handlePreview"
               :on-remove="handleRemove3"
               :on-success="handleSuccess3"
               :file-list="fileList3"
@@ -130,8 +163,8 @@
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
           </el-form-item>
-          <el-form-item label="眼妆画法3" label-width="120px">
-            <textarea id="eyeMakeAdd3" rows="10" cols="80"></textarea>
+          <el-form-item label="教程id" label-width="120px">
+            <el-input v-model="formAdd.beautyDetailsId3"></el-input>
           </el-form-item>
           <el-form-item label="搜索产品3" label-width="120px">
             <el-input v-model="searchBeautiColor3" @input="getBeautiColorList3" clearable></el-input>
@@ -148,7 +181,8 @@
               <el-table-column prop="name" label="色号名" align="center"></el-table-column>
               <el-table-column prop="productName" label="商品名" align="center"></el-table-column>
             </el-table>
-            <div class="labelChoosed">已选产品：
+            <div class="labelChoosed">
+              已选产品：
               <span
                 v-for="(item,key) in choosedBeautiColorList3"
                 v-dragging="{ list: choosedBeautiColorList3, item: item, group: 'name' }"
@@ -170,21 +204,21 @@
       <el-table-column prop="id" label="id" align="center"></el-table-column>
       <el-table-column prop="labelName" label="标签名称" align="center"></el-table-column>
       <el-table-column prop="labelName" label="创建人" align="center"></el-table-column>
-      
+
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button size="small" type="primary" @click="handleEdit(scope.row)" v-has>编辑</el-button>
+          <el-button size="small" type="primary" @click="handleView(scope.row)" v-has>预览</el-button>
           <el-button
             @click.native.prevent="deleteRow(scope.$index, labelCountList)"
             type="danger"
             size="small"
             v-del
           >删除</el-button>
-          
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog title="编辑" :visible.sync="TableVisible" width="80%">
+    <el-dialog title="编辑" :visible.sync="TableVisible" width="80%" :close-on-click-modal="false">
       <el-form :model="formEdit">
         <el-form-item label="标签" label-width="120px">
           <el-select v-model="formEdit.labels" placeholder="请选择标签">
@@ -196,17 +230,18 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="教程id" label-width="120px">
-          <el-input v-model="formEdit.beautyDetailsId1"></el-input>
-        </el-form-item>
         <el-form-item label="眼部描述" label-width="120px">
           <textarea id="eyeDesc" rows="10" cols="80"></textarea>
         </el-form-item>
-        <el-form-item label="眼部图片" label-width="120px">
+        <el-form-item label="基础画法" label-width="120px">
+          <textarea id="eyeMake" rows="10" cols="80"></textarea>
+        </el-form-item>
+        <el-form-item label="基础画法图片" label-width="120px">
           <el-upload
             class="upload-demo"
             action="/management/admin/kcupload!uploadImage.action?type=goods_path"
             :data="imgData1"
+            :on-preview="handlePreview"
             :on-remove="handleRemove1"
             :on-success="handleSuccess1"
             :file-list="fileList1"
@@ -216,8 +251,8 @@
             <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
         </el-form-item>
-        <el-form-item label="眼妆画法" label-width="120px">
-          <textarea id="eyeMake" rows="10" cols="80"></textarea>
+        <el-form-item label="教程id" label-width="120px">
+          <el-input v-model="formEdit.beautyDetailsId1"></el-input>
         </el-form-item>
         <el-form-item label="搜索产品" label-width="120px">
           <el-input v-model="searchBeautiColor" @input="getBeautiColorList" clearable></el-input>
@@ -234,7 +269,8 @@
             <el-table-column prop="name" label="色号名" align="center"></el-table-column>
             <el-table-column prop="productName" label="商品名" align="center"></el-table-column>
           </el-table>
-          <div class="labelChoosed">已选产品：
+          <div class="labelChoosed">
+            已选产品：
             <span
               v-for="(item,key) in choosedBeautiColorList"
               v-dragging="{ list: choosedBeautiColorList, item: item, group: 'name' }"
@@ -244,17 +280,15 @@
             </span>
           </div>
         </el-form-item>
-        <el-form-item label="教程id" label-width="120px">
-          <el-input v-model="formEdit.beautyDetailsId2"></el-input>
+        <el-form-item label="桃花妆画法" label-width="120px">
+          <textarea id="eyeMake2" rows="10" cols="80"></textarea>
         </el-form-item>
-        <el-form-item label="眼部描述2" label-width="120px">
-          <textarea id="eyeDesc2" rows="10" cols="80"></textarea>
-        </el-form-item>
-        <el-form-item label="眼部图片2" label-width="120px">
+        <el-form-item label="桃花妆图片" label-width="120px">
           <el-upload
             class="upload-demo"
             action="/management/admin/kcupload!uploadImage.action?type=goods_path"
             :data="imgData2"
+            :on-preview="handlePreview"
             :on-remove="handleRemove2"
             :on-success="handleSuccess2"
             :file-list="fileList2"
@@ -264,10 +298,10 @@
             <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
         </el-form-item>
-        <el-form-item label="眼妆画法2" label-width="120px">
-          <textarea id="eyeMake2" rows="10" cols="80"></textarea>
+        <el-form-item label="教程id" label-width="120px">
+          <el-input v-model="formEdit.beautyDetailsId2"></el-input>
         </el-form-item>
-        <el-form-item label="搜索产品2" label-width="120px">
+        <el-form-item label="搜索产品" label-width="120px">
           <el-input v-model="searchBeautiColor2" @input="getBeautiColorList2" clearable></el-input>
           <el-table
             :data="beautiColorTableData2"
@@ -282,7 +316,8 @@
             <el-table-column prop="name" label="色号名" align="center"></el-table-column>
             <el-table-column prop="productName" label="商品名" align="center"></el-table-column>
           </el-table>
-          <div class="labelChoosed">已选产品：
+          <div class="labelChoosed">
+            已选产品：
             <span
               v-for="(item,key) in choosedBeautiColorList2"
               v-dragging="{ list: choosedBeautiColorList2, item: item, group: 'name' }"
@@ -292,17 +327,15 @@
             </span>
           </div>
         </el-form-item>
-        <el-form-item label="教程id" label-width="120px">
-          <el-input v-model="formEdit.beautyDetailsId3"></el-input>
+        <el-form-item label="财运妆画法" label-width="120px">
+          <textarea id="eyeMake3" rows="10" cols="80"></textarea>
         </el-form-item>
-        <el-form-item label="眼部描述3" label-width="120px">
-          <textarea id="eyeDesc3" rows="10" cols="80"></textarea>
-        </el-form-item>
-        <el-form-item label="眼部图片3" label-width="120px">
+        <el-form-item label="财运妆图片" label-width="120px">
           <el-upload
             class="upload-demo"
             action="/management/admin/kcupload!uploadImage.action?type=goods_path"
             :data="imgData3"
+            :on-preview="handlePreview"
             :on-remove="handleRemove3"
             :on-success="handleSuccess3"
             :file-list="fileList3"
@@ -312,10 +345,10 @@
             <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
         </el-form-item>
-        <el-form-item label="眼妆画法3" label-width="120px">
-          <textarea id="eyeMake3" rows="10" cols="80"></textarea>
+        <el-form-item label="教程id" label-width="120px">
+          <el-input v-model="formEdit.beautyDetailsId3"></el-input>
         </el-form-item>
-        <el-form-item label="搜索产品3" label-width="120px">
+        <el-form-item label="搜索产品" label-width="120px">
           <el-input v-model="searchBeautiColor3" @input="getBeautiColorList3" clearable></el-input>
           <el-table
             :data="beautiColorTableData3"
@@ -330,7 +363,8 @@
             <el-table-column prop="name" label="色号名" align="center"></el-table-column>
             <el-table-column prop="productName" label="商品名" align="center"></el-table-column>
           </el-table>
-          <div class="labelChoosed">已选产品：
+          <div class="labelChoosed">
+            已选产品：
             <span
               v-for="(item,key) in choosedBeautiColorList3"
               v-dragging="{ list: choosedBeautiColorList3, item: item, group: 'name' }"
@@ -375,10 +409,13 @@ export default {
       imgData3: {},
       TableVisible: false,
       AddVisible: false,
+      imgVisible: false,
+      viewVisible: false,
       editor: false,
       editorAdd: false,
       loading: true,
       dateVal: "",
+      img: "",
       eyesDescribe: "",
       idx: -1,
       currentPage1: 1,
@@ -394,6 +431,9 @@ export default {
         beautyDetailsId2: 2,
         beautyDetailsId3: 3
       },
+      viewPageColorList: [], //产品预览列表
+      viewPageColorList2: [], //产品预览列表
+      viewPageColorList3: [], //产品预览列表
       labelTableData: [], //标签表格数据
       searchLabel: "", //搜索标签输入框
       choosedLabelList: [], //已选中标签列表
@@ -419,17 +459,28 @@ export default {
     this.getlabelList();
   },
   methods: {
+    getImgUrl(str) {
+      let testExp = /http.*?(\.png|\.jpg|\.gif|\.jpeg)/gi;
+      if (str) {
+        return str.match(testExp)[0];
+      }
+    },
     getlabelCountList(page1, row1) {
-      this.$axios.post("/management/admin/eyes!list.action", this.$qs.stringify({
+      this.$axios
+        .post(
+          "/management/admin/eyes!list.action",
+          this.$qs.stringify({
             page: page1,
             row: row1
-          })).then(res => {
-        if (res.status == 200) {
-          console.log(res);
-          this.labelCountList = res.data.rows;
-          this.totalNum1 = res.data.total;
-        }
-      });
+          })
+        )
+        .then(res => {
+          if (res.status == 200) {
+            console.log(res);
+            this.labelCountList = res.data.rows;
+            this.totalNum1 = res.data.total;
+          }
+        });
     },
     getlabelList() {
       this.$axios
@@ -478,96 +529,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
-        templates_replaceContent: false,
-        autoUpdateElement: true,
-        //编辑器中回车产生的标签
-        enterMode: CKEDITOR.ENTER_BR, //可选：CKEDITOR.ENTER_BR或CKEDITOR.ENTER_P
-        shiftEnterMode: CKEDITOR.ENTER_P
-      });
-      CKEDITOR.replace("eyeDesc2", {
-        height: 100,
-        resize_maxHeight: 3000,
-        filebrowserImageUploadUrl:
-          "/management/admin/kcupload!uploadImg.action?type=goods_path",
-        filebrowserBrowseUrl:
-          "/management/admin/kcupload!getImages.action?type=cosmetics_img",
-        extraPlugins: "beautyappraisal",
-        toolbar: [
-          {
-            name: "document",
-            items: ["Source", "-", "Templates"]
-          },
-          {
-            name: "clipboard",
-            items: ["-", "Undo", "Redo"]
-          },
-          {
-            name: "insert",
-            items: ["-", "Image"]
-          },
-          {
-            name: "paragraph",
-            items: [
-              "-",
-              "JustifyLeft",
-              "JustifyCenter",
-              "JustifyRight",
-              "JustifyBlock"
-            ]
-          },
-          {
-            name: "colors",
-            items: ["-", "TextColor"]
-          }
-        ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
-        templates_replaceContent: false,
-        autoUpdateElement: true,
-        //编辑器中回车产生的标签
-        enterMode: CKEDITOR.ENTER_BR, //可选：CKEDITOR.ENTER_BR或CKEDITOR.ENTER_P
-        shiftEnterMode: CKEDITOR.ENTER_P
-      });
-      CKEDITOR.replace("eyeDesc3", {
-        height: 100,
-        resize_maxHeight: 3000,
-        filebrowserImageUploadUrl:
-          "/management/admin/kcupload!uploadImg.action?type=goods_path",
-        filebrowserBrowseUrl:
-          "/management/admin/kcupload!getImages.action?type=cosmetics_img",
-        extraPlugins: "beautyappraisal",
-        toolbar: [
-          {
-            name: "document",
-            items: ["Source", "-", "Templates"]
-          },
-          {
-            name: "clipboard",
-            items: ["-", "Undo", "Redo"]
-          },
-          {
-            name: "insert",
-            items: ["-", "Image"]
-          },
-          {
-            name: "paragraph",
-            items: [
-              "-",
-              "JustifyLeft",
-              "JustifyCenter",
-              "JustifyRight",
-              "JustifyBlock"
-            ]
-          },
-          {
-            name: "colors",
-            items: ["-", "TextColor"]
-          }
-        ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: "./static/ckeditor/style.css",
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -611,8 +574,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: "./static/ckeditor/style.css",
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -655,8 +618,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: "./static/ckeditor/style.css",
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -699,8 +662,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: "./static/ckeditor/style.css",
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -745,96 +708,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
-        templates_replaceContent: false,
-        autoUpdateElement: true,
-        //编辑器中回车产生的标签
-        enterMode: CKEDITOR.ENTER_BR, //可选：CKEDITOR.ENTER_BR或CKEDITOR.ENTER_P
-        shiftEnterMode: CKEDITOR.ENTER_P
-      });
-      CKEDITOR.replace("eyeDescAdd2", {
-        height: 100,
-        resize_maxHeight: 3000,
-        filebrowserImageUploadUrl:
-          "/management/admin/kcupload!uploadImg.action?type=goods_path",
-        filebrowserBrowseUrl:
-          "/management/admin/kcupload!getImages.action?type=cosmetics_img",
-        extraPlugins: "beautyappraisal",
-        toolbar: [
-          {
-            name: "document",
-            items: ["Source", "-", "Templates"]
-          },
-          {
-            name: "clipboard",
-            items: ["-", "Undo", "Redo"]
-          },
-          {
-            name: "insert",
-            items: ["-", "Image"]
-          },
-          {
-            name: "paragraph",
-            items: [
-              "-",
-              "JustifyLeft",
-              "JustifyCenter",
-              "JustifyRight",
-              "JustifyBlock"
-            ]
-          },
-          {
-            name: "colors",
-            items: ["-", "TextColor"]
-          }
-        ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
-        templates_replaceContent: false,
-        autoUpdateElement: true,
-        //编辑器中回车产生的标签
-        enterMode: CKEDITOR.ENTER_BR, //可选：CKEDITOR.ENTER_BR或CKEDITOR.ENTER_P
-        shiftEnterMode: CKEDITOR.ENTER_P
-      });
-      CKEDITOR.replace("eyeDescAdd3", {
-        height: 100,
-        resize_maxHeight: 3000,
-        filebrowserImageUploadUrl:
-          "/management/admin/kcupload!uploadImg.action?type=goods_path",
-        filebrowserBrowseUrl:
-          "/management/admin/kcupload!getImages.action?type=cosmetics_img",
-        extraPlugins: "beautyappraisal",
-        toolbar: [
-          {
-            name: "document",
-            items: ["Source", "-", "Templates"]
-          },
-          {
-            name: "clipboard",
-            items: ["-", "Undo", "Redo"]
-          },
-          {
-            name: "insert",
-            items: ["-", "Image"]
-          },
-          {
-            name: "paragraph",
-            items: [
-              "-",
-              "JustifyLeft",
-              "JustifyCenter",
-              "JustifyRight",
-              "JustifyBlock"
-            ]
-          },
-          {
-            name: "colors",
-            items: ["-", "TextColor"]
-          }
-        ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: "./static/ckeditor/style.css",
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -878,8 +753,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: "./static/ckeditor/style.css",
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -922,8 +797,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: "./static/ckeditor/style.css",
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -966,8 +841,8 @@ export default {
             items: ["-", "TextColor"]
           }
         ],
-        // contentsCss: './static/ckeditor/style.css',
-        contentsCss: "../../../static/ckeditor/style.css",
+        contentsCss: "./static/ckeditor/style.css",
+        // contentsCss: "../../../static/ckeditor/style.css",
         templates_replaceContent: false,
         autoUpdateElement: true,
         //编辑器中回车产生的标签
@@ -1009,9 +884,7 @@ export default {
 
       this.formAdd.eyesDescribe = CKEDITOR.instances.eyeDescAdd.getData();
       this.formAdd.eyeMakeup = CKEDITOR.instances.eyeMakeAdd.getData();
-      this.formAdd.eyesDescribe2 = CKEDITOR.instances.eyeDescAdd2.getData();
       this.formAdd.eyeMakeup2 = CKEDITOR.instances.eyeMakeAdd2.getData();
-      this.formAdd.eyesDescribe3 = CKEDITOR.instances.eyeDescAdd3.getData();
       this.formAdd.eyeMakeup3 = CKEDITOR.instances.eyeMakeAdd3.getData();
       console.log(this.formAdd);
       this.$axios
@@ -1038,9 +911,9 @@ export default {
       this.searchBeautiColor = "";
       this.searchBeautiColor2 = "";
       this.searchBeautiColor3 = "";
-      this.choosedBeautiColorList=[]
-      this.choosedBeautiColorList2=[]
-      this.choosedBeautiColorList3=[]
+      this.choosedBeautiColorList = [];
+      this.choosedBeautiColorList2 = [];
+      this.choosedBeautiColorList3 = [];
       console.log(row);
       this.TableVisible = true;
       this.idx = row.id;
@@ -1051,13 +924,19 @@ export default {
           if (res.status == 200) {
             this.formEdit = res.data;
             this.formEdit.eyesImg
-              ? (this.fileList1 = [{ url: this.formEdit.eyesImg }])
+              ? (this.fileList1 = [
+                  { url: this.formEdit.eyesImg, name: "图片1" }
+                ])
               : (this.fileList1 = []);
             this.formEdit.eyesImg2
-              ? (this.fileList2 = [{ url: this.formEdit.eyesImg2 }])
+              ? (this.fileList2 = [
+                  { url: this.formEdit.eyesImg2, name: "图片2" }
+                ])
               : (this.fileList2 = []);
             this.formEdit.eyesImg3
-              ? (this.fileList3 = [{ url: this.formEdit.eyesImg3 }])
+              ? (this.fileList3 = [
+                  { url: this.formEdit.eyesImg3, name: "图片3" }
+                ])
               : (this.fileList3 = []);
           }
         });
@@ -1110,18 +989,14 @@ export default {
         // 设置文本编辑器内容
         CKEDITOR.instances.eyeDesc.setData(row.eyesDescribe);
         CKEDITOR.instances.eyeMake.setData(row.eyeMakeup);
-        CKEDITOR.instances.eyeDesc2.setData(row.eyesDescribe2);
         CKEDITOR.instances.eyeMake2.setData(row.eyeMakeup2);
-        CKEDITOR.instances.eyeDesc3.setData(row.eyesDescribe3);
         CKEDITOR.instances.eyeMake3.setData(row.eyeMakeup3);
       }, 10);
     },
     saveEdit() {
       this.formEdit.eyesDescribe = CKEDITOR.instances.eyeDesc.getData();
       this.formEdit.eyeMakeup = CKEDITOR.instances.eyeMake.getData();
-      this.formEdit.eyesDescribe2 = CKEDITOR.instances.eyeDesc2.getData();
       this.formEdit.eyeMakeup2 = CKEDITOR.instances.eyeMake2.getData();
-      this.formEdit.eyesDescribe3 = CKEDITOR.instances.eyeDesc3.getData();
       this.formEdit.eyeMakeup3 = CKEDITOR.instances.eyeMake3.getData();
       var colorId = "";
       for (let i = 0; i < this.choosedBeautiColorList.length; i++) {
@@ -1144,10 +1019,8 @@ export default {
           eyesDescribe: this.formEdit.eyesDescribe,
           eyesImg: this.formEdit.eyesImg,
           eyeMakeup: this.formEdit.eyeMakeup,
-          eyesDescribe2: this.formEdit.eyesDescribe2,
           eyesImg2: this.formEdit.eyesImg2,
           eyeMakeup2: this.formEdit.eyeMakeup2,
-          eyesDescribe3: this.formEdit.eyesDescribe3,
           eyesImg3: this.formEdit.eyesImg3,
           eyeMakeup3: this.formEdit.eyeMakeup3
         }) +
@@ -1201,6 +1074,42 @@ export default {
             }
           });
       });
+    },
+    //预览
+    handleView(row) {
+      console.log(row);
+      this.viewVisible = true;
+      // 色号数据
+      this.$axios
+        .post(
+          `/management/admin/beauty-color-to-label!comboGridlist.action`,
+          this.$qs.stringify({ labelId: row.labels, type: 1 })
+        )
+        .then(res1 => {
+          if (Object.keys(res1.data).length != 0) {
+            this.viewPageColorList = [...res1.data.rows];
+          }
+        });
+      this.$axios
+        .post(
+          `/management/admin/beauty-color-to-label!comboGridlist.action`,
+          this.$qs.stringify({ labelId: row.labels, type: 2 })
+        )
+        .then(res2 => {
+          if (Object.keys(res2.data).length != 0) {
+            this.viewPageColorList2 = [...res2.data.rows];
+          }
+        });
+      this.$axios
+        .post(
+          `/management/admin/beauty-color-to-label!comboGridlist.action`,
+          this.$qs.stringify({ labelId: row.labels, type: 3 })
+        )
+        .then(res3 => {
+          if (Object.keys(res3.data).length != 0) {
+            this.viewPageColorList3 = [...res3.data.rows];
+          }
+        });
     },
     // 色号操作
 
@@ -1278,9 +1187,14 @@ export default {
     handleRemove1(file, fileList) {},
     handleRemove2(file, fileList) {},
     handleRemove3(file, fileList) {},
+    handlePreview(file) {
+      this.img = file.url;
+      this.imgVisible = true;
+    },
     beforeUpload1(file) {
       console.log(file);
-      this.imgData1.FileName ='zmxy/uploadFiles/'+
+      this.imgData1.FileName =
+        "zmxy/uploadFiles/" +
         new Date().valueOf() +
         "_" +
         sessionStorage.getItem("id") +
@@ -1290,18 +1204,18 @@ export default {
       this.imgData1.imgFile = file;
     },
     beforeUpload2(file) {
-      this.imgData2.FileName =File.name
+      this.imgData2.FileName = File.name;
       this.imgData2.imgFile = file;
     },
     beforeUpload3(file) {
-      this.imgData3.FileName =File.name
+      this.imgData3.FileName = File.name;
       this.imgData3.imgFile = file;
     },
     handleSuccess1(res) {
       console.log(res);
-      this.formEdit.eyesImg1 = res.url;
+      this.formEdit.eyesImg = res.url;
       if (this.AddVisible) {
-        this.formAdd.eyesImg1 = res.url;
+        this.formAdd.eyesImg = res.url;
       }
     },
     handleSuccess2(res) {
@@ -1375,5 +1289,102 @@ export default {
 
 .labelChoosed span:hover {
   background: #eeeeee;
+}
+/* 产品清单预览 */
+.content {
+  width: 100%;
+  height: 770px;
+  position: relative;
+  min-width: 1000px;
+}
+.phoneBorder {
+  position: absolute;
+  width: 300px;
+  height: auto;
+  left: 5%;
+}
+.content .productBox {
+  position: absolute;
+  width: 300px;
+  height: auto;
+  display: block;
+  /* left: 60%; */
+}
+
+.content .productContent {
+  position: absolute;
+  height: 460px;
+  width: 258px;
+  top: 76px;
+  left: 6.5%;
+  overflow-y: auto;
+}
+
+.productContent .productTitle {
+  text-align: center;
+  line-height: 40px;
+  font-size: 16px;
+  border-bottom: 1px solid #ccc;
+}
+
+.productContent .productItem {
+  padding: 10px;
+  box-sizing: border-box;
+  border-bottom: 1px solid #eee;
+  position: relative;
+  padding-left: 110px;
+  min-height: 100px;
+}
+
+.productItem img {
+  position: absolute;
+  top: 15px;
+  left: 10px;
+  width: 80px;
+  height: 80px;
+}
+.pro2 {
+  left: 37%;
+}
+.content .cont2 {
+  left: 38.5%;
+}
+.pro3 {
+  left: 70%;
+}
+.content .cont3 {
+  left: 71.5%;
+}
+.productItem p:nth-of-type(1) {
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.productItem p:nth-of-type(2) {
+  font-size: 10px;
+  line-height: 16px;
+}
+.pageContent::-webkit-scrollbar,
+.productContent::-webkit-scrollbar {
+  /*滚动条整体样式*/
+  width: 3px;
+  /*高宽分别对应横竖滚动条的尺寸*/
+  height: 3px;
+}
+
+.pageContent::-webkit-scrollbar-thumb,
+.productContent::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius: 5px;
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.pageContent::-webkit-scrollbar-track,
+.productContent::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.2);
 }
 </style>

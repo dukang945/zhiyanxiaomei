@@ -61,6 +61,9 @@ import ShareDescribe from '@/components/page/ShareDescribe'
 import InterestedTest from '@/components/page/InterestedTest'
 import CategoryProblem from '@/components/page/CategoryProblem'
 import KnowledgeMes from '@/components/page/KnowledgeMes'
+import NewProduct from '@/components/page/NewProduct'
+import NewIngredient from '@/components/page/NewIngredient'
+import QuickWork from '@/components/page/QuickWork'
 
 Vue.use(Router)
 
@@ -69,7 +72,7 @@ export default new Router({
       path: '/Welcome',
       component: Welcome,
       name:'首页',
-			redirect:'workspace',
+			redirect:'quickWork',
       children: [{
           path: '/skillColumn',
 					name:'技能栏目管理',
@@ -97,7 +100,7 @@ export default new Router({
         },
         {
           path: '/advice',
-					name:'化妆建议管理',
+					name:'天气建议',
           component: Advice
         },
         {
@@ -112,7 +115,7 @@ export default new Router({
         },
         {
           path: '/brand',
-					name:'品牌管理',
+					name:'品牌',
           component: Brand,
         },
         {
@@ -122,82 +125,82 @@ export default new Router({
         },
         {
           path: '/color',
-					name:'产品色号管理',
+					name:'色号',
           component: Color
         },
         {
           path: '/constellation',
-					name:'星座管理',
+					name:'星座信息',
           component: Constellation
         },
         {
           path: '/constellationDetail',
-					name:'星座详情管理',
+					name:'星座运势',
           component: ConstellationDetail
         },
         {
           path: '/log',
-					name:'系统日志',
+					name:'登录日志',
           component: Log
         },
         {
           path: '/evaluation',
-					name:'美妆测评',
+					name:'美妆评测',
           component: Evaluation
         },
         {
           path: '/eye',
-					name:'眼部管理',
+					name:'眼部',
           component: Eye
         },
         {
           path: '/face',
-					name:'脸部管理',
+					name:'脸部',
           component: Face
         },
         {
           path: '/lip',
-					name:'唇部管理',
+					name:'唇部',
           component: Lip
         },
         {
           path: '/nose',
-					name:'鼻部管理',
+					name:'鼻部',
           component: Nose
         },
         {
           path: '/hair',
-					name:'发型管理',
+					name:'发型',
           component: Hair
         },
         {
           path: '/praise',
-					name:'夸奖的话',
+					name:'夸赞文案',
           component: Praise
         },
         {
           path: '/star',
-					name:'明星管理',
+					name:'明星相似度',
           component: Star
         },
         {
           path: '/husbandStar',
-					name:'明星夫妻',
+					name:'明星夫妻相',
           component: HusbandStar
         },
         {
           path: '/similarCelebrity',
-					name:'相似名人管理',
+					name:'相似名人',
           component: SimilarCelebrity
         },
         {
           path: '/emotion',
-					name:'AI识颜情绪管理',
+					name:'情绪检测',
           component: Emotion
         },
         {
           path: '/feedback',
-					name:'用户反馈管理',
+					name:'用户反馈',
           component: Feedback
         },
         {
@@ -207,17 +210,17 @@ export default new Router({
         },
         {
           path: '/ingredient',
-					name:'化妆品成分管理',
+					name:'成分',
           component: Ingredient
         },
         {
           path: '/issue',
-					name:'肌肤问题管理',
+					name:'功效问题',
           component: Issue
         },
         {
           path: '/keyword',
-					name:'关键词管理',
+					name:'屏蔽词',
           component: Keyword
         },
         {
@@ -227,8 +230,18 @@ export default new Router({
         },
         {
           path: '/makeup',
-					name:'化妆产品管理',
+					name:'产品',
           component: Makeup
+        },
+        {
+          path: '/newProduct',
+					name:'产品(爬取)',
+          component: NewProduct
+        },
+        {
+          path: '/newIngredient',
+					name:'成分(爬取)',
+          component: NewIngredient
         },
         {
           path: '/marking',
@@ -252,7 +265,7 @@ export default new Router({
         },
         {
           path: '/module',
-					name:'美妆模块图',
+					name:'AR试妆素材',
           component: Module
         },
         {
@@ -262,12 +275,12 @@ export default new Router({
         },
         {
           path: '/product',
-					name:'产品分类管理',
+					name:'品类',
           component: Product
         },
         {
           path: '/categoryProblem',
-					name:'产品分类问题及答案',
+					name:'化妆救急',
           component: CategoryProblem
         },
         {
@@ -277,7 +290,7 @@ export default new Router({
         },
         {
           path: '/search',
-					name:'热搜信息管理',
+					name:'热搜词',
           component: Search
         },
         {
@@ -292,7 +305,7 @@ export default new Router({
         },
         {
           path: '/teach',
-					name:'妆容教程管理',
+					name:'妆容教程',
           component: Teach
         },
         {
@@ -302,7 +315,7 @@ export default new Router({
         },
         {
           path: '/user',
-					name:'后台用户管理',
+					name:'后台用户',
           component: User,
         },
         {
@@ -312,7 +325,7 @@ export default new Router({
         },
         {
           path: '/labelCountAll',
-					name:'标签数据统计',
+					name:'标签数据',
           component: LabelCountAll,
         },
         {
@@ -322,12 +335,12 @@ export default new Router({
         },
 				{
 					path: '/beautyMakeupDataAll',
-					name:'文章数据统计',
+					name:'文章数据',
 					component: BeautyMakeupDataAll,
 				},
 				{
 					path: '/knowledgeMes',
-					name:'文章数据统计',
+					name:'AI识颜数据',
 					component: KnowledgeMes,
 				},
         {
@@ -347,23 +360,28 @@ export default new Router({
 				},
 				{
 					path:'/answer',
-					name:'答案之书管理',
+					name:'答案之书',
 					component: Answer
 				},
 				{
 					path:'/shareDescribe',
-					name:'分享描述管理',
+					name:'分享文案',
 					component: ShareDescribe
 				},
 				{
 					path:'/interestedTest',
-					name:'感兴趣内容测试图管理',
+					name:'感兴趣内容测试',
 					component: InterestedTest
 				},
 				{
 					path:'/workspace',
-					name:'工作台',
+					name:'数据总览',
 					component: Workspace
+				},
+				{
+					path:'/quickWork',
+					name:'快捷菜单',
+					component: QuickWork
 				}
       ]
     },

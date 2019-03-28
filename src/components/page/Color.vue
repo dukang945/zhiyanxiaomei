@@ -2,10 +2,10 @@
   <div>
     <div class="handle-box">
       <el-button type="primary" @click="AddVisible = true" v-has size="small">新增</el-button>
-      <el-input v-model="color_Search" placeholder="请输入搜索类容" style="width: 30%" size="small">
+      <el-input v-model="color_Search" placeholder="请输入搜索类容" style="width: 30%" size="small" @keyup.enter.native="colorSearch">
         <el-button slot="append" icon="el-icon-search" @click="colorSearch"></el-button>
       </el-input>
-      <el-dialog title="新增" :visible.sync="AddVisible">
+      <el-dialog title="新增" :visible.sync="AddVisible" :close-on-click-modal='false'>
         <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAdd">
           <el-form-item label="产品及色号名称">
             <el-input v-model="formLabelAdd.productName"></el-input>
@@ -68,12 +68,6 @@
       <el-table-column label="操作" align="center" width="250">
         <template slot-scope="scope">
           <el-button
-            @click.native.prevent="deleteRow(scope.$index, colorList)"
-            type="danger"
-            size="small"
-            v-del
-          >删除</el-button>
-          <el-button
             size="small"
             type="primary"
             @click="handleEdit(scope.$index, scope.row)"
@@ -81,7 +75,13 @@
           >编辑</el-button>
           <el-button size="small" @click="online(scope.row)" v-if="scope.row.online==1">上线</el-button>
           <el-button size="small" v-else-if="scope.row.online==0" @click="online(scope.row)">下线</el-button>
-          <el-dialog title="编辑" :visible.sync="dialogVisible">
+          <el-button
+            @click.native.prevent="deleteRow(scope.$index, colorList)"
+            type="danger"
+            size="small"
+            v-del
+          >删除</el-button>
+          <el-dialog title="编辑" :visible.sync="dialogVisible" :close-on-click-modal='false'>
             <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
               <el-form-item label="产品及色号名称">
                 <el-input v-model="formLabelAlign.productName"></el-input>

@@ -1,5 +1,4 @@
 <template>
-	<!-- <div class="login-wrap"> -->
 	<div class="login-wrap">
 		<img class="bgPic" src="../../images/loginBg.jpg">
 		<div class="ms-login">
@@ -29,8 +28,8 @@
 		data: function() {
 			return {
 				ruleForm: {
-					username: "admin",
-					password: "888888"
+					username: "",
+					password: ""
 				},
 				rules: {
 					username: [{
@@ -52,16 +51,13 @@
 					if (valid) {
 						let that = this;
 						that.$axios
-							.get("/management/admin/public!doLogin.action", {
-								params: {
-									loginName: that.ruleForm.username,
+							.post("/management/admin/public!doLogin.action", this.$qs.stringify({
+								loginName: that.ruleForm.username,
 									password: that.ruleForm.password,
 									rememberMe: "1"
-								}
-							})
+							}))
 							.then(function(res) {
-								if (res.status == 200) {
-									console.log(res)
+								if (res.data.status == 1) {
 									let menuList = res.data.menu;
 									that.$router.push('/welcome');
 									sessionStorage.setItem("ms_username", that.ruleForm.username);
@@ -116,9 +112,9 @@
 		width: 350px;
 		margin: -190px 0 0 -175px;
 		border-radius: 5px;
-		background: rgba(64, 158, 255, 0.3);
+		background: rgba(0, 0, 0, 0.15);
 		overflow: hidden;
-		z-index: 9;
+		z-index: 999;
 	}
 
 	.ms-content {

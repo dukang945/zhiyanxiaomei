@@ -3,7 +3,7 @@
     <div class="handle-box">
       <el-button type="primary" @click="AddVisible = true" v-has size="small">新增</el-button>
       <el-button type="primary" @click="refresh" v-has size="small">刷新缓存</el-button>
-      <el-dialog title="新增" :visible.sync="AddVisible" width="80%" @opened="addOPen">
+      <el-dialog title="新增" :visible.sync="AddVisible" width="80%" @opened="addOPen" :close-on-click-modal='false'>
         <el-form :model="formAdd">
           <el-form-item label="答案文本" label-width="120px">
             <el-input v-model="formAdd.answerBook"></el-input>
@@ -30,7 +30,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog title="编辑" :visible.sync="EditVisible" width="80%" @opened="addOPen">
+    <el-dialog title="编辑" :visible.sync="EditVisible" width="80%" @opened="addOPen" :close-on-click-modal='false'>
         <el-form :model="formEdit">
           <el-form-item label="答案文本" label-width="120px">
             <el-input v-model="formEdit.answerBook"></el-input>

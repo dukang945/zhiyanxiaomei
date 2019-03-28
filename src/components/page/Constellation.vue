@@ -2,6 +2,9 @@
   <div class="constellationContent">
     <div class="handle-box">
       <el-button type="primary" @click="AddVisible = true" size="small">新增</el-button>
+      <el-dialog title="图片预览" :visible.sync="imgVisible" append-to-body>
+      <img :src="img" alt style="width:100%">
+    </el-dialog>
       <el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
         <el-form
           :label-position="labelPosition"
@@ -39,6 +42,7 @@
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
               :data="imgData"
+              :on-preview="handlePreview"
               :before-upload="beforeUpload"
               :on-success="uploadSuccess"
               :on-remove="handleRemove"
@@ -53,6 +57,7 @@
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
               :data="imgData1"
+              :on-preview="handlePreview"
               :before-upload="beforeUpload1"
               :on-success="uploadSuccess1"
               :on-remove="handleRemove1"
@@ -85,7 +90,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+    <el-dialog title="编辑" :visible.sync="dialogVisible" width="30%" :before-close="handleClose" :close-on-click-modal='false'>
       <el-form
         :label-position="labelPosition"
         :rules="rules"
@@ -121,6 +126,7 @@
           <el-upload
             action="/management/admin/kcupload!uploadImage.action?type=goods_path"
             :data="imgData"
+            :on-preview="handlePreview"
             :before-upload="beforeUpload"
             :on-success="uploadSuccess"
             :on-remove="handleRemove"
@@ -134,6 +140,7 @@
           <el-upload
             action="/management/admin/kcupload!uploadImage.action?type=goods_path"
             :data="imgData1"
+            :on-preview="handlePreview"
             :before-upload="beforeUpload1"
             :on-success="uploadSuccess1"
             :on-remove="handleRemove1"
@@ -161,6 +168,8 @@ export default {
       tableData: [],
       dialogVisible: false,
       AddVisible: false,
+      imgVisible: false,
+      img:'',
       labelPosition: "left",
       idx: -1,
       editFileList: [],
@@ -215,8 +224,8 @@ export default {
         if(res.status==200){
           console.log(res)
           this.formLabelAlign = res.data
-          this.editFileList=[{url:res.data.image?res.data.image:''}]
-          this.editFileList1=[{url:res.data.detailsImage?res.data.detailsImage:''}]
+          this.editFileList=[{url:res.data.image?res.data.image:'',name:"星座"}]
+          this.editFileList1=[{url:res.data.detailsImage?res.data.detailsImage:'',name:"教程"}]
         }
       })
 	  
@@ -324,6 +333,10 @@ export default {
       this.getData(this.page, val);
     },
     // 操作上传图片(需要图片上传地址)
+    handlePreview(file) {
+      this.img = file.url;
+      this.imgVisible = true;
+    },
     beforeUpload(file) {
       console.log(file);
       this.imgData.FileName = file.name;

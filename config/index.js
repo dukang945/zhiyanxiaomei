@@ -12,11 +12,11 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/management': {
-        target: 'http://localhost:8080',
+        // target: 'http://192.168.11.241:8082',
         // target: 'http://192.168.12.225:8080',//xierui
         // target: 'http://192.168.12.226:8080',//liqinxiang
         // target: 'http://192.168.12.227:8082',//fuxiaolong
-        // target: 'http://192.168.11.241:8082',
+        target: 'http://192.168.11.241:8082',
         changeOrigin: true,
         pathRewrite: {
           '^/management': '/management'

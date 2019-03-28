@@ -17,7 +17,7 @@
             @click="handleClick(scope.row)"
             v-has
           >查看历史数据</el-button>
-          <el-dialog title="历史数据" :visible.sync="TableVisible" width="80%">
+          <el-dialog title="历史数据" :visible.sync="TableVisible" width="80%" :close-on-click-modal='false'>
             <div class="search">
               <el-date-picker
                 v-model="dateVal"

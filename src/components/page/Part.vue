@@ -101,6 +101,7 @@
                 highlight-current
                 default-expand-all
                 :default-checked-keys="checkList"
+                check-strictly
               ></el-tree>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -285,7 +286,6 @@ export default {
         )
         .then(res => {
           if (res.status == 200) {
-            console.log(res.data);
             this.checkList = res.data.split(",");
             this.dialogVisible = true;
           }
@@ -308,7 +308,6 @@ export default {
         )
         .then(res => {
           if (res.status == 200) {
-            console.log(res);
             this.dialogVisible = false;
             this.$message.success(`修改成功`);
           }

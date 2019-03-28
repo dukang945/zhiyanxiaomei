@@ -28,19 +28,19 @@
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
-            @click.native.prevent="deleteRow(scope.$index, mainList)"
-            type="danger"
-            size="small"
-            class="el-icon-delete"
-            v-del
-          >删除</el-button>
-          <el-button
             size="small"
             type="primary"
             icon="el-icon-edit"
             @click="handleEdit(scope.$index, scope.row)"
             v-has
           >编辑</el-button>
+          <el-button
+            @click.native.prevent="deleteRow(scope.$index, mainList)"
+            type="danger"
+            size="small"
+            class="el-icon-delete"
+            v-del
+          >删除</el-button>
           <el-dialog
             title="编辑"
             :visible.sync="dialogVisible"
