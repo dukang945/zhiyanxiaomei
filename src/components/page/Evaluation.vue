@@ -8,24 +8,28 @@
 					<el-button type="primary" size='small' @click="batchOffline">批量下线</el-button>
 					<el-button type="primary" size='small' @click="batchLabel">批量加标签</el-button>
 					<el-button type="danger" size='small' @click="batchDelete">批量删除</el-button>
+					<el-button type="primary" plain size='small' @click="freshSearch">刷新ElasticSearch</el-button>
+					<el-button type="primary" plain size='small' @click="freshH5">刷新HTML</el-button>
 					<el-dialog title="新增测评" :visible="AddVisible" width="60%" @close='AddVisible=false;cancelAdd()'>
 						<el-form :label-position="labelPosition" label-width="120px" :model="formLabelAdd">
 							<el-form-item label="标题">
 								<el-input v-model="formLabelAdd.name"></el-input>
 							</el-form-item>
 							<el-form-item label="搜索标签">
-								<el-input v-model='searchLabel' @change='getLabelList' clearable></el-input>
+								<el-input v-model='searchLabel' @input='getLabelList' clearable></el-input>
 								<el-table :data="labelTableData" @row-click='selectLabel' border style="width: 100%" v-loading="loading" v-if='searchLabel'
 								 class='labelTable'>
 									<el-table-column prop="id" label="id" width="50" align='center'>
 									</el-table-column>
 									<el-table-column prop="name" label="标题" align='center'>
 									</el-table-column>
+									<el-table-column prop="enname" label="英文标题" align='center'>
+									</el-table-column>
 									<el-table-column prop="labelName" label="上级标签" align='center'>
 									</el-table-column>
 								</el-table>
 								<div class="labelChoosed">
-									已选标签：<span v-for="(item,key) in choosedLabelList">{{item.name}}
+									已选标签：<span v-for="(item,key) in choosedLabelList">{{item.name?item.name:item.enname}}
 										<i class="el-icon-error" @click="deleteLabel(key)"></i></span>
 								</div>
 							</el-form-item>
@@ -57,7 +61,13 @@
 									<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
 								</el-upload>
 							</el-form-item>
-
+							<el-form-item label="视频">
+								<el-upload action="/management/admin/kcupload!uploadVideo.action?type=makeupvideo_path&dir=media" :data='videoData'
+								 :before-upload='beforeUploadVideo' :on-success="uploadSuccessVideo" :on-remove="handleRemoveVideo">
+									<el-button size="small" type="primary" @click='videoHandle("add")'>点击上传</el-button>
+									<span slot="tip" class="el-upload__tip" style="margin-left: 20px;">只能上传mp4或flv格式文件，为保证速度，请尽量压缩文件</span>
+								</el-upload>
+							</el-form-item>
 							<el-form-item label="编辑页面内容">
 								<el-row>
 									<el-col :span='24'>
@@ -136,18 +146,20 @@
 					<el-input v-model="editFormData.name"></el-input>
 				</el-form-item>
 				<el-form-item label="搜索标签">
-					<el-input v-model='searchLabel' @change='getLabelList' clearable></el-input>
+					<el-input v-model='searchLabel' @input='getLabelList' clearable></el-input>
 					<el-table :data="labelTableData" @row-click='selectLabel' border style="width: 100%" v-loading="loading" v-if='searchLabel'
 					 class='labelTable'>
 						<el-table-column prop="id" label="id" width="50" align='center'>
 						</el-table-column>
 						<el-table-column prop="name" label="标题" align='center'>
 						</el-table-column>
+						<el-table-column prop="enname" label="英文标题" align='center'>
+						</el-table-column>
 						<el-table-column prop="labelName" label="上级标签" align='center'>
 						</el-table-column>
 					</el-table>
 					<div class="labelChoosed">
-						已选标签：<span v-for="(item,key) in choosedLabelList">{{item.name}}
+						已选标签：<span v-for="(item,key) in choosedLabelList">{{item.name?item.name:item.enname}}
 							<i class="el-icon-error" @click="deleteLabel(key)"></i></span>
 					</div>
 				</el-form-item>
@@ -177,6 +189,13 @@
 					 :file-list="editBannerPicFileList" list-type="picture">
 						<el-button size="small" type="primary">点击上传</el-button>
 						<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+					</el-upload>
+				</el-form-item>
+				<el-form-item label="视频">
+					<el-upload action="/management/admin/kcupload!uploadVideo.action?type=makeupvideo_path&dir=media" :data='videoData'
+					 :before-upload='beforeUploadVideo' :on-success="uploadSuccessVideo" :on-remove="handleRemoveVideo" :file-list='editVideo'>
+						<el-button size="small" type="primary" @click='videoHandle("edit")'>点击上传</el-button>
+						<span slot="tip" class="el-upload__tip" style="margin-left: 20px;">只能上传mp4或flv格式文件，为保证速度，请尽量压缩文件</span>
 					</el-upload>
 				</el-form-item>
 				<el-form-item label="编辑页面内容">
@@ -351,11 +370,13 @@
 						</el-table-column>
 						<el-table-column prop="name" label="标题" align='center'>
 						</el-table-column>
+						<el-table-column prop="enname" label="英文标题" align='center'>
+						</el-table-column>
 						<el-table-column prop="labelName" label="上级标签" align='center'>
 						</el-table-column>
 					</el-table>
 					<div class="labelChoosed">
-						已选标签：<span v-for="(item,key) in choosedLabelList">{{item.name}}
+						已选标签：<span v-for="(item,key) in choosedLabelList">{{item.name?item.name:item.enname}}
 							<i class="el-icon-error" @click="deleteLabel(key)"></i></span>
 					</div>
 				</el-form-item>
@@ -437,6 +458,10 @@
 					FileName: '',
 					imgFile: null
 				},
+				videoData:{
+					imgFileFileName:'',
+					imgFile: null
+				},
 				tempImgUrl: '',
 				tempListImgUrl: '',
 				tempBannerImgUrl: '',
@@ -446,6 +471,7 @@
 				addFileList: [],
 				editListPicFileList: [],
 				editBannerPicFileList: [],
+				editVideo:[],
 				dialogImageUrl: '',
 				imgDialogVisible: false,
 				productRowId: '', //点击产品管理行id
@@ -478,6 +504,7 @@
 					value: 5,
 					text: "审核驳回"
 				}, ], // 状态列表（用于筛选）
+				videoPlace:''
 			}
 		},
 		components: {
@@ -663,6 +690,16 @@
 					this.$message.error('没有选中的行')
 				}
 			},
+			freshSearch(){
+// 				this.$axios.get('/management/admin/beauty-details!refreshHTML.action').then(res=>{
+// 					console.log(res)
+// 				})
+			},
+			freshH5(){
+// 				this.$axios.get('/management/admin/beauty-details!refreshHTML.action').then(res=>{
+// 					console.log(res)
+// 				})
+			},
 			// 批量增加标签
 			batchLabel() {
 				if (this.checkedRowId) {
@@ -783,6 +820,30 @@
 					imgFile: null
 				}
 			},
+			// 视频上传
+			videoHandle(str){
+				this.videoPlace=str;
+			},
+			beforeUploadVideo(file) {
+				this.videoData.imgFileFileName = file.name;
+				this.videoData.imgFile = file
+				console.log(file)
+			},
+			handleRemoveVideo(file, fileList) {
+				// this.tempImgUrl = '';
+				this.formLabelAdd.videoUrl='';
+				this.editFormData.videoUrl='';
+			},
+			uploadSuccessVideo(res, file, fileList) {
+				this.videoData.imgFileFileName = '';
+				this.videoData.imgFile = null
+				if(this.videoPlace=='add'){
+					this.formLabelAdd.videoUrl=res.url
+				}
+				if(this.videoPlace=='edit'){
+					this.editFormData.videoUrl=res.url
+				}
+			},
 			// 表格操作
 			// 编辑
 			openEdit(){
@@ -811,7 +872,7 @@
 				}, 500);
 				that.editFormData = tempObj
 				// 显示图片
-				let testExp = /http.*?(\.png|\.jpg)/gi;
+				let testExp = /http.*?(\.png|\.jpg|\.gif|\.jpeg)/gi;
 				if (row.image) {
 					this.editListPicFileList = [{
 						name: '列表图片',
@@ -832,9 +893,17 @@
 					for (let i = 0; i < tempIdArr.length; i++) {
 						this.choosedLabelList.push({
 							id: tempIdArr[i],
-							name: tempNameArr[i]
+							name: tempNameArr[i],
+							// enname:
 						})
 					}
+				}
+				// 显示视频截图
+				if(row.videoUrl){
+					this.editVideo=[{
+						name:'评测视频',
+						url:row.videoUrl.split('|')[1]
+					}]
 				}
 			},
 			// 取消编辑

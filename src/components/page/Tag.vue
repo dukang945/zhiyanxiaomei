@@ -4,6 +4,7 @@
 			<el-row>
 				<el-col :span='6'>
 					<el-button type="primary" @click="AddVisible = true" size='small'>新增</el-button>
+					<el-button type="primary" plain size='small'>一键缓存</el-button>
 					<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
 						<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAdd" label-width="100px" :model="formLabelAdd">
 							<el-form-item label="标签名称">
@@ -472,7 +473,7 @@
 <style scoped>
 	.tableBox {
 		background-color: #fff;
-		max-height: 717px;
+		max-height: 720px;
 		overflow-y: auto;
 	}
 	.tableBox::-webkit-scrollbar {
