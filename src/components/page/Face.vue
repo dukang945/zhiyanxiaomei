@@ -12,8 +12,8 @@
             <div class="productTitle">基础画法</div>
             <div class="productItem" v-for="(item,index) in viewPageColorList">
               <img :src="getImgUrl(item.colorImage)" alt>
-              <p>{{item.name}} {{item.colorPrice}}</p>
-              <p>参考价格 ：￥{{item.price}}</p>
+              <p>{{item.name}} {{item.specification}}</p>
+              <p>参考价格 ：￥{{item.colorPrice}}</p>
             </div>
           </div>
           
@@ -867,6 +867,7 @@ export default {
           this.$qs.stringify({ labelId: row.labels, type: 1 })
         )
         .then(res1 => {
+          console.log(res1)
           if (Object.keys(res1.data).length != 0) {
             this.viewPageColorList = [...res1.data.rows];
           }

@@ -279,7 +279,7 @@ html{
 			.userinfo {
 				width: 120px;
 				color: #fff;
-				margin-top: 45px;
+				margin-top: 40px;
 				float: right;
 
 				span {

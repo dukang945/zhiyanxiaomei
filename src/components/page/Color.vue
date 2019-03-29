@@ -6,7 +6,7 @@
         <el-button slot="append" icon="el-icon-search" @click="colorSearch"></el-button>
       </el-input>
       <el-dialog title="新增" :visible.sync="AddVisible" :close-on-click-modal='false'>
-        <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAdd">
+        <el-form :label-position="labelPosition" label-width="110px" :model="formLabelAdd">
           <el-form-item label="产品及色号名称">
             <el-input v-model="formLabelAdd.productName"></el-input>
           </el-form-item>
@@ -82,7 +82,7 @@
             v-del
           >删除</el-button>
           <el-dialog title="编辑" :visible.sync="dialogVisible" :close-on-click-modal='false'>
-            <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
+            <el-form :label-position="labelPosition" label-width="110px" :model="formLabelAlign">
               <el-form-item label="产品及色号名称">
                 <el-input v-model="formLabelAlign.productName"></el-input>
               </el-form-item>
@@ -130,6 +130,9 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-dialog title="图片预览" :visible.sync="imgVisible" append-to-body>
+					<img :src="img" alt="" style="width:100%">
+				</el-dialog>
     <Pagination :totalNum="totalNum1" @change_Page="changePage1" @change_Size="changeSize1"></Pagination>
   </div>
 </template>
@@ -157,7 +160,9 @@ export default {
       totalNum3: 1,
       dialogVisible: false,
       AddVisible: false,
+      imgVisible: false,
       value: "",
+      img:"",
       fileList: [],
       fileList1: [],
       labelPosition: "left",
@@ -255,7 +260,7 @@ export default {
             if (srcArr) {
               for (let i = 0; i < srcArr.length; i++) {
                 this.fileList.push({
-                  url: srcArr[i].split('"')[0]
+                  url: srcArr[i].split('"')[0],name:'产品图片'
                 });
               }
             }
@@ -416,7 +421,8 @@ export default {
       // this.formLabelAdd.image =''
     },
     handlePreview(file) {
-      console.log(file);
+      	this.img= file.url
+				this.imgVisible = true
     },
     beforeUpload(file) {
       this.imgData.FileName = file.name;
