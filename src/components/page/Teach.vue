@@ -8,6 +8,8 @@
 					<el-button type="primary" size='small' @click="batchOffline">批量下线</el-button>
 					<el-button type="primary" size='small' @click="batchLabel">批量加标签</el-button>
 					<el-button type="danger" size='small' @click="batchDelete">批量删除</el-button>
+					<el-button type="primary" plain size='small' @click="freshSearch">刷新ElasticSearch</el-button>
+					<el-button type="primary" plain size='small' @click="freshH5">刷新HTML</el-button>
 					<!-- <el-button type="primary" size='small' @click="tableToExcel" plain>导出为Excel</el-button> -->
 					<el-dialog title="新增教程" :visible.sync="AddVisible" width="50%" :before-close="handleClose" @close='closeAddDialog'>
 						<el-form label-position="right" ref='addForm' label-width="120px" :model="formLabelAdd">
@@ -28,7 +30,7 @@
 									</el-table-column>
 								</el-table>
 								<div class="labelChoosed">
-									已选标签：<span v-for="(item,key) in choosedLabelList">{{item.name}}
+									已选标签：<span v-for="(item,key) in choosedLabelList">{{item.name?item.name:item.enname}}
 										<i class="el-icon-error" @click="deleteLabel(key)"></i></span>
 								</div>
 							</el-form-item>
@@ -66,7 +68,7 @@
 							<el-form-item label="视频">
 								<el-upload action="/management/admin/kcupload!uploadVideo.action?type=makeupvideo_path&dir=media" :data='videoData'
 								 :before-upload='beforeUploadVideo' :on-success="uploadSuccessVideo" :on-remove="handleRemoveVideo">
-									<el-button size="small" type="primary">点击上传</el-button>
+									<el-button size="small" type="primary" @click='videoHandle("add")'>点击上传</el-button>
 									<span slot="tip" class="el-upload__tip" style="margin-left: 20px;">只能上传mp4或flv格式文件，为保证速度，请尽量压缩文件</span>
 								</el-upload>
 							</el-form-item>
@@ -196,7 +198,7 @@
 						</el-table-column>
 					</el-table>
 					<div class="labelChoosed">
-						已选标签：<span v-for="(item,key) in choosedLabelList">{{item.name}}
+						已选标签：<span v-for="(item,key) in choosedLabelList">{{item.name?item.name:item.enname}}
 							<i class="el-icon-error" @click="deleteLabel(key)"></i></span>
 					</div>
 				</el-form-item>
@@ -233,8 +235,8 @@
 				</el-form-item>
 				<el-form-item label="视频">
 					<el-upload action="/management/admin/kcupload!uploadVideo.action?type=makeupvideo_path&dir=media"
-					 :before-upload='beforeUploadVideo' :on-success="uploadSuccessVideo" :on-remove="handleRemoveVideo" :file-list='editVideo'>
-						<el-button size="small" type="primary">点击上传</el-button>
+					 :before-upload='beforeUploadVideo' :on-success="uploadSuccessVideo" :on-remove="handleRemoveVideo" :file-list='editVideo' :data='videoData'>
+						<el-button size="small" type="primary" @click='videoHandle("edit")'>点击上传</el-button>
 						<span slot="tip" class="el-upload__tip" style="margin-left: 20px;">只能上传mp4或flv格式文件，为保证速度，请尽量压缩文件</span>
 					</el-upload>
 				</el-form-item>
@@ -435,7 +437,7 @@
 						<p>{{viewPageData.name}}</p>
 					</div>
 					<div style="clear: both;"></div>
-					<div id="time"><span>{{getTime(1,1,viewPageData.createTime).split(" ")[0]}}</span><span>视频来源：{{viewPageData.original==0?'网络':'原创'}}</span></div>
+					<div id="time"><span>{{getTime(1,1,viewPageData.createTime).split(" ")[0]}}</span><span>视频来源：{{viewPageData.source?viewPageData.source:'原创'}}</span></div>
 					<div class="rate">
 						<p>难度</p>
 						<ul>
@@ -451,7 +453,7 @@
 					</div>
 					<div style="clear: both;"></div>
 					<div v-for='(item,index) in viewPageData.beautyDetailsRelationList'>
-						<div>
+						<div v-if="item.procedureName!='结语'">
 							<div class="angled stripes"></div>
 							<div class="column">
 								<p :class="index+1>9?'wordart wordart1':'wordart'">{{index+1}}</p>
@@ -460,10 +462,14 @@
 								<img :src='getTitleImg(item.procedureName)'>
 							</div>
 						</div>
-						<div class="intro" v-for="(childrenItem,key) in item.childrenProcedureList" :key='childrenItem.id'>
+						<div class="intro" v-for="(childrenItem,key) in item.childrenProcedureList" :key='childrenItem.id' v-if="item.procedureName!='结语'">
 							<div class="sequence" v-if='item.childrenProcedureList.length>1&&childrenItem.desSort!=98&&childrenItem.desSort!=99'>
 								<div class="sequence1"></div><span>{{(key+1)>9?(key+1):'0'+(key+1)}}</span>
 							</div>
+							<p>{{childrenItem.procedureDes}}</p>
+							<img :src="itemImg" v-for="(itemImg, ind) in childrenItem.procedureImg">
+						</div>
+						<div class="intro" v-for="(childrenItem,key) in item.childrenProcedureList" :key='childrenItem.id' v-if="item.procedureName=='结语'">
 							<p>{{childrenItem.procedureDes}}</p>
 							<img :src="itemImg" v-for="(itemImg, ind) in childrenItem.procedureImg">
 						</div>
@@ -498,7 +504,7 @@
 						</el-table-column>
 					</el-table>
 					<div class="labelChoosed">
-						已选标签：<span v-for="(item,key) in choosedLabelList">{{item.name}}
+						已选标签：<span v-for="(item,key) in choosedLabelList">{{item.name?item.name:item.enname}}
 							<i class="el-icon-error" @click="deleteLabel(key)"></i></span>
 					</div>
 				</el-form-item>
@@ -721,6 +727,7 @@
 					value: 5,
 					text: "审核驳回"
 				}, ], // 状态列表（用于筛选）
+				videoPlace:''
 			}
 		},
 		components: {
@@ -744,7 +751,7 @@
 				}
 			},
 			getImgUrl(str) {
-				let testExp = /http.*?(\.png|\.jpg|\.gif)/gi;
+				let testExp = /http.*?(\.png|\.jpg|\.gif|\.jpeg)/gi;
 				if (str) {
 					return str.match(testExp)[0]
 				}
@@ -789,7 +796,8 @@
 					default:
 						break;
 				}
-				return '../../../static/stepImg/' + imgStr + '.png'
+				return '../../../static/stepImg/' + imgStr + '.png'  // dev开发环境
+				// return './static/stepImg/' + imgStr + '.png'  //pro打包环境
 			},
 			closeAddDialog() {
 				this.formLabelAdd = {
@@ -1073,7 +1081,16 @@
 			tableToExcel() {
 
 			},
-
+			freshSearch(){
+// 				this.$axios.get('/management/admin/beauty-details!refreshHTML.action').then(res=>{
+// 					console.log(res)
+// 				})
+			},
+			freshH5(){
+// 				this.$axios.get('/management/admin/beauty-details!refreshHTML.action').then(res=>{
+// 					console.log(res)
+// 				})
+			},
 			// 批量增加标签
 			batchLabel() {
 				if (this.checkedRowId) {
@@ -1147,11 +1164,17 @@
 			},
 			uploadSuccess(res, file, fileList) {
 				this.tempImgUrl = res.url;
+				console.log(this.editFormData.beautyDetailsRelationList)
 				// 判断图片保存位置
 				if (this.imgPlace.indexOf('addImg') > -1) {
 					this.formLabelAdd.image = res.url;
 				} else if (this.imgPlace.indexOf('addMiniStep') > -1) {
 					this.formLabelAdd.beautyDetailsRelationList[(this.imgPlace.split('-')[1])].childrenProcedureList[(this.imgPlace.split(
+						'-')[2])].procedureImg.push(res.url);
+				}else if(this.imgPlace.indexOf('editImg') > -1){
+					this.editFormData.image = res.url;
+				}else if(this.imgPlace.indexOf('editMiniStep') > -1){
+					this.editFormData.beautyDetailsRelationList[(this.imgPlace.split('-')[1])].childrenProcedureList[(this.imgPlace.split(
 						'-')[2])].procedureImg.push(res.url);
 				}
 				// 清空上传图片参数
@@ -1161,6 +1184,9 @@
 				}
 			},
 			// 视频上传
+			videoHandle(str){
+				this.videoPlace=str;
+			},
 			beforeUploadVideo(file) {
 				this.videoData.imgFileFileName = file.name;
 				this.videoData.imgFile = file
@@ -1168,16 +1194,19 @@
 			},
 			handleRemoveVideo(file, fileList) {
 				// this.tempImgUrl = '';
-				this.formLabelAdd.videoUrl=''
-				console.log(file)
+				this.formLabelAdd.videoUrl='';
+				this.editFormData.videoUrl='';
 			},
 			uploadSuccessVideo(res, file, fileList) {
+				console.log(fileList)
 				this.videoData.imgFileFileName = '';
 				this.videoData.imgFile = null
-				this.formLabelAdd.videoUrl=res.data
-				// 清空上传图片参数
-				console.log(res)
-				console.log(file)
+				if(this.videoPlace=='add'){
+					this.formLabelAdd.videoUrl=res.url
+				}
+				if(this.videoPlace=='edit'){
+					this.editFormData.videoUrl=res.url
+				}
 			},
 			// 表格操作
 			// 编辑
@@ -1185,6 +1214,7 @@
 				console.log(row)
 				this.stepEditList = [];
 				this.editStepfileList = [];
+				this.editVideo=[]
 				// 获取输入框数据
 				var that = this;
 				that.editDialogVisible = true;
@@ -1240,11 +1270,18 @@
 					}
 				})
 				// 显示图片
-				let testExp = /http.*?(\.png|\.jpg)/gi;
+				let testExp = /http.*?(\.png|\.jpg|\.gif|\.jpeg)/gi;
 				if (row.image) {
 					this.editFileList = [{
 						name: '教程图片',
 						url: row.image.match(testExp)[0]
+					}]
+				}
+				// 显示视频截图
+				if(row.videoUrl){
+					this.editVideo=[{
+						name:'教程视频',
+						url:row.videoUrl.split('|')[1]
 					}]
 				}
 			},
@@ -1342,6 +1379,10 @@
 							this.$message.error('好像出了点问题-.-！')
 						}
 					})
+					
+					
+					
+					
 				// 				var testObj = {};
 				// 				for (var key in this.editFormData) {
 				// 					if (key != 'labelId' && key != 'productColor' && key != 'lableId' && key != 'id') {
@@ -1762,9 +1803,19 @@
 				this.teachStepValue = activeName;
 				this.stepList = tabs.filter(tab => tab.name !== targetName);
 			},
+			// 删除编辑大步骤
 			removeEditTab(targetName) {
 				let tabs = this.stepEditList;
 				let activeName = this.teachStepValue;
+				let tempIndex=0;
+				tabs.forEach((item,index)=>{
+					if(item.name == targetName){
+						tempIndex=index
+					}
+				})
+				console.log(tempIndex);
+				this.editFormData.beautyDetailsRelationList.splice(tempIndex,1);
+				console.log(this.editFormData.beautyDetailsRelationList)
 				if (activeName === targetName) {
 					tabs.forEach((tab, index) => {
 						if (tab.name === targetName) {

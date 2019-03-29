@@ -18,14 +18,21 @@
 		},
 		props: ['path'],
 		watch: {
-			path(val) {
+			editableTabs2(val) {
+				console.log(val)
+				if ((val.length == 1 && val[0].name != '/quickWork')) {
+					this.editableTabs2.unshift({
+						name: '/quickWork',
+						title: '快捷菜单'
+					})
+				}
 			}
 		},
 		methods: {
 			clickTab(val) {
 				let path = val.name;
 				this.$router.push(path);
-				this.$emit('showPath',path)
+				this.$emit('showPath', path)
 			},
 			addTab(path, pathName) {
 				let tempArr = this.editableTabs2.map(item => {
@@ -45,14 +52,10 @@
 				}
 			},
 			removeTab(targetName) {
+				console.log(targetName)
 				let tabs = [...this.editableTabs2];
 				let activeName = this.editableTabsValue2;
-				if (tabs.length == 1) {
-					this.$router.push('/workspace');
-					this.editableTabs2=[{
-						title: '工作台',
-						name: 'workspace'
-					}];
+				if (targetName == '/quickWork') {
 					return
 				}
 				var tempIndex = -1;
