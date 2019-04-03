@@ -58,7 +58,7 @@ export default {
     getRegisteredList(page, row) {
       this.$axios
         .get("/management/admin/registered-user!list.action", {
-          params: { page, row }
+          params: { page, rows:row }
         })
         .then(res => {
           if (res.status == 200) {
@@ -69,6 +69,7 @@ export default {
         });
     },
     handleSizeChange(val) {
+      console.log(val)
       this.row = val;
       this.getRegisteredList(this.page, this.row);
     },

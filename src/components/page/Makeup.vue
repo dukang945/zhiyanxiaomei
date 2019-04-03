@@ -136,12 +136,12 @@
       </el-table-column>
       <el-table-column prop="name" label="产品名称" align="center"></el-table-column>
       <el-table-column prop="brandName" label="品牌名称" align="center"></el-table-column>
-      <el-table-column prop="status" label="状态" align="center">
+      <!-- <el-table-column prop="status" label="状态" align="center">
         <template slot-scope="scope">
           <el-tag type="success" v-if="scope.row.online==0">上线</el-tag>
           <el-tag type="danger" v-else-if="scope.row.online==1">下线</el-tag>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column prop="creatUser" label="操作人" align="center"></el-table-column>
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
@@ -151,8 +151,8 @@
             @click="handleEdit(scope.$index, scope.row)"
             v-has
           >编辑</el-button>
-          <el-button size="small" @click="online(scope.row)" v-if="scope.row.online==1">上线</el-button>
-          <el-button size="small" v-else-if="scope.row.online==0" @click="online(scope.row)">下线</el-button>
+          <!-- <el-button size="small" @click="online(scope.row)" v-if="scope.row.online==1">上线</el-button>
+          <el-button size="small" v-else-if="scope.row.online==0" @click="online(scope.row)">下线</el-button> -->
           <el-button
             @click.native.prevent="deleteRow(scope.$index, makeupList)"
             type="danger"
@@ -502,9 +502,12 @@ export default {
             }`
           )
           .then(res => {
-            if (res.status == 200) {
+            if (res.status == 200 && res.data.success==true) {
+              console.log(res)
               this.$message.success("删除成功");
               this.getMakeupList();
+            }else{
+              this.$message.error('该产品已绑定色号,请下线后在执行删除操作!!')
             }
           });
       });

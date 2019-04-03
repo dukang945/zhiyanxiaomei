@@ -39,14 +39,6 @@
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
-            @click.native.prevent="deleteRow(scope.$index, partList)"
-            type="danger"
-            size="small"
-            class="el-icon-delete"
-            v-if="scope.row.id!=1&scope.row.id!=2&scope.row.id!=3"
-            v-del
-          >删除</el-button>
-          <el-button
             size="small"
             type="primary"
             icon="el-icon-edit"
@@ -54,13 +46,20 @@
             v-if="scope.row.id!=1&scope.row.id!=2&scope.row.id!=3"
             v-has
           >编辑</el-button>
-          
           <el-button
             size="small"
             type="success"
             icon="el-icon-share"
             @click="handleAllot(scope.$index, scope.row)"
           >权限分配</el-button>
+          <el-button
+            @click.native.prevent="deleteRow(scope.$index, partList)"
+            type="danger"
+            size="small"
+            class="el-icon-delete"
+            v-if="scope.row.id!=1&scope.row.id!=2&scope.row.id!=3"
+            v-del
+          >删除</el-button>
           <el-dialog title="角色分配资源" :visible.sync="editVisible" width="30%">
              <el-form
           :label-position="labelPosition"

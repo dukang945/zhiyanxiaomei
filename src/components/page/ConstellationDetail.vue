@@ -14,7 +14,13 @@
         placeholder="选择日期"
         size="small"
       ></el-date-picker>
-      <el-dialog title="新增" :visible.sync="AddVisible" width="50%" :before-close="handleClose" :close-on-click-modal='false'>
+      <el-dialog
+        title="新增"
+        :visible.sync="AddVisible"
+        width="50%"
+        :before-close="handleClose"
+        :close-on-click-modal="false"
+      >
         <el-form
           :label-position="labelPosition"
           label-width="150px"
@@ -79,14 +85,27 @@
         </span>
       </el-dialog>
     </div>
-    <el-table :data="tableData" border style="width: 100%" @selection-change="handleSelectionChange">
+    <el-table
+      :data="tableData"
+      border
+      style="width: 100%"
+      @selection-change="handleSelectionChange"
+      @filter-change="filterTag"
+    >
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="id" label="编号" width="100" align="center"></el-table-column>
       <el-table-column prop="constellation" label="星座名(日期-日期)" width="250" align="center"></el-table-column>
       <el-table-column prop="date" label="日期" width="200" align="center"></el-table-column>
       <el-table-column prop="luckScore" label="今日运势分数" width="120" align="center"></el-table-column>
       <el-table-column prop="details" label="今日运势详情" align="center" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="status" label="状态" align="center" width="100">
+      <el-table-column
+        prop="status"
+        label="状态"
+        align="center"
+        width="100"
+        :filters="[{ text: '上线', value: '0' }, { text: '下线', value: '1' }]"
+        
+      >
         <template slot-scope="scope">
           <el-tag type="success" v-if="scope.row.online==0">上线</el-tag>
           <el-tag type="danger" v-else-if="scope.row.online==1">下线</el-tag>
@@ -95,7 +114,6 @@
       <el-table-column prop="creatUser" label="创建人" width="120" align="center"></el-table-column>
       <el-table-column label="操作" width="300" align="center">
         <template slot-scope="scope">
-          
           <el-button type="primary" size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
           <el-button size="small" @click="online(scope.row)" v-if="scope.row.online==1">上线</el-button>
           <el-button size="small" v-else-if="scope.row.online==0" @click="online(scope.row)">下线</el-button>
@@ -104,79 +122,87 @@
             size="small"
             type="danger"
           >删除</el-button>
-         
         </template>
       </el-table-column>
     </el-table>
-     <el-dialog title="编辑" :visible.sync="dialogVisible" width="50%" :close-on-click-modal='false'>
-            <el-form
-              :label-position="labelPosition"
-              :rules="rules"
-              ref="formLabelAlign"
-              label-width="150px"
-              :model="formLabelAlign"
-            >
-              <el-form-item label="星座名称(日期-日期)" prop="constellation">
-                <el-select v-model="formLabelAlign.constellationId" placeholder="请选择">
-                  <el-option
-                    v-for="item in constellationList"
-                    :key="item.id"
-                    :label="item.text"
-                    :value="item.id"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="运势时间">
-                <el-date-picker
-                  type="date"
-                  placeholder="选择日期"
-                  v-model="formLabelAlign.date"
-                  value-format="yyyy-MM-dd"
-                  style="width: 100%;"
-                ></el-date-picker>
-              </el-form-item>
-              <el-form-item label="今日运势分数">
-                <el-input v-model="formLabelAlign.luckScore"></el-input>
-              </el-form-item>
-              <el-form-item label="今日运势详情">
-                <el-input v-model="formLabelAlign.details" type="textarea" autosize></el-input>
-              </el-form-item>
+    <el-dialog title="编辑" :visible.sync="dialogVisible" width="50%" :close-on-click-modal="false">
+      <el-form
+        :label-position="labelPosition"
+        :rules="rules"
+        ref="formLabelAlign"
+        label-width="150px"
+        :model="formLabelAlign"
+      >
+        <el-form-item label="星座名称(日期-日期)" prop="constellation">
+          <el-select v-model="formLabelAlign.constellationId" placeholder="请选择">
+            <el-option
+              v-for="item in constellationList"
+              :key="item.id"
+              :label="item.text"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="运势时间">
+          <el-date-picker
+            type="date"
+            placeholder="选择日期"
+            v-model="formLabelAlign.date"
+            value-format="yyyy-MM-dd"
+            style="width: 100%;"
+          ></el-date-picker>
+        </el-form-item>
+        <el-form-item label="今日运势分数">
+          <el-input v-model="formLabelAlign.luckScore"></el-input>
+        </el-form-item>
+        <el-form-item label="今日运势详情">
+          <el-input v-model="formLabelAlign.details" type="textarea" autosize></el-input>
+        </el-form-item>
 
-              <el-form-item label="爱情运势">
-                <el-input v-model="formLabelAlign.message1" type="textarea" autosize></el-input>
-              </el-form-item>
-              <el-form-item label="教程ID">
-                <el-input v-model="formLabelAlign.lableId1"></el-input>
-                <el-tag v-if="formLabelAlign.docName1">{{formLabelAlign.docName1}}</el-tag>
-              </el-form-item>
-              <el-form-item label="事业学业">
-                <el-input v-model="formLabelAlign.message2" type="textarea" autosize></el-input>
-              </el-form-item>
-              <el-form-item label="教程ID">
-                <el-input v-model="formLabelAlign.lableId2"></el-input>
-                <el-tag v-if="formLabelAlign.docName2">{{formLabelAlign.docName2}}</el-tag>
-              </el-form-item>
-              <el-form-item label="财富运势">
-                <el-input v-model="formLabelAlign.message3" type="textarea" autosize></el-input>
-              </el-form-item>
-              <el-form-item label="教程ID">
-                <el-input v-model="formLabelAlign.lableId3"></el-input>
-                <el-tag v-if="formLabelAlign.docName3">{{formLabelAlign.docName3}}</el-tag>
-              </el-form-item>
-              <el-form-item label="健康运势">
-                <el-input v-model="formLabelAlign.message4" type="textarea" autosize></el-input>
-              </el-form-item>
-              <el-form-item label="教程ID">
-                <el-input v-model="formLabelAlign.lableId4"></el-input>
-                <el-tag v-if="formLabelAlign.docName4">{{formLabelAlign.docName4}}</el-tag>
-              </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-              <el-button @click="dialogVisible = false">取 消</el-button>
-              <el-button type="primary" @click="saveEdit('formLabelAlign')">确 定</el-button>
-            </span>
-          </el-dialog>
-    <Pagination :totalNum="totalNum" @change_Page="changePage" @change_Size="changeSize"></Pagination>
+        <el-form-item label="爱情运势">
+          <el-input v-model="formLabelAlign.message1" type="textarea" autosize></el-input>
+        </el-form-item>
+        <el-form-item label="教程ID">
+          <el-input v-model="formLabelAlign.lableId1"></el-input>
+          <el-tag v-if="formLabelAlign.docName1">{{formLabelAlign.docName1}}</el-tag>
+        </el-form-item>
+        <el-form-item label="事业学业">
+          <el-input v-model="formLabelAlign.message2" type="textarea" autosize></el-input>
+        </el-form-item>
+        <el-form-item label="教程ID">
+          <el-input v-model="formLabelAlign.lableId2"></el-input>
+          <el-tag v-if="formLabelAlign.docName2">{{formLabelAlign.docName2}}</el-tag>
+        </el-form-item>
+        <el-form-item label="财富运势">
+          <el-input v-model="formLabelAlign.message3" type="textarea" autosize></el-input>
+        </el-form-item>
+        <el-form-item label="教程ID">
+          <el-input v-model="formLabelAlign.lableId3"></el-input>
+          <el-tag v-if="formLabelAlign.docName3">{{formLabelAlign.docName3}}</el-tag>
+        </el-form-item>
+        <el-form-item label="健康运势">
+          <el-input v-model="formLabelAlign.message4" type="textarea" autosize></el-input>
+        </el-form-item>
+        <el-form-item label="教程ID">
+          <el-input v-model="formLabelAlign.lableId4"></el-input>
+          <el-tag v-if="formLabelAlign.docName4">{{formLabelAlign.docName4}}</el-tag>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveEdit('formLabelAlign')">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- <Pagination :totalNum="totalNum" @change_Page="changePage" @change_Size="changeSize"></Pagination> -->
+    <el-pagination
+      @size-change="changeSize"
+      @current-change="changePage"
+      :current-page="currentPage"
+      :page-sizes="[12, 24]"
+      :page-size="12"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="totalNum"
+    ></el-pagination>
   </div>
 </template>
 
@@ -187,10 +213,12 @@ export default {
     return {
       tableData: [],
       value2: "",
+      Isonline: "",
       dialogVisible: false,
       AddVisible: false,
       labelPosition: "left",
       idx: -1,
+      currentPage: 1,
       formLabelAlign: {
         date: "",
         constellation: "",
@@ -220,7 +248,7 @@ export default {
         ]
       },
       page: 1,
-      row: 10,
+      row: 12,
       totalNum: 1,
       constellationList: [],
       multipleSelection: []
@@ -318,13 +346,19 @@ export default {
         })
         .catch(_ => {});
     },
-    deleteAll(){
-      this.$axios.get(`/management/admin/constellation-details!batchDelete.action?ids=${this.multipleSelection}`).then(res=>{
-        if(res.status==200){
-          this.$message.success(`删除成功`);
-          this.getData(this.page, this.row);
-        }
-      })
+    deleteAll() {
+      this.$axios
+        .get(
+          `/management/admin/constellation-details!batchDelete.action?ids=${
+            this.multipleSelection
+          }`
+        )
+        .then(res => {
+          if (res.status == 200) {
+            this.$message.success(`删除成功`);
+            this.getData(this.page, this.row);
+          }
+        });
     },
     // 新增
     handleAdd(formLabelAdd) {
@@ -400,16 +434,22 @@ export default {
           });
         });
     },
-    onlineAll(number){
-      this.$axios.get(`/management/admin/constellation-details!batchOnLine.action?ids=${this.multipleSelection}&online=${number}`).then(res=>{
-        if(res.status==200){
-          this.$message({
-                  type: "success",
-                  message: `${number == 0 ? "上线" : "下线"}成功!`
-                });
-                this.getData(this.page, this.row);
-        }
-      })
+    onlineAll(number) {
+      this.$axios
+        .get(
+          `/management/admin/constellation-details!batchOnLine.action?ids=${
+            this.multipleSelection
+          }&online=${number}`
+        )
+        .then(res => {
+          if (res.status == 200) {
+            this.$message({
+              type: "success",
+              message: `${number == 0 ? "上线" : "下线"}成功!`
+            });
+            this.getData(this.page, this.row);
+          }
+        });
     },
     //日期搜索
     onchange(val) {
@@ -424,13 +464,18 @@ export default {
         .catch(_ => {});
     },
     //多选
-    handleSelectionChange(val){
-      let chooseArr = []
+    handleSelectionChange(val) {
+      let chooseArr = [];
       for (let index = 0; index < val.length; index++) {
-        chooseArr.push(val[index].id)
+        chooseArr.push(val[index].id);
       }
-      this.multipleSelection = chooseArr.join(',')
-      console.log(this.multipleSelection)
+      this.multipleSelection = chooseArr.join(",");
+      console.log(this.multipleSelection);
+    },
+    //状态筛选
+    filterTag(value){
+      this.Isonline = Object.values(value)[0][0]
+      this.getData(this.page,this.row)
     },
     // 分页
     changePage(val) {
@@ -448,6 +493,7 @@ export default {
         .get(url, {
           params: {
             filter_EQS_date: this.value2,
+            filter_EQI_online: this.Isonline,
             page: page,
             rows: row
           }
@@ -455,13 +501,12 @@ export default {
         .then(res => {
           this.totalNum = res.data.total;
           this.tableData = res.data.rows;
-          console.log(this.tableData);
         });
     }
   },
   mounted() {
     // 获取列表
-    this.getData(1, 10);
+    this.getData(1, 12);
     // 获取星座列表
     this.$axios
       .get("/management/admin/constellation!comboData.action")

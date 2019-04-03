@@ -4,6 +4,9 @@
       <el-button type="primary" @click="AddVisible = true" size="small" v-has>新增</el-button>
       <el-button type="primary" @click="refreshElastic" size="small">刷新Elastic</el-button>
       <el-button type="primary" @click="refreshHTML" size="small">刷新HTML</el-button>
+      <el-input v-model="productSearch" placeholder="请输入搜索类容" style="width: 30%" size="small" @keyup.enter.native="Search">
+        <el-button slot="append" icon="el-icon-search" @click="Search"></el-button>
+      </el-input>
       <!-- <el-input v-model="ingredient_Search" placeholder="请输入搜索类容" style="width: 30%" size="small" @keyup.enter.native="ingredientSearch">
 				<el-button slot="append" icon="el-icon-search" @click="ingredientSearch"></el-button>
       </el-input>-->
@@ -36,6 +39,7 @@
               :on-remove="handleRemove1"
               :on-success="handleSuccess1"
               :file-list="fileList"
+               :limit="1"
               :before-upload="beforeUpload1"
               list-type="picture"
             >
@@ -80,6 +84,7 @@
               :on-remove="handleRemove1"
               :on-success="handleSuccess1"
               :file-list="fileList"
+               :limit="1"
               :before-upload="beforeUpload1"
               list-type="picture"
             >
@@ -142,13 +147,13 @@ export default {
   data() {
     return {
       ingredientList: [],
-      ingredient_Search: "",
       dialogVisible: false,
       AddVisible: false,
       imgVisible: false,
       labelPosition: "left",
       idx: -1,
       img: "",
+      productSearch:"",
       currentPage4: 1,
       imgData1: {},
       fileList: [],
@@ -283,6 +288,24 @@ export default {
            this.$message.success("刷新成功");
         }
       })
+    },
+    //搜索
+    Search(page, row) {
+      this.$axios
+        .post(
+          `/management/admin/product!list.action`,
+          this.$qs.stringify({
+            q: this.productSearch,
+            page: this.page,
+            rows: this.row
+          })
+        )
+        .then(res => {
+          if (res.status == 200) {
+            this.ingredientList = res.data.rows;
+            this.totalNum = res.data.total;
+          }
+        });
     },
     //图片上传
     handleRemove1(file, fileList) {},

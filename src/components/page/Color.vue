@@ -6,10 +6,8 @@
         <el-button slot="append" icon="el-icon-search" @click="colorSearch"></el-button>
       </el-input>
       <el-dialog title="新增" :visible.sync="AddVisible" :close-on-click-modal='false'>
-        <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAdd">
-          <el-form-item label="产品及色号名称">
-            <el-input v-model="formLabelAdd.productName"></el-input>
-          </el-form-item>
+        <el-form :label-position="labelPosition" label-width="110px" :model="formLabelAdd">
+         
           <el-form-item label="产品">
             <el-select
               v-model="formLabelAdd.productId"
@@ -27,13 +25,16 @@
               ></el-option>
             </el-select>
           </el-form-item>
+           <el-form-item label="产品及色号名称">
+            <el-input v-model="formLabelAdd.productName"></el-input>
+          </el-form-item>
           <el-form-item label="色号名称">
             <el-input v-model="formLabelAdd.colorName"></el-input>
           </el-form-item>
           <el-form-item label="图片">
             <el-upload
               class="upload-demo"
-              action="management/admin/kcupload!uploadImage.action"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
               :data="imgData1"
               :on-preview="handlePreview"
               :on-remove="handleRemove1"
@@ -82,10 +83,7 @@
             v-del
           >删除</el-button>
           <el-dialog title="编辑" :visible.sync="dialogVisible" :close-on-click-modal='false'>
-            <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
-              <el-form-item label="产品及色号名称">
-                <el-input v-model="formLabelAlign.productName"></el-input>
-              </el-form-item>
+            <el-form :label-position="labelPosition" label-width="110px" :model="formLabelAlign">
               <el-form-item label="产品">
                 <el-select
               v-model="formLabelAlign.productId"
@@ -103,13 +101,16 @@
               ></el-option>
             </el-select>
               </el-form-item>
+              <el-form-item label="产品及色号名称">
+                <el-input v-model="formLabelAlign.productName"></el-input>
+              </el-form-item>
               <el-form-item label="色号名称">
                 <el-input v-model="formLabelAlign.colorName"></el-input>
               </el-form-item>
               <el-form-item label="图片">
                 <el-upload
                   class="upload-demo"
-                  action="management/admin/kcupload!uploadImage.action"
+                  action="/management/admin/kcupload!uploadImage.action?type=goods_path"
                   :data="imgData"
                   :on-preview="handlePreview"
                   :on-remove="handleRemove"
@@ -130,6 +131,9 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-dialog title="图片预览" :visible.sync="imgVisible" append-to-body>
+					<img :src="img" alt="" style="width:100%">
+				</el-dialog>
     <Pagination :totalNum="totalNum1" @change_Page="changePage1" @change_Size="changeSize1"></Pagination>
   </div>
 </template>
@@ -157,7 +161,9 @@ export default {
       totalNum3: 1,
       dialogVisible: false,
       AddVisible: false,
+      imgVisible: false,
       value: "",
+      img:"",
       fileList: [],
       fileList1: [],
       labelPosition: "left",
@@ -213,12 +219,7 @@ export default {
     },
     //新增
     handleAdd() {
-      this.formLabelAdd={}
       this.options=[]
-      let image = "";
-      for (let i = 0; i < this.formLabelAdd.image.length; i++) {
-        image += `<img src="` + this.formLabelAdd.image[i] + `"  alt='' />`;
-      }
       this.$axios
         .post(
           "/management/admin/beauty-color!save.action",
@@ -226,7 +227,7 @@ export default {
             productId: this.formLabelAdd.productId,
             productName: this.formLabelAdd.productName,
             colorName: this.formLabelAdd.colorName,
-            image: image
+            image: this.formLabelAdd.image
           })
         )
         .then(res => {
@@ -249,13 +250,16 @@ export default {
           if (res.status == 200) {
             console.log(res);
             this.formLabelAlign = res.data;
-            let str = this.formLabelAlign.image;
+            if(this.formLabelAlign.image){
+              let str = this.formLabelAlign.image;
             let srcReg = /[a-zA-z]+:\/\/[^\s]*/g;
-            let srcArr = str.match(srcReg);
+            var srcArr = str.match(srcReg);
+            console.log(srcArr)
+            }
             if (srcArr) {
               for (let i = 0; i < srcArr.length; i++) {
                 this.fileList.push({
-                  url: srcArr[i].split('"')[0]
+                  url: srcArr[i].split('"')[0],name:'产品图片'
                 });
               }
             }
@@ -400,23 +404,24 @@ export default {
     },
     //图片
     handleRemove(file, fileList) {
-      this.formLabelAlign.image = "";
-      for (let i = 0; i < fileList.length; i++) {
-        this.formLabelAlign.image +=
-          `<img src="` + fileList[i].url + `"  alt='' />`;
-      }
+      // this.formLabelAlign.image = "";
+      // for (let i = 0; i < fileList.length; i++) {
+      //   this.formLabelAlign.image +=
+      //     `<img src="` + fileList[i].url + `"  alt='' />`;
+      // }
     },
     handleRemove1(file, fileList) {
       // console.log(this.formLabelAdd,file,fileList)
-      this.formLabelAdd.image = [];
-      for (let i = 0; i < fileList.length; i++) {
-        this.formLabelAdd.image.push(fileList[i].response.url);
-      }
-      console.log(this.formLabelAdd);
+      // this.formLabelAdd.image = [];
+      // for (let i = 0; i < fileList.length; i++) {
+      //   this.formLabelAdd.image.push(fileList[i].response.url);
+      // }
+      // console.log(this.formLabelAdd);
       // this.formLabelAdd.image =''
     },
     handlePreview(file) {
-      console.log(file);
+      	this.img= file.url
+				this.imgVisible = true
     },
     beforeUpload(file) {
       this.imgData.FileName = file.name;
@@ -428,10 +433,10 @@ export default {
     },
     handleSuccess(res) {
       console.log(res);
-      this.formLabelAlign.image += res.url;
+      this.formLabelAlign.image = res.url;
     },
     handleSuccess1(res) {
-      this.formLabelAdd.image.push(res.url);
+      this.formLabelAdd.image =res.url;
     },
     //分页
     changePage1(val) {

@@ -4,7 +4,7 @@
 			<el-col :span='6'>
 				<div class="cardItem" style="background: linear-gradient(to right, rgba(255, 255, 255,1), rgba(50, 208, 136,0.2))">
 					<div class="cardLeft" style="color: #32D088;">
-						<i class="el-icon-my-xinzengrenyuan_huaban"></i>
+						<i class="icon iconfont el-icon-my-xinzengrenyuan_huaban"></i>
 					</div>
 					<div class="cardRight">
 						<p class="text1">{{cardData.registeredData}}</p>
@@ -17,7 +17,7 @@
 			<el-col :span='6'>
 				<div class="cardItem" style="background: linear-gradient(to right, rgba(255, 255, 255,1), rgba(251, 110, 81,0.2))">
 					<div class="cardLeft" style="color: #FB6E51;">
-						<i class="el-icon-my-liulanliang"></i>
+						<i class="icon iconfont el-icon-my-liulanliang"></i>
 					</div>
 					<div class="cardRight">
 						<p class="text1">{{cardData.readData}}</p>
@@ -30,7 +30,7 @@
 			<el-col :span='6'>
 				<div class="cardItem" style="background: linear-gradient(to right, rgba(255, 255, 255,1), rgba(245, 178, 82,0.2))">
 					<div class="cardLeft" style="color: #F5B252;">
-						<i class="el-icon-my-pinglun"></i>
+						<i class="icon iconfont el-icon-my-pinglun"></i>
 					</div>
 					<div class="cardRight">
 						<p class="text1">{{cardData.commentData}}</p>
@@ -42,7 +42,7 @@
 			</el-col>
 			<el-col :span='6'>
 				<div class="cardItem totalNumber" style="background: linear-gradient(to right, rgba(50, 208, 136,0.2),rgba(50, 206, 228,0.2),rgba(251, 110, 81,0.2), rgba(245, 178, 82,0.2))">
-					<p>总注册量 <span>{{cardData.registeredAll}}</span></p>
+					<p>总注册量 <span>{{cardData.registeredAll-11156}}</span></p>
 					<p>总阅读量 <span>{{cardData.readAll}}</span></p>
 					<p>总评论量 <span>{{cardData.commentAll}}</span></p>
 				</div>

@@ -87,13 +87,6 @@
       <el-table-column label="操作" width="440" align="center">
         <template slot-scope="scope">
           <el-button
-            @click.native.prevent="deleteRow(scope.$index, userList)"
-            type="danger"
-            size="small"
-            class="el-icon-delete"
-            v-del
-          >删除</el-button>
-          <el-button
             size="small"
             type="primary"
             icon="el-icon-edit"
@@ -121,6 +114,13 @@
             v-else
             @click="handleRefresh(scope.$index, scope.row)"
           >禁用</el-button>
+          <el-button
+            @click.native.prevent="deleteRow(scope.$index, userList)"
+            type="danger"
+            size="small"
+            class="el-icon-delete"
+            v-del
+          >删除</el-button>
           <el-dialog
             title="编辑"
             :visible.sync="dialogVisible"

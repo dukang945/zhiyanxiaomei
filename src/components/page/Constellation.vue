@@ -47,6 +47,7 @@
               :on-success="uploadSuccess"
               :on-remove="handleRemove"
               :file-list="editFileList"
+               :limit="1"
               list-type="picture"
             >
               <el-button size="small" type="primary">点击上传</el-button>
@@ -61,6 +62,7 @@
               :before-upload="beforeUpload1"
               :on-success="uploadSuccess1"
               :on-remove="handleRemove1"
+               :limit="1"
               :file-list="editFileList1"
               list-type="picture"
             >
@@ -130,6 +132,7 @@
             :before-upload="beforeUpload"
             :on-success="uploadSuccess"
             :on-remove="handleRemove"
+             :limit="1"
             :file-list="editFileList"
             list-type="picture"
           >
@@ -140,6 +143,7 @@
           <el-upload
             action="/management/admin/kcupload!uploadImage.action?type=goods_path"
             :data="imgData1"
+             :limit="1"
             :on-preview="handlePreview"
             :before-upload="beforeUpload1"
             :on-success="uploadSuccess1"
@@ -156,7 +160,16 @@
         <el-button type="primary" @click="saveEdit">确 定</el-button>
       </span>
     </el-dialog>
-    <Pagination :totalNum="totalNum" @change_Page="changePage" @change_Size="changeSize"></Pagination>
+    <!-- <Pagination :totalNum="totalNum" @change_Page="changePage" @change_Size="changeSize"></Pagination> -->
+    <el-pagination
+      @size-change="changeSize"
+      @current-change="changePage"
+      :current-page="currentPage"
+      :page-sizes="[12, 24]"
+      :page-size="12"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="totalNum"
+    ></el-pagination>
   </div>
 </template>
 
@@ -172,6 +185,7 @@ export default {
       img:'',
       labelPosition: "left",
       idx: -1,
+      currentPage:1,
       editFileList: [],
       editFileList1: [],
       formLabelAlign: {
@@ -200,7 +214,7 @@ export default {
         ]
       },
       page: 1,
-      row: 10,
+      row: 12,
       totalNum: 1,
       imgData: {
         FileName: "",
@@ -403,7 +417,7 @@ export default {
     }
   },
   mounted() {
-    this.getData(1, 10);
+    this.getData(1, 12);
   }
 };
 </script>

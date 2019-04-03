@@ -55,19 +55,19 @@
       <el-table-column label="操作" width="200" align="center">
         <template slot-scope="scope">
           <el-button
-            @click.native.prevent="deleteRow(scope.$index, menuList)"
-            type="danger"
-            size="small"
-            class="el-icon-delete"
-            v-del
-          >删除</el-button>
-          <el-button
             size="small"
             type="primary"
             icon="el-icon-edit"
             @click="handleEdit(scope.$index, scope.row)"
             v-has
           >编辑</el-button>
+          <el-button
+            @click.native.prevent="deleteRow(scope.$index, menuList)"
+            type="danger"
+            size="small"
+            class="el-icon-delete"
+            v-del
+          >删除</el-button>
           <el-dialog
             title="编辑"
             :visible.sync="dialogVisible"
@@ -197,6 +197,7 @@ export default {
     handleEdit(index, row) {
       var _this = this;
       this.idx = row.id;
+      // this.dialogVisible = true;
       this.$axios
         .get(`/management/admin/resource!input.action?id=${this.idx}`)
         .then(res => {
@@ -244,7 +245,7 @@ export default {
               if (res.status == 200) {
                 this.dialogVisible = false;
                 this.$message.success(`修改成功`);
-                this.getMenuList(1, 10);
+                this.getMenuList(this.page, this.row);
               }
             });
         } else {

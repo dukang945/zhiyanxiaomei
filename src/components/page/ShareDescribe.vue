@@ -35,6 +35,7 @@
               :on-remove="handleRemove1"
               :on-success="handleSuccess1"
               :file-list="fileList1"
+               :limit="1"
               :before-upload="beforeUpload1"
               list-type="picture"
             >
@@ -60,7 +61,7 @@
       <el-table-column prop="title" label="标题" align="center" show-overflow-tooltip></el-table-column>
       <el-table-column label="审核状态" width="80" align="center">
         <template slot-scope="scope">
-          <el-tag type="success" v-if="scope.row.online==0">上线</el-tag>
+          <el-tag type="success" v-if="scope.row.status==0">上线</el-tag>
           <el-tag type="danger" v-else>下线</el-tag>
         </template>
       </el-table-column>
@@ -73,13 +74,6 @@
       <el-table-column label="操作" align="center" width="300">
         <template slot-scope="scope">
           <el-button
-            @click.native.prevent="deleteRow(scope.$index, bannerList)"
-            type="primary"
-            class="el-icon-delete"
-            size="small"
-            v-del
-          >删除</el-button>
-          <el-button
             type="primary"
             icon="el-icon-edit"
             @click="handleEdit(scope.$index, scope.row)"
@@ -87,8 +81,8 @@
             v-has
           >编辑</el-button>
           <el-button
-            type="primary"
-            v-if="scope.row.online==0"
+            type="warning"
+            v-if="scope.row.status==0"
             class="el-icon-sort"
             @click="online(scope.$index, scope.row)"
             size="small"
@@ -102,6 +96,13 @@
             class="el-icon-sort"
             v-online
           >上线</el-button>
+          <el-button
+            @click.native.prevent="deleteRow(scope.$index, bannerList)"
+            type="danger"
+            class="el-icon-delete"
+            size="small"
+            v-del
+          >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -138,6 +139,7 @@
             :on-remove="handleRemove"
             :on-success="handleSuccess"
             :file-list="fileList"
+             :limit="1"
             :before-upload="beforeUpload"
             list-type="picture"
           >
@@ -296,7 +298,7 @@ export default {
       console.log(rows, rows.online);
       this.$axios
         .get(
-          `/management/admin/invite-friends!online.action?id=${
+          `/management/admin/invite-friends!update.action?id=${
             rows.id
           }`
         )
@@ -304,6 +306,8 @@ export default {
           if (res.status == 200) {
             this.$message.success(rows.enable == 0 ? "已下线" : "已上线");
             this.getBannerList();
+          }else{
+            this.$message.error('出现该弹窗就是接口请求失败!!!!找小龙哦')
           }
         });
     },

@@ -19,6 +19,7 @@
               :on-remove="handleRemove1"
               :on-success="handleSuccess1"
               :file-list="fileList1"
+               :limit="1"
               :before-upload="beforeUpload1"
               list-type="picture"
             >
@@ -74,6 +75,7 @@
               :on-remove="handleRemove1"
               :on-success="handleSuccess1"
               :file-list="fileList1"
+               :limit="1"
               :before-upload="beforeUpload1"
               list-type="picture"
             >

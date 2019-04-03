@@ -17,6 +17,8 @@ module.exports = {
         // target: 'http://192.168.12.226:8080',//liqinxiang
         // target: 'http://192.168.12.227:8082',//fuxiaolong
         target: 'http://192.168.11.241:8082',
+        // target: 'http://192.168.14.166:8082',
+        // target: 'http://192.168.14.167:8080',
         changeOrigin: true,
         pathRewrite: {
           '^/management': '/management'
