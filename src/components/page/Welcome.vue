@@ -235,7 +235,7 @@
 								menuname: "AI识颜",
 								parentId: "5",
 								menus: [{
-										enname: "",
+										enname: "marking",
 										icon: "el-icon-my-gongzuoneirong",
 										menuid: 27,
 										menuname: "颜值分数分析",
@@ -245,7 +245,7 @@
 										]
 									},
 									{
-										enname: "",
+										enname: "markingDetail",
 										icon: "el-icon-my-gongzuoneirong",
 										menuid: 28,
 										menuname: "颜值夸赞",
@@ -431,7 +431,7 @@
 
 								]
 							}, {
-								enname: "",
+								enname: "interestedTest",
 								icon: "el-icon-my-gongzuoneirong",
 								menuid: 21,
 								menuname: "感兴趣内容测试",
@@ -1209,7 +1209,7 @@
 
 								]
 							}, {
-								enname: "",
+								enname: "interestedTest",
 								icon: "el-icon-my-gongzuoneirong",
 								menuid: 21,
 								menuname: "感兴趣内容测试",
@@ -1532,6 +1532,7 @@ html{
 		text-align: center;
 		// line-height: 200px;
 		max-width: 222px;
+		max-height: 90%;
 		overflow-x: hidden;
 		padding:0px 10px 10px;
 		box-sizing: border-box;

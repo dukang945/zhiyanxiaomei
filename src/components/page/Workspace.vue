@@ -42,7 +42,7 @@
 			</el-col>
 			<el-col :span='6'>
 				<div class="cardItem totalNumber" style="background: linear-gradient(to right, rgba(50, 208, 136,0.2),rgba(50, 206, 228,0.2),rgba(251, 110, 81,0.2), rgba(245, 178, 82,0.2))">
-					<p>总注册量 <span>{{cardData.registeredAll}}</span></p>
+					<p>总注册量 <span>{{cardData.registeredAll-11156}}</span></p>
 					<p>总阅读量 <span>{{cardData.readAll}}</span></p>
 					<p>总评论量 <span>{{cardData.commentAll}}</span></p>
 				</div>

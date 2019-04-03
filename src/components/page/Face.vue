@@ -46,6 +46,7 @@
               :on-remove="handleRemove1"
               :on-success="handleSuccess1"
               :file-list="fileList1"
+               :limit="1"
               :before-upload="beforeUpload1"
               list-type="picture"
             >
@@ -64,6 +65,7 @@
               :on-remove="handleRemove2"
               :on-success="handleSuccess2"
               :file-list="fileList2"
+               :limit="1"
               :before-upload="beforeUpload2"
               list-type="picture"
             >
@@ -82,6 +84,7 @@
               :on-remove="handleRemove3"
               :on-success="handleSuccess3"
               :file-list="fileList3"
+               :limit="1"
               :before-upload="beforeUpload3"
               list-type="picture"
             >
@@ -174,6 +177,7 @@
             :on-remove="handleRemove1"
             :on-success="handleSuccess1"
              :file-list="fileList1"
+              :limit="1"
             :before-upload="beforeUpload1"
             list-type="picture"
           >
@@ -192,6 +196,7 @@
             :on-remove="handleRemove2"
             :on-success="handleSuccess2"
             :file-list="fileList2"
+             :limit="1"
             :before-upload="beforeUpload2"
             list-type="picture"
           >
@@ -210,6 +215,7 @@
             :on-remove="handleRemove3"
             :on-success="handleSuccess3"
             :file-list="fileList3"
+             :limit="1"
             :before-upload="beforeUpload3"
             list-type="picture"
           >

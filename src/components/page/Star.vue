@@ -54,6 +54,7 @@
               :on-remove="handleRemove1"
               :on-success="handleSuccess1"
               :file-list="fileList1"
+               :limit="1"
               :before-upload="beforeUpload1"
               list-type="picture"
             >
@@ -139,11 +140,12 @@
         <el-form-item label="明星图片" label-width="120px">
           <el-upload
             class="upload-demo"
-            action="/management/admin/kcupload!uploadImage.action"
+            action="/management/admin/kcupload!uploadImage.action?type=goods_path"
             :data="imgData1"
             :on-remove="handleRemove1"
             :on-success="handleSuccess1"
             :file-list="fileList1"
+             :limit="1"
             :before-upload="beforeUpload1"
             list-type="picture"
           >

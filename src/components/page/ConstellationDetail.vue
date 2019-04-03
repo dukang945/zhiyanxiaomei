@@ -193,7 +193,16 @@
         <el-button type="primary" @click="saveEdit('formLabelAlign')">确 定</el-button>
       </span>
     </el-dialog>
-    <Pagination :totalNum="totalNum" @change_Page="changePage" @change_Size="changeSize"></Pagination>
+    <!-- <Pagination :totalNum="totalNum" @change_Page="changePage" @change_Size="changeSize"></Pagination> -->
+    <el-pagination
+      @size-change="changeSize"
+      @current-change="changePage"
+      :current-page="currentPage"
+      :page-sizes="[12, 24]"
+      :page-size="12"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="totalNum"
+    ></el-pagination>
   </div>
 </template>
 
@@ -209,6 +218,7 @@ export default {
       AddVisible: false,
       labelPosition: "left",
       idx: -1,
+      currentPage: 1,
       formLabelAlign: {
         date: "",
         constellation: "",
@@ -238,7 +248,7 @@ export default {
         ]
       },
       page: 1,
-      row: 10,
+      row: 12,
       totalNum: 1,
       constellationList: [],
       multipleSelection: []
@@ -496,7 +506,7 @@ export default {
   },
   mounted() {
     // 获取列表
-    this.getData(1, 10);
+    this.getData(1, 12);
     // 获取星座列表
     this.$axios
       .get("/management/admin/constellation!comboData.action")

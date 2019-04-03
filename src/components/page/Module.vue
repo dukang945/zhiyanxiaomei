@@ -8,7 +8,7 @@
 						<el-input v-model="formLabelAdd.name"></el-input>
 					</el-form-item>
 					<el-form-item v-for='(item,index) in picArr' :label='item.label' :key='item.picName'>
-						<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData' :before-upload='beforeUpload'
+						<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData' :before-upload='beforeUpload' :limit="1"
 						 :on-success="uploadSuccess" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" list-type="picture">
 							<el-button size="small" type="primary" @click='upLoadImg(item.picName)'>点击上传</el-button>
 							<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
@@ -38,7 +38,7 @@
 								<el-input v-model="formLabelAlign.name"></el-input>
 							</el-form-item>
 							<el-form-item v-for='(item,index) in picArr' :label='item.label' :key='item.picName'>
-								<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
+								<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData' :limit="1"
 								 :before-upload='beforeUpload' :on-preview="handlePictureCardPreview" :on-success="uploadSuccess" :on-remove="handleRemove"
 								 :file-list="editFileList[item.picName]" list-type="picture">
 									<el-button size="small" type="primary" @click='upLoadImg(item.picName)'>点击上传</el-button>

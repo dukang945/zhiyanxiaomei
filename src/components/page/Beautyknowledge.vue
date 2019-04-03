@@ -47,18 +47,18 @@
 							</el-form-item>
 							<el-form-item label="列表图片">
 								<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
-								 :before-upload='beforeUpload' :on-success="uploadListImgSuccess" :on-preview="handlePictureCardPreview"
+								 :before-upload='beforeUpload' :on-success="uploadListImgSuccess" :on-preview="handlePictureCardPreview" :limit="1"
 								 :on-remove="handleRemoveListPic" :file-list="addFileList" list-type="picture">
 									<el-button size="small" type="primary">点击上传</el-button>
-									<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+									<!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
 								</el-upload>
 							</el-form-item>
 							<el-form-item label="banner图片">
 								<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
-								 :before-upload='beforeUpload' :on-success="uploadBannerImgSuccess" :on-preview="handlePictureCardPreview"
+								 :before-upload='beforeUpload' :on-success="uploadBannerImgSuccess" :on-preview="handlePictureCardPreview" :limit="1"
 								 :on-remove="handleRemoveBannerPic" :file-list="addFileList" list-type="picture">
 									<el-button size="small" type="primary">点击上传</el-button>
-									<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+									<!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
 								</el-upload>
 							</el-form-item>
 							<el-form-item label="视频">
@@ -173,18 +173,18 @@
 				</el-form-item>
 				<el-form-item label="列表图片">
 					<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData' :before-upload='beforeUpload'
-					 :on-success="uploadListImgSuccess" :on-remove="handleRemoveListPic" :file-list="editListPicFileList" :on-preview="handlePictureCardPreview"
+					 :on-success="uploadListImgSuccess" :on-remove="handleRemoveListPic" :file-list="editListPicFileList" :on-preview="handlePictureCardPreview" :limit="1"
 					 list-type="picture">
 						<el-button size="small" type="primary">点击上传</el-button>
-						<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+						<!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
 					</el-upload>
 				</el-form-item>
 				<el-form-item label="banner图片">
 					<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData' :before-upload='beforeUpload'
-					 :on-success="uploadBannerImgSuccess" :on-remove="handleRemoveBannerPic" :on-preview="handlePictureCardPreview"
+					 :on-success="uploadBannerImgSuccess" :on-remove="handleRemoveBannerPic" :on-preview="handlePictureCardPreview" :limit="1"
 					 :file-list="editBannerPicFileList" list-type="picture">
 						<el-button size="small" type="primary">点击上传</el-button>
-						<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+						<!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
 					</el-upload>
 				</el-form-item>
 				<el-form-item label="视频">
@@ -562,6 +562,8 @@
 			// 新增
 			add() {
 				let _this = this;
+				this.addFileList=[]
+				this.searchLabel='';
 				_this.AddVisible = true;
 				setTimeout(function() {
 					if (_this.hasEditor) {

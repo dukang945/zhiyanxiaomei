@@ -47,18 +47,19 @@
 							</el-form-item>
 							<el-form-item label="列表图片">
 								<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
-								 :before-upload='beforeUpload' :on-success="uploadListImgSuccess" :on-preview="handlePictureCardPreview"
+								 :before-upload='beforeUpload' :on-success="uploadListImgSuccess" :on-preview="handlePictureCardPreview" :limit="1"
 								 :on-remove="handleRemoveListPic" :file-list="addFileList" list-type="picture">
 									<el-button size="small" type="primary">点击上传</el-button>
-									<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+									<!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
 								</el-upload>
 							</el-form-item>
+						
 							<el-form-item label="banner图片">
 								<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
-								 :before-upload='beforeUpload' :on-success="uploadBannerImgSuccess" :on-preview="handlePictureCardPreview"
+								 :before-upload='beforeUpload' :on-success="uploadBannerImgSuccess" :on-preview="handlePictureCardPreview" :limit="1"
 								 :on-remove="handleRemoveBannerPic" :file-list="addFileList" list-type="picture">
 									<el-button size="small" type="primary">点击上传</el-button>
-									<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+									<!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
 								</el-upload>
 							</el-form-item>
 							<el-form-item label="视频">
@@ -123,10 +124,11 @@
 					<el-table-column prop="createTime" label="创建时间" width="100" align='center' :formatter='getTime'
 					 :show-overflow-tooltip="true">
 					</el-table-column>
-					<el-table-column label="操作" fixed="right" align='center' width='580'>
+					<el-table-column label="操作" fixed="right" align='center' width='620'>
 						<template slot-scope="scope">
 							<el-button size="small" type="primary" @click="edit(scope.$index, scope.row)" icon='el-icon-edit'>编辑</el-button>
 							<el-button size="small" type="primary" @click="checkH5(scope.$index, scope.row)" icon='el-icon-edit-outline'>预览</el-button>
+							<el-button size="small" type="primary" @click="saveH5(scope.row)">生成H5</el-button>
 							<el-button size="small" type="primary" @click="switchOnline(scope.$index, scope.row)" class="el-icon-sort">{{tableData[scope.$index].online==0?'下线':'上线'}}</el-button>
 							<!-- <el-button size="small" type="success" @click="switchTop(scope.$index, scope.row)">{{tableData[scope.$index].sticky==0?'置顶':'取消置顶'}}</el-button> -->
 							<el-button @click.native.prevent="deleteRow(scope.$index, scope.row)" size='small' type="danger" class="el-icon-delete">删除</el-button>
@@ -177,7 +179,7 @@
 				</el-form-item>
 				<el-form-item label="列表图片">
 					<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData' :before-upload='beforeUpload'
-					 :on-success="uploadListImgSuccess" :on-remove="handleRemoveListPic" :file-list="editListPicFileList" :on-preview="handlePictureCardPreview"
+					 :on-success="uploadListImgSuccess" :on-remove="handleRemoveListPic" :file-list="editListPicFileList" :on-preview="handlePictureCardPreview" :limit="1"
 					 list-type="picture">
 						<el-button size="small" type="primary">点击上传</el-button>
 						<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
@@ -185,7 +187,7 @@
 				</el-form-item>
 				<el-form-item label="banner图片">
 					<el-upload action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData' :before-upload='beforeUpload'
-					 :on-success="uploadBannerImgSuccess" :on-remove="handleRemoveBannerPic" :on-preview="handlePictureCardPreview"
+					 :on-success="uploadBannerImgSuccess" :on-remove="handleRemoveBannerPic" :on-preview="handlePictureCardPreview" :limit="1"
 					 :file-list="editBannerPicFileList" list-type="picture">
 						<el-button size="small" type="primary">点击上传</el-button>
 						<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
@@ -577,6 +579,8 @@
 			// 新增
 			add() {
 				this.choosedLabelList=[];
+				this.addFileList=[]
+				this.searchLabel=""
 				let _this = this;
 				_this.AddVisible = true;
 				setTimeout(function() {
@@ -628,6 +632,7 @@
 					this.tempBannerImgUrl = '';
 					this.formLabelAdd = {};
 					this.choosedLabelList=[];
+					this.addFileList=[]
 					this.selectId=[];
 				})
 			},
@@ -699,6 +704,16 @@
 // 				this.$axios.get('/management/admin/beauty-details!refreshHTML.action').then(res=>{
 // 					console.log(res)
 // 				})
+			},
+			saveH5(row){
+				this.$axios.get(`/management/admin/beauty-appraisal!saveHtml.action?id=${row.id}`).then(res=>{
+					if(res.status==200){
+						this.$message.success('已生成H5!')
+					}else{
+						this.$message.error('生成失败!!!')
+					}
+					
+				})
 			},
 			// 批量增加标签
 			batchLabel() {

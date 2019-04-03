@@ -17,7 +17,7 @@
 						</el-select>
 					</el-form-item>
 					<el-form-item label="图片">
-						<el-upload class="upload-demo" action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data="imgData1"
+						<el-upload class="upload-demo" action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data="imgData1" :limit="1"
 						 :on-preview="handlePreview" :on-remove="handleRemove1" :on-success="handleSuccess1" :file-list="fileList"
 						 :before-upload="beforeUpload1" list-type="picture">
 							<el-button size="small" type="primary">点击上传</el-button>
@@ -75,7 +75,7 @@
 								</el-select>
 							</el-form-item>
 							<el-form-item label="图片">
-								<el-upload class="upload-demo" action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data="imgData"
+								<el-upload class="upload-demo" action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data="imgData" :limit="1"
 								 :on-preview="handlePreview" :on-remove="handleRemove" :on-success="handleSuccess" :file-list="fileList1"
 								 :before-upload="beforeUpload" list-type="picture" >
 									<el-button size="small" type="primary">点击上传</el-button>

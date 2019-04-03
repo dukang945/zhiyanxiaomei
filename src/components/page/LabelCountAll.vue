@@ -113,7 +113,7 @@ export default {
     getlabelCountList(page1, row1) {
       this.$axios
         .get("/management/admin/label-count-all!list.action", {
-          params: { page: page1, row: row1 }
+          params: { page: page1, rows: row1 }
         })
         .then(res => {
           if (res.status == 200) {

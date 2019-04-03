@@ -245,12 +245,12 @@ export default new Router({
         },
         {
           path: '/marking',
-					name:'妆容打分',
+					name:'颜值分数分析',
           component: Marking
         },
         {
           path: '/markingDetail',
-					name:'妆容打分详情',
+					name:'颜值夸赞',
           component: MarkingDetail
         },
         {

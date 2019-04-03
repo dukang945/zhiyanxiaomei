@@ -12,7 +12,7 @@
 					</el-form-item>
 					<el-form-item label="图片">
 						<el-upload class="upload-demo" action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
-						 :before-upload='beforeUpload' :on-success="uploadSuccess" :on-remove="handleRemove" list-type="picture">
+						 :before-upload='beforeUpload' :on-success="uploadSuccess" :limit="1" :on-remove="handleRemove" list-type="picture">
 							<el-button size="small" type="primary">点击上传</el-button>
 							<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
 						</el-upload>
@@ -47,7 +47,7 @@
 							</el-form-item>
 							<el-form-item label="图片">
 								<el-upload  action="/management/admin/kcupload!uploadImage.action?type=goods_path" :data='imgData'
-						 :before-upload='beforeUpload' :on-success="uploadSuccess" :on-remove="handleRemove" :file-list="editFileList"
+						 :before-upload='beforeUpload' :on-success="uploadSuccess" :on-remove="handleRemove" :file-list="editFileList" :limit="1"
 								 list-type="picture">
 									<el-button size="small" type="primary">点击上传</el-button>
 									<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
