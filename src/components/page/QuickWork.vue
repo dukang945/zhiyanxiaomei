@@ -1,6 +1,6 @@
 <template>
   <div class="quickWorkContent">
-    <!-- <el-button @click="refreshImg">刷新菜单</el-button> -->
+    <el-button @click="refreshImg">刷新菜单</el-button>
     <el-row type="flex" justify="space-around">
       <el-col :span="4">
         <div class="quickItem" @click="toRouter('teach')">

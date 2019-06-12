@@ -2,7 +2,7 @@
 	<div>
 		<div class="handle-box">
 			<el-button type="primary" @click="AddVisible = true" size="small" v-has>新增</el-button>
-			<el-input v-model="brand_Search" placeholder="请输入搜索类容" style="width: 30%" size="small" @keyup.enter.native="brandSearch">
+			<el-input v-model="brand_Search" placeholder="请输入搜索类容" style="width: 30%" size="small" @keyup.enter.native.prevent="brandSearch">
         <el-button slot="append" icon="el-icon-search" @click="brandSearch"></el-button>
       </el-input>
 			<el-dialog title="新增" :visible.sync="AddVisible" width="30%">
@@ -123,6 +123,7 @@
 			// 编辑
 			handleEdit(index, row) {
 				console.log(index, row)
+				this.idx= row.id
 				this.$axios.get(`/management/admin/brand!input.action?id=${row.id}`).then(
 					res => {
 						if (res.status == 200) {
@@ -204,6 +205,7 @@
 			},
 			//搜索
 			 brandSearch(page1, row1) {
+				 
       this.$axios
         .post(
           "/management/admin/brand!list.action",

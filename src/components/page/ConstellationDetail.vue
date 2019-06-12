@@ -163,28 +163,28 @@
           <el-input v-model="formLabelAlign.message1" type="textarea" autosize></el-input>
         </el-form-item>
         <el-form-item label="教程ID">
-          <el-input v-model="formLabelAlign.lableId1"></el-input>
+          <el-input v-model="formLabelAlign.lableId1" type="number"></el-input>
           <el-tag v-if="formLabelAlign.docName1">{{formLabelAlign.docName1}}</el-tag>
         </el-form-item>
         <el-form-item label="事业学业">
           <el-input v-model="formLabelAlign.message2" type="textarea" autosize></el-input>
         </el-form-item>
         <el-form-item label="教程ID">
-          <el-input v-model="formLabelAlign.lableId2"></el-input>
+          <el-input v-model="formLabelAlign.lableId2" type="number"></el-input>
           <el-tag v-if="formLabelAlign.docName2">{{formLabelAlign.docName2}}</el-tag>
         </el-form-item>
         <el-form-item label="财富运势">
           <el-input v-model="formLabelAlign.message3" type="textarea" autosize></el-input>
         </el-form-item>
         <el-form-item label="教程ID">
-          <el-input v-model="formLabelAlign.lableId3"></el-input>
+          <el-input v-model="formLabelAlign.lableId3" type="number"></el-input>
           <el-tag v-if="formLabelAlign.docName3">{{formLabelAlign.docName3}}</el-tag>
         </el-form-item>
         <el-form-item label="健康运势">
           <el-input v-model="formLabelAlign.message4" type="textarea" autosize></el-input>
         </el-form-item>
         <el-form-item label="教程ID">
-          <el-input v-model="formLabelAlign.lableId4"></el-input>
+          <el-input v-model="formLabelAlign.lableId4" type="number"></el-input>
           <el-tag v-if="formLabelAlign.docName4">{{formLabelAlign.docName4}}</el-tag>
         </el-form-item>
       </el-form>
@@ -317,6 +317,7 @@ export default {
             })
             .catch(e => {
               this.$message.error(`出了点问题-.-!`);
+              console.log(e)
             });
           this.dialogVisible = false;
           this.formLabelAlign = {};
@@ -387,10 +388,13 @@ export default {
               if (res.status == 200) {
                 this.getData(this.page, this.row);
                 this.$message.success(`添加成功`);
+              }else{
+                console.log(res)
               }
             })
             .catch(e => {
               this.$message.error(`出了点问题-.-!`);
+              console.log(e)
             });
           this.AddVisible = false;
           this.formLabelAdd = {};

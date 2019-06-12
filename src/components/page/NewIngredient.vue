@@ -3,7 +3,7 @@
     <div class="handle-box">
       <el-button type="primary" @click="AddVisible = true" size="small" v-has>新增</el-button>
       <el-button type="primary" @click="refreshElastic" size="small">刷新Elastic</el-button>
-      <el-input v-model="ingredientSearch" placeholder="请输入搜索类容" style="width: 30%" size="small" @keyup.enter.native="Search">
+      <el-input v-model="ingredientSearch" placeholder="请输入搜索类容" style="width: 30%" size="small" @keyup.enter.native.prevent="Search">
         <el-button slot="append" icon="el-icon-search" @click="Search"></el-button>
       </el-input>
       <!-- <el-button type="primary" @click="refreshHTML" size="small">刷新HTML</el-button> -->

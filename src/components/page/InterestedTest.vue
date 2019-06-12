@@ -5,7 +5,7 @@
       <el-dialog title="图片预览" :visible.sync="imgVisible" append-to-body>
         <img :src="img" alt style="width:100%">
       </el-dialog>
-      <el-dialog title="新增" :visible.sync="AddVisible" width="80%" @opene="addOPen">
+      <el-dialog title="新增" :visible.sync="AddVisible" width="80%" @open="addOPen">
         <el-form :model="formAdd">
           <el-form-item label="类型" label-width="120px">
             <el-input v-model="formAdd.type"></el-input>

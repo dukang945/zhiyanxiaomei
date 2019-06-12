@@ -4,41 +4,29 @@
       <el-button type="primary" @click="AddVisible = true" v-has size="small">新增</el-button>
       <el-dialog title="新增" :visible.sync="AddVisible" width="80%" @opened="addOPen">
          <el-form :model="formAdd">
-        <el-form-item label="标签" label-width="120px">
-          <el-select v-model="formAdd.labels" placeholder="请选择标签" clearable> 
-            <el-option-group label="鼻部">
-                <el-option
-                :label="item.name"
-                :value="item.id.toString()"
-                v-for="item in labelList1"
-                :key="item.id"
-              ></el-option>
-              </el-option-group>
-              <el-option-group label="脸部">
-                <el-option
-                :label="item.name"
-                :value="item.id.toString()"
-                v-for="item in labelList3"
-                :key="item.id"
-              ></el-option>
-              </el-option-group>
-              <el-option-group label="唇部">
-                <el-option
-                :label="item.name"
-                :value="item.id.toString()"
-                v-for="item in labelList4"
-                :key="item.id"
-              ></el-option>
-              </el-option-group>
-              <el-option-group label="眼部">
-                <el-option
-                :label="item.name"
-                :value="item.id.toString()"
-                v-for="item in labelList2"
-                :key="item.id"
-              ></el-option>
-              </el-option-group>
-          </el-select>
+         <el-form-item label="搜索标签" label-width="120px">
+          <el-input v-model="searchlabels" @input="getLabelsList" clearable></el-input>
+          <el-table
+            :data="beautiLabelsList"
+            @row-click="selectLabelsList"
+            border
+            style="width: 100%"
+            v-if="searchlabels"
+            class="labelTable"
+          >
+            <el-table-column prop="id" label="id" width="60" align="center"></el-table-column>
+            <el-table-column prop="name" label="标签" align="center"></el-table-column>
+            <el-table-column prop="labelName" label="上级目录" align="center"></el-table-column>
+          </el-table>
+          <div class="labelChoosed">
+            已选标签：<br>
+            <span
+              v-for="(item,key) in choosedLabelsList"
+            >
+              {{key+1}}--{{item.name?item.name:item.enname}}
+              <i class="el-icon-error" @click="deleteLabels(key)"></i>
+            </span>
+          </div>
         </el-form-item>
         <el-form-item label="类型" label-width="120px">
             <el-select v-model="formAdd.type" placeholder="请选择类型" clearable>
@@ -89,41 +77,29 @@
     </el-table>
     <el-dialog title="编辑" :visible.sync="TableVisible" width="80%">
       <el-form :model="formEdit">
-        <el-form-item label="标签" label-width="120px">
-          <el-select v-model="formEdit.labels" placeholder="请选择标签" clearable>
-            <el-option-group label="鼻部">
-                <el-option
-                :label="item.name"
-                :value="item.id.toString()"
-                v-for="item in labelList1"
-                :key="item.id"
-              ></el-option>
-              </el-option-group>
-              <el-option-group label="脸部">
-                <el-option
-                :label="item.name"
-                :value="item.id.toString()"
-                v-for="item in labelList3"
-                :key="item.id"
-              ></el-option>
-              </el-option-group>
-              <el-option-group label="唇部">
-                <el-option
-                :label="item.name"
-                :value="item.id.toString()"
-                v-for="item in labelList4"
-                :key="item.id"
-              ></el-option>
-              </el-option-group>
-              <el-option-group label="眼部">
-                <el-option
-                :label="item.name"
-                :value="item.id.toString()"
-                v-for="item in labelList2"
-                :key="item.id"
-              ></el-option>
-              </el-option-group>
-          </el-select>
+         <el-form-item label="搜索标签" label-width="120px">
+          <el-input v-model="searchlabels" @input="getLabelsList" clearable></el-input>
+          <el-table
+            :data="beautiLabelsList"
+            @row-click="selectLabelsList"
+            border
+            style="width: 100%"
+            v-if="searchlabels"
+            class="labelTable"
+          >
+            <el-table-column prop="id" label="id" width="60" align="center"></el-table-column>
+            <el-table-column prop="name" label="标签" align="center"></el-table-column>
+            <el-table-column prop="labelName" label="上级目录" align="center"></el-table-column>
+          </el-table>
+          <div class="labelChoosed">
+            已选标签：<br>
+            <span
+              v-for="(item,key) in choosedLabelsList"
+            >
+              {{key+1}}--{{item.name?item.name:item.enname}}
+              <i class="el-icon-error" @click="deleteLabels(key)"></i>
+            </span>
+          </div>
         </el-form-item>
         <el-form-item label="类型" label-width="120px">
             <el-select v-model="formEdit.type" placeholder="请选择类型">
@@ -187,7 +163,10 @@ export default {
       choosedLabelList: [], //已选中标签列表
       beautiColorTableData: [], //色号表格数据
       searchBeautiColor: "", //搜索色号输入框
-      choosedBeautiColorList: [] //已选中色号列表
+      choosedBeautiColorList: [],//已选中色号列表
+      searchlabels:"",//标签
+      beautiLabelsList:[],//搜索标签列表
+      choosedLabelsList:[],//选中标签
     };
   },
   mounted() {
@@ -212,6 +191,34 @@ export default {
             this.totalNum1 = res.data.total;
           }
         });
+    },
+     // 标签操作
+    getLabelsList(val){
+      this.$axios.post('/management/admin/label!featuresList.action',this.$qs.stringify({
+        page: 1,
+            rows: 50,
+            q: val
+      })).then(res => {
+          this.beautiLabelsList = res.data.rows;
+          this.loading = false;
+        });
+    },
+    //点击单选
+    selectLabelsList(row){
+ if (
+        this.choosedLabelsList.some(item => {
+          return item.id == row.id;
+        })
+      ) {
+        this.$message.warning("请勿重复选中");
+      } else {
+        this.choosedLabelsList.push(row);
+        // this.searchLabel = "";
+      }
+    },
+    // 删除
+    deleteLabels(val){
+ this.choosedLabelsList.splice(val, 1);
     },
     getlabelList() {
       //鼻
@@ -255,13 +262,19 @@ export default {
     // 新增dialog打开后回调
     addOPen() {
       this.formAdd = {};
+      this.searchlabels=""
+      this.choosedLabelsList=[];
     },
     //新增
     handleAdd() {
+      var labels = ''
+      for (let i = 0; i < this.choosedLabelsList.length; i++) {
+        labels += `&labelId=` + this.choosedLabelsList[i].id;
+      }
       this.$axios
         .post(
           `/management/admin/praise!save.action`,
-          this.$qs.stringify(this.formAdd)
+          this.$qs.stringify(this.formAdd) +labels
         )
         .then(res => {
           if (res.status == 200) {
@@ -269,7 +282,7 @@ export default {
               this.AddVisible = false;
               this.$message.success(`添加成功`);
               this.formAdd = {};
-              this.getlabelCountList();
+              this.getlabelCountList(this.page1, this.row1);
             }
           }
         });
@@ -287,16 +300,29 @@ export default {
             this.formEdit = res.data;
           }
         });
+         //获取选中标签
+        this.$axios.post('/management/admin/label!featuresList.action',this.$qs.stringify({
+          labelIds:row.labels.toString(),
+          page:1,
+          rows:50
+        })).then(res =>{
+          if(res.status==200){
+            this.choosedLabelsList = res.data.rows
+          }
+        })
     },
     saveEdit() {
+      var labels = ''
+      for (let i = 0; i < this.choosedLabelsList.length; i++) {
+        labels += `&labelId=` + this.choosedLabelsList[i].id;
+      }
       this.$axios
         .post(
           `/management/admin/praise!save.action?id=${this.idx}`,
           this.$qs.stringify({
-            labelId: this.formEdit.labels,
             type: this.formEdit.type,
             text: this.formEdit.text
-          })
+          }) +labels
         )
         .then(res => {
           if (res.status == 200) {
@@ -304,7 +330,9 @@ export default {
               this.TableVisible = false;
               this.$message.success(`修改成功`);
               this.formEdit = {};
-              this.getlabelCountList();
+              this.searchlabels=""
+      this.choosedLabelsList=[];
+              this.getlabelCountList(this.page1, this.row1);
             }
           }
         });
@@ -321,7 +349,7 @@ export default {
           .then(res => {
             if (res.status == 200) {
               this.$message.success("删除成功");
-              this.getlabelCountList();
+              this.getlabelCountList(this.page1, this.row1);
             }
           });
       });
@@ -340,4 +368,148 @@ export default {
 };
 </script>
 <style scoped>
+.labelTable {
+  max-height: 250px;
+  overflow-y: auto;
+}
+.labelTable::-webkit-scrollbar {
+  /*滚动条整体样式*/
+  width: 6px;
+  /*高宽分别对应横竖滚动条的尺寸*/
+  height: 4px;
+}
+
+.labelTable::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius: 5px;
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.labelTable::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.table.el-table td {
+  padding: 10px 0;
+}
+
+.labelTable.el-table td {
+  padding: 5px 0;
+}
+.labelChoosed span {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-top: 15px;
+  margin-right: 10px;
+  cursor: pointer;
+  transition: all 0.5s;
+  line-height: 20px;
+  border: 1px solid #ccc;
+}
+
+.labelChoosed span:hover {
+  background: #eeeeee;
+}
+/* 产品清单预览 */
+.content {
+  width: 100%;
+  height: 770px;
+  position: relative;
+  min-width: 1000px;
+}
+.phoneBorder {
+  position: absolute;
+  width: 300px;
+  height: auto;
+  left: 5%;
+}
+.content .productBox {
+  position: absolute;
+  width: 300px;
+  height: auto;
+  display: block;
+  /* left: 60%; */
+}
+
+.content .productContent {
+  position: absolute;
+  height: 460px;
+  width: 258px;
+  top: 76px;
+  left: 6.5%;
+  overflow-y: auto;
+}
+
+.productContent .productTitle {
+  text-align: center;
+  line-height: 40px;
+  font-size: 16px;
+  border-bottom: 1px solid #ccc;
+}
+
+.productContent .productItem {
+  padding: 10px;
+  box-sizing: border-box;
+  border-bottom: 1px solid #eee;
+  position: relative;
+  padding-left: 110px;
+  min-height: 100px;
+}
+
+.productItem img {
+  position: absolute;
+  top: 15px;
+  left: 10px;
+  width: 80px;
+  height: 80px;
+}
+.pro2 {
+  left: 37%;
+}
+.content .cont2 {
+  left: 38.5%;
+}
+.pro3 {
+  left: 70%;
+}
+.content .cont3 {
+  left: 71.5%;
+}
+.productItem p:nth-of-type(1) {
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.productItem p:nth-of-type(2) {
+  font-size: 10px;
+  line-height: 16px;
+}
+.pageContent::-webkit-scrollbar,
+.productContent::-webkit-scrollbar {
+  /*滚动条整体样式*/
+  width: 3px;
+  /*高宽分别对应横竖滚动条的尺寸*/
+  height: 3px;
+}
+
+.pageContent::-webkit-scrollbar-thumb,
+.productContent::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius: 5px;
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.pageContent::-webkit-scrollbar-track,
+.productContent::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.2);
+}
 </style>

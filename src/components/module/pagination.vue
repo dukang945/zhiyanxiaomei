@@ -1,7 +1,7 @@
 <template>
 	<div class="pagination">
 		<el-pagination class='pagination' @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
-		:page-sizes="[10, 20]" :page-size="10" layout="total, sizes, prev, pager, next, jumper" :total="total"></el-pagination>
+		:page-sizes="[10, 20,40,60]" :page-size="10" layout="total, sizes, prev, pager, next, jumper" :total="total"></el-pagination>
 	</div>
 </template>
 

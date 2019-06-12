@@ -51,6 +51,8 @@ import Eye from '@/components/page/Eye'
 import Nose from '@/components/page/Nose'
 import Lip from '@/components/page/Lip'
 import Hair from '@/components/page/Hair'
+import Brow from '@/components/page/Brow'
+import Foundation from '@/components/page/Foundation'
 import Praise from '@/components/page/Praise'
 import Star from '@/components/page/Star'
 import HusbandStar from '@/components/page/HusbandStar'
@@ -64,6 +66,10 @@ import KnowledgeMes from '@/components/page/KnowledgeMes'
 import NewProduct from '@/components/page/NewProduct'
 import NewIngredient from '@/components/page/NewIngredient'
 import QuickWork from '@/components/page/QuickWork'
+import Comment from '@/components/page/Comment'
+import Bloggers from '@/components/page/Bloggers'
+import NewMakeup from '@/components/page/NewMakeup'
+import Category from '@/components/page/Category'
 
 Vue.use(Router)
 
@@ -169,6 +175,16 @@ export default new Router({
           component: Nose
         },
         {
+          path: '/brow',
+					name:'眉形',
+          component: Brow
+        },
+        {
+          path: '/foundation',
+					name:'底妆遮瑕',
+          component: Foundation
+        },
+        {
           path: '/hair',
 					name:'发型',
           component: Hair
@@ -232,6 +248,16 @@ export default new Router({
           path: '/makeup',
 					name:'产品',
           component: Makeup
+        },
+        {
+          path: '/newMakeup',
+					name:'新产品',
+          component: NewMakeup
+        },
+        {
+          path: '/category',
+					name:'新产品',
+          component: Category
         },
         {
           path: '/newProduct',
@@ -302,6 +328,16 @@ export default new Router({
           path: '/tag',
 					name:'标签管理',
           component: Tag
+        },
+        {
+          path: '/comment',
+					name:'评论管理',
+          component: Comment
+        },
+        {
+          path: '/bloggers',
+					name:'博主管理',
+          component: Bloggers
         },
         {
           path: '/teach',

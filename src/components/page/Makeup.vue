@@ -8,9 +8,9 @@
         placeholder="请输入产品名称"
         style="width: 30%"
         size="small"
-        @keyup.enter.native="productSearch"
+        @keyup.enter.native.prevent="getMakeupList"
       >
-        <el-button slot="append" icon="el-icon-search" @click="productSearch"></el-button>
+        <el-button slot="append" icon="el-icon-search" @click="getMakeupList"></el-button>
       </el-input>
       <el-dialog title="新增产品" :visible.sync="AddVisible" :close-on-click-modal='false'>
         <el-form
@@ -27,14 +27,32 @@
           <el-form-item label="产品规格" >
             <el-input v-model="formLabelAdd.specification"></el-input>
           </el-form-item>
-          <!-- <el-form-item label="新增品牌">
-            <el-button type="primary" icon="el-icon-circle-plus-outline" size="small" class="add">新增</el-button>
-          </el-form-item>-->
+          <el-form-item label="新增品牌">
+            <el-button type="primary" icon="el-icon-circle-plus-outline" size="small" class="add" @click="AddBrandVisible = true">新增</el-button>
+          </el-form-item>
+          <el-dialog title="新增品牌" :visible.sync="AddBrandVisible" width="30%" append-to-body>
+				<el-form :label-position="labelPosition" label-width="120px" :model="formLabelAddBrand" :rules="rules" ref="formLabelAdd">
+					<el-form-item label="品牌名称:">
+						<el-input v-model="formLabelAddBrand.name"></el-input>
+					</el-form-item>
+					<el-form-item label="简介:">
+						<el-input v-model="formLabelAddBrand.synopsis"></el-input>
+					</el-form-item>
+					<el-form-item label="主打:">
+						<el-input v-model="formLabelAddBrand.theMain"></el-input>
+					</el-form-item>
+				</el-form>
+				<span slot="footer" class="dialog-footer">
+					<el-button @click="AddBrandVisible = false">取 消</el-button>
+					<el-button type="primary" @click="handleAddBrand">确 定</el-button>
+				</span>
+			</el-dialog>
           <el-form-item label="品牌">
             <el-select
               v-model="formLabelAdd.brandId"
               filterable
               remote
+              clearable
               reserve-keyword
               placeholder="请输入关键词"
               :remote-method="brandSearch"
@@ -50,6 +68,9 @@
           </el-form-item>
           <el-form-item label="参考价格" prop="price">
             <el-input v-model="formLabelAdd.price"></el-input>
+          </el-form-item>
+          <el-form-item label="备案号">
+            <el-input v-model="formLabelAdd.records"></el-input>
           </el-form-item>
           <el-form-item label="好评率">
             <el-input v-model="formLabelAdd.grade" placeholder="例如90%就填9.0"></el-input>
@@ -177,11 +198,15 @@
         <el-form-item label="产品规格">
           <el-input v-model="formLabelAlign.specification"></el-input>
         </el-form-item>
+        <el-form-item label="新增品牌">
+            <el-button type="primary" icon="el-icon-circle-plus-outline" size="small" class="add" @click="AddBrandVisible = true">新增</el-button>
+          </el-form-item>
         <el-form-item label="品牌">
           <el-select
             v-model="formLabelAlign.brandId"
             filterable
             remote
+            clearable
             reserve-keyword
             placeholder="请输入关键词"
             :remote-method="brandSearch"
@@ -197,6 +222,9 @@
         </el-form-item>
         <el-form-item label="参考价格" prop="price">
           <el-input v-model="formLabelAlign.price"></el-input>
+        </el-form-item>
+        <el-form-item label="备案号">
+          <el-input v-model="formLabelAlign.records"></el-input>
         </el-form-item>
         <el-form-item label="好评率(例如90%就填9.0)">
           <el-input v-model="formLabelAlign.grade"></el-input>
@@ -269,7 +297,7 @@
             list-type="picture"
           >
             <el-button size="small" type="primary">点击上传</el-button>
-            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+            <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
           </el-upload>
         </el-form-item>
       </el-form>
@@ -301,6 +329,7 @@ export default {
       imgData1: {},
       makeup_Search: "",
       dialogVisible: false,
+      AddBrandVisible: false,
       AddVisible: false,
       imgVisible: false,
       AddGrid: false,
@@ -309,6 +338,7 @@ export default {
       labelPosition: "left",
       idx: -1,
       formLabelAlign: {},
+      formLabelAddBrand: {},
       formLabelAdd: {
       },
       page1: 1,
@@ -375,14 +405,25 @@ export default {
     this.getMakeupList(1, 10);
   },
   methods: {
-    getMakeupList(page, row) {
+    getMakeupList(page=1, row=10) {
+      var makeup_Search = ''
+      if(this.makeup_Search.indexOf(' ')>-1){
+          var makeupList= this.makeup_Search.split(' ')
+          
+          for (let index = 0; index < makeupList.length; index++) {
+           makeup_Search +='&keyword='+ makeupList[index];
+            
+          }
+				 }else{
+           makeup_Search = '&keyword=' + this.makeup_Search
+         }
       this.$axios
-        .get("/management/admin/beauty-product!list.action", {
-          params: {
+        .post("/management/admin/beauty-product!list.action", this.$qs.stringify({
+            // filter_LIKES_name: this.makeup_Search,
             page: page,
             rows: row
-          }
-        })
+          } ) + makeup_Search
+        )
         .then(res => {
           console.log(res, "");
           if (res.status == 200) {
@@ -415,7 +456,8 @@ export default {
                 if (res2.status == 200) {
                   this.formLabelAlign = res.data;
                   if(res2.data.brandId){
-                    this.formLabelAlign.brandId = res2.data.brandId.id
+                    // this.formLabelAlign.brandId = res2.data.brandId.id
+                     this.$set(this.formLabelAlign,'brandId',res2.data.brandId.id)
                     this.gridList = [res2.data.brandId]
                   }
                   if(res2.data.categoryId){
@@ -425,7 +467,8 @@ export default {
                   res2.data.fs
                     ? (this.formLabelAlign.fs = res2.data.fs)
                     : (this.formLabelAlign.fx = "");
-                  if (res2.data.gx) {
+                  if (res2.data.gx.length) {
+                    console.log(1)
                     let gx = [];
                     for (let index = 0; index < res2.data.gx.length; index++) {
                       gx.push(res2.data.gx[index].id);
@@ -457,6 +500,7 @@ export default {
               specification: this.formLabelAlign.specification,
               brandId: this.formLabelAlign.brandId,
               price: this.formLabelAlign.price,
+              records: this.formLabelAlign.records,
               grade: this.formLabelAlign.grade,
               synopsis: this.formLabelAlign.synopsis,
               elementId: this.formLabelAlign.elementId,
@@ -502,11 +546,12 @@ export default {
             }`
           )
           .then(res => {
-            if (res.status == 200 && res.data.success==true) {
+            if (res.status == 200 && res.data=='{success:true}') {
               console.log(res)
               this.$message.success("删除成功");
               this.getMakeupList();
             }else{
+              console.log(res)
               this.$message.error('该产品已绑定色号,请下线后在执行删除操作!!')
             }
           });
@@ -530,6 +575,7 @@ export default {
               specification: this.formLabelAdd.specification,
               brandId: this.formLabelAdd.brandId,
               price: this.formLabelAdd.price,
+              records: this.formLabelAdd.records,
               grade: this.formLabelAdd.grade,
               synopsis: this.formLabelAdd.synopsis,
               elementId: this.formLabelAdd.elementId,
@@ -559,6 +605,25 @@ export default {
         }
       });
     },
+    //新增品牌
+    // 新增
+			handleAddBrand(formName) {
+						this.$axios
+							.post(
+								`/management/admin/brand!save.action`,
+								this.$qs.stringify({
+									name: this.formLabelAddBrand.name,
+									synopsis: this.formLabelAddBrand.synopsis,
+									theMain: this.formLabelAddBrand.theMain
+								})
+							)
+							.then(res => {
+								this.AddBrandVisible = false;
+								this.$message.success(`添加成功`);
+							});
+					
+
+			},
     // 上下线
     online(rows) {
       this.$confirm(`是否${rows.online == 0 ? "禁用" : "启用"}该记录`, "提示", {
@@ -594,19 +659,10 @@ export default {
     },
     // 搜索
     makeupSearch() {
-      this.$axios
-        .get("/management/admin/beauty-product!list.action", {
-          params: {
-            filter_EQS_categoryId: this.category,
-            filter_EQL_brandId: this.grid
-          }
-        })
-        .then(res => {
-          if (res.status == 200) {
-            this.makeupList = res.data.rows;
-            this.totalNum3 = res.data.total;
-          }
-        });
+      if(this.makeup_Search.indexOf(',')==-1){
+					 console.log(this.makeup_Search)
+				 }
+				 console.log(this.makeup_Search)
     },
     //品牌搜索
     brandSearch(q) {
@@ -684,14 +740,26 @@ export default {
       }
     },
     productSearch(page, row) {
+      var makeup_Search = ''
+      if(this.makeup_Search.indexOf(',')>-1){
+          var makeupList= this.makeup_Search.split(',')
+          
+          for (let index = 0; index < makeupList.length; index++) {
+           makeup_Search +='&keyword='+ makeupList[index];
+            
+          }
+				 }else{
+           makeup_Search = '&keyword=' + this.makeup_Search
+         }
+				//  console.log(this.makeup_Search)
       this.$axios
         .post(
           "/management/admin/beauty-product!list.action",
           this.$qs.stringify({
             filter_LIKES_name: this.makeup_Search,
-            page: page,
-            rows: row
-          })
+            page: this.page1,
+            rows: this.row1
+          }) 
         )
         .then(res => {
           if (res.status == 200) {
@@ -729,11 +797,11 @@ export default {
     // 分页
     changePage1(val) {
       this.page1 = val;
-      this.getGridList(val, this.row1);
+      this.getMakeupList(val, this.row1);
     },
     changeSize1(val) {
       this.row1 = val;
-      this.getGridList(this.page1, val);
+      this.getMakeupList(this.page1, val);
     },
     changePage2(val) {
       this.page2 = val;

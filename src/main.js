@@ -23,11 +23,26 @@ Vue.use(VueDND)
 Vue.prototype.$axios = axios;
 Vue.prototype.$qs = qs;
 axios.defaults.withCredentials = true;
+import Vuex from 'vuex'
+import './directive.js';
+Vue.use( Vuex );
 // axios.defaults.baseURL = 'http://localhost:8080';
 // 全局设置 post 时候表单数据格式组织形式   application/x-www-form-urlencoded
 // Vue.http.options.emulateJSON = true;
 
-
+//构建vuex
+const store = new Vuex.Store({
+  //待添加
+  state:{
+    loading:[]
+  },
+  mutations: {
+    getRoute(state,route){
+        let loadingList = state.loading.push(route)
+        console.log(state)
+    }
+  }
+})
 //路由拦截
 router.beforeEach((to, from, next) => {
   const role = sessionStorage.getItem('ms_username');
@@ -107,6 +122,7 @@ Vue.filter("formatTime", function (value, type) {
 new Vue({
   el: '#app',
   router,
+  store,
   components: {
     App
   },

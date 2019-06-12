@@ -7,7 +7,7 @@
         placeholder="请输入搜索类容"
         style="width: 30%"
         size="small"
-        @keyup.enter.native="issueSearch"
+        @keyup.enter.native.prevent="issueSearch"
       >
         <el-button slot="append" icon="el-icon-search" @click="issueSearch"></el-button>
       </el-input>

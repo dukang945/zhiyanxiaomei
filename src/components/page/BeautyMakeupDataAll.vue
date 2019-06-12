@@ -108,7 +108,7 @@ export default {
     getlabelCountList(page1, row1) {
       this.$axios
         .get("/management/admin/beauty-makeup-data-all!list.action", {
-          params: { page: page1, row: row1 }
+          params: { page: page1, rows: row1 }
         })
         .then(res => {
           if (res.status == 200) {
@@ -157,6 +157,7 @@ export default {
     //分页
     handleSizeChange(val) {
       this.row1 = val;
+      console.log(this.row1)
       this.getlabelCountList(this.page1, this.row1);
     },
     handleCurrentChange(val) {

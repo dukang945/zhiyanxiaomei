@@ -12,13 +12,9 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/management': {
-        // target: 'http://192.168.11.241:8082',
-        // target: 'http://192.168.12.225:8080',//xierui
-        // target: 'http://192.168.12.226:8080',//liqinxiang
-        // target: 'http://192.168.12.227:8082',//fuxiaolong
-        target: 'http://192.168.11.241:8082',
-        // target: 'http://192.168.14.166:8082',
-        // target: 'http://192.168.14.167:8080',
+        // target: 'http://192.168.51.58:8082',//内网
+        target: 'http://192.168.50.162:8082',//付小龙
+        // target: 'http://192.168.14.167:8080',//谢瑞
         changeOrigin: true,
         pathRewrite: {
           '^/management': '/management'
