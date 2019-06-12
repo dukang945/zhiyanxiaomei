@@ -185,7 +185,7 @@ export default {
               this.AddVisible = false;
               this.$message.success(`添加成功`);
               this.formAdd = {};
-              this.getlabelCountList();
+              this.getlabelCountList(this.page1, this.row1);
             }
           }
         });
@@ -223,7 +223,7 @@ export default {
               this.TableVisible = false;
               this.$message.success(`修改成功`);
               this.formEdit = {};
-              this.getlabelCountList();
+              this.getlabelCountList(this.page1, this.row1);
             }
           }
         });
@@ -240,7 +240,7 @@ export default {
           .then(res => {
             if (res.status == 200) {
               this.$message.success("删除成功");
-              this.getlabelCountList();
+              this.getlabelCountList(this.page1, this.row1);
             }
           });
       });

@@ -1,29 +1,119 @@
 <template>
   <div class="teachContent">
+    <el-dialog
+        title="新增"
+        :visible.sync="AddBloggerVisible"
+        width="30%"
+      >
+        <el-form
+          :label-position="labelPosition"
+          label-width="120px"
+          :model="formLabelAddBlogger"
+          :rules="rules"
+          ref="formLabelAdd"
+        >
+          <el-form-item
+            label="博主姓名:"
+            prop="name"
+          >
+            <el-input v-model="formLabelAddBlogger.name"></el-input>
+          </el-form-item>
+          <el-form-item label="博主标语:">
+            <el-input v-model="formLabelAddBlogger.slogan"></el-input>
+          </el-form-item>
+          <el-form-item label="图片">
+                <el-upload
+                  class="upload-demo"
+                  action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+                  :data="imgData1"
+                  :on-remove="handleRemove1"
+                  :on-success="handleSuccess1"
+                  :file-list="fileList1"
+                  :before-upload="beforeUpload1"
+                  list-type="picture"
+                >
+                  <el-button size="small" type="primary">点击上传</el-button>
+                </el-upload>
+              </el-form-item>
+        </el-form>
+        <span
+          slot="footer"
+          class="dialog-footer"
+        >
+          <el-button @click="AddBloggerVisible = false">取 消</el-button>
+          <el-button
+            type="primary"
+            @click="handleAddBlogger('formLabelAddBlogger')"
+          >确 定</el-button>
+        </span>
+      </el-dialog>
     <el-row>
       <el-col :span="16">
         <div class="btnGroup">
-          <el-button type="primary" size="small" @click="add">新增</el-button>
-          <el-button type="primary" size="small" @click="batchOnline">批量上线</el-button>
-          <el-button type="primary" size="small" @click="batchOffline">批量下线</el-button>
-          <el-button type="primary" size="small" @click="batchLabel">批量加标签</el-button>
-          <el-button type="danger" size="small" @click="batchDelete">批量删除</el-button>
-          <el-button type="primary" plain size="small" @click="freshSearch">刷新ElasticSearch</el-button>
-          <el-button type="primary" plain size="small" @click="freshH5">刷新HTML</el-button>
+          <el-button
+            type="primary"
+            size="small"
+            @click="add"
+          >新增</el-button>
+          <el-button
+            type="primary"
+            size="small"
+            @click="batchOnline"
+          >批量上线</el-button>
+          <el-button
+            type="primary"
+            size="small"
+            @click="batchOffline"
+          >批量下线</el-button>
+          <el-button
+            type="primary"
+            size="small"
+            @click="batchLabel"
+          >批量加标签</el-button>
+          <el-button
+            type="danger"
+            size="small"
+            @click="batchDelete"
+          >批量删除</el-button>
+          <el-button
+            type="primary"
+            plain
+            size="small"
+            @click="freshSearch"
+          >刷新ElasticSearch</el-button>
+          <el-button
+            type="primary"
+            plain
+            size="small"
+            @click="freshH5"
+          >刷新HTML</el-button>
           <!-- <el-button type="primary" size='small' @click="tableToExcel" plain>导出为Excel</el-button> -->
           <el-dialog
             title="新增教程"
             :visible.sync="AddVisible"
-            width="50%"
-            :before-close="handleClose"
+            :close-on-click-modal='false'
             @close="closeAddDialog"
+            @open="open"
+            v-dialogDrag
+            ref="dialog__wrapper"
+            :modal="false"
+            :modal-append-to-body="false"
           >
-            <el-form label-position="right" ref="addForm" label-width="120px" :model="formLabelAdd">
+            <el-form
+              label-position="right"
+              ref="addForm"
+              label-width="120px"
+              :model="formLabelAdd"
+            >
               <el-form-item label="名称">
                 <el-input v-model="formLabelAdd.name"></el-input>
               </el-form-item>
               <el-form-item label="搜索标签">
-                <el-input v-model="searchLabel" @input="getLabelList" clearable></el-input>
+                <el-input
+                  v-model="searchLabel"
+                  @input="getLabelList"
+                  clearable
+                ></el-input>
                 <el-table
                   :data="labelTableData"
                   @row-click="selectLabel"
@@ -33,15 +123,32 @@
                   v-if="searchLabel"
                   class="labelTable"
                 >
-                  <el-table-column prop="id" label="id" width="50" align="center"></el-table-column>
-                  <el-table-column prop="name" label="中文标题" align="center"></el-table-column>
-                  <el-table-column prop="enname" label="英文标题" align="center"></el-table-column>
-                  <el-table-column prop="labelName" label="上级标签" align="center"></el-table-column>
+                  <el-table-column
+                    prop="id"
+                    label="id"
+                    width="50"
+                    align="center"
+                  ></el-table-column>
+                  <el-table-column
+                    prop="name"
+                    label="中文标题"
+                    align="center"
+                  ></el-table-column>
+                  <el-table-column
+                    prop="enname"
+                    label="英文标题"
+                    align="center"
+                  ></el-table-column>
+                  <el-table-column
+                    prop="labelName"
+                    label="上级标签"
+                    align="center"
+                  ></el-table-column>
                 </el-table>
                 <div class="labelChoosed">
-                  已选标签：
+                  <div>已选标签：</div>
                   <span v-for="(item,key) in choosedLabelList">
-                    {{item.name?item.name:item.enname}}
+                    {{key+1}}--{{item.name?item.name:item.enname}}
                     <i
                       class="el-icon-error"
                       @click="deleteLabel(key)"
@@ -55,11 +162,36 @@
               <el-form-item label="浏览量">
                 <el-input v-model="formLabelAdd.pageView"></el-input>
               </el-form-item>
+              <el-form-item label="来源新增">
+                <el-button
+        type="primary"
+        @click="AddBloggerVisible = true"
+        size="small"
+        v-has
+      >新增</el-button>
+              </el-form-item>
               <el-form-item label="来源">
-                <el-input v-model="formLabelAdd.source"></el-input>
+                <el-select
+                  v-model="formLabelAdd.source"
+                  filterable
+                  :filter-method='getBlogger'
+                  placeholder="请选择"
+                >
+                  <el-option
+                    v-for="item in bloggerList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.name"
+                  >
+                  </el-option>
+                </el-select>
               </el-form-item>
               <el-form-item label="搜索产品">
-                <el-input v-model="searchBeautiColor" @change="getBeautiColorList" clearable></el-input>
+                <el-input
+                  v-model="searchBeautiColor"
+                  @input="getBeautiColorList"
+                  clearable
+                ></el-input>
                 <el-table
                   :data="beautiColorTableData"
                   @row-click="selectBeautiColor"
@@ -69,18 +201,34 @@
                   v-if="searchBeautiColor"
                   class="labelTable"
                 >
-                  <el-table-column prop="id" label="id" width="50" align="center"></el-table-column>
-                  <el-table-column prop="name" label="色号名" align="center"></el-table-column>
-                  <el-table-column prop="productName" label="商品名" align="center"></el-table-column>
+                  <el-table-column
+                    prop="id"
+                    label="id"
+                    width="50"
+                    align="center"
+                  ></el-table-column>
+                  <el-table-column
+                    prop="name"
+                    label="色号名"
+                    align="center"
+                  ></el-table-column>
+                  <el-table-column
+                    prop="productName"
+                    label="商品名"
+                    align="center"
+                  ></el-table-column>
                 </el-table>
                 <div class="labelChoosed">
-                  已选产品：
+                  <div>已选产品：</div>
                   <span
                     v-for="(item,key) in choosedBeautiColorList"
                     v-dragging="{ list: choosedBeautiColorList, item: item, group: 'name' }"
                   >
-                    {{item.name}}
-                    <i class="el-icon-error" @click="deleteBeautiColor(key)"></i>
+                    {{key+1}}--{{item.name}}
+                    <i
+                      class="el-icon-error"
+                      @click="deleteBeautiColor(key)"
+                    ></i>
                   </span>
                 </div>
               </el-form-item>
@@ -106,17 +254,46 @@
                   :before-upload="beforeUploadVideo"
                   :on-success="uploadSuccessVideo"
                   :on-remove="handleRemoveVideo"
+                  :on-progress="uploadVideoProcess"
+                  :show-file-list="false"
+                  list-type="text"
+                  ref="upload"
                 >
-                  <el-button size="small" type="primary" @click="videoHandle('add')">点击上传</el-button>
+                  <el-button
+                    size="small"
+                    type="primary"
+                    @click="videoHandle('add')"
+                  >点击上传</el-button>
+                  <!-- <video :src="formLabelAdd.videoUrl"></video> -->
                   <span
                     slot="tip"
                     class="el-upload__tip"
                     style="margin-left: 20px;"
                   >只能上传mp4或flv格式文件，为保证速度，请尽量压缩文件</span>
                 </el-upload>
+                <img
+                  :src="formLabelAdd.videoUrl.split('|')[1]"
+                  alt=""
+                  v-if='formLabelAdd.videoUrl && videoFlag == false'
+                >
+                <el-progress
+                  v-if='videoFlag == true'
+                  :percentage="videoUploadPercent"
+                  style="margin-top:30px;"
+                ></el-progress>
               </el-form-item>
+              <el-form-item label="视频方位">
+    <el-radio-group v-model="formLabelAdd.orientation">
+      <el-radio :label="0" >横屏</el-radio>
+      <el-radio :label="1">竖屏</el-radio>
+    </el-radio-group>
+  </el-form-item>
               <el-form-item label="教程简介">
-                <el-input type="textarea" autosize v-model="formLabelAdd.about"></el-input>
+                <el-input
+                  type="textarea"
+                  autosize
+                  v-model="formLabelAdd.about"
+                ></el-input>
               </el-form-item>
               <el-form-item label="图片">
                 <el-upload
@@ -130,7 +307,11 @@
                   :file-list="addFileList"
                   list-type="picture"
                 >
-                  <el-button size="small" type="primary" @click="uploadName("addImg")">点击上传</el-button>
+                  <el-button
+                    size="small"
+                    type="primary"
+                    @click="uploadName('addImg')"
+                  >点击上传</el-button>
                   <!-- <span slot="tip" class="el-upload__tip" style="margin-left: 20px;">只能上传jpg/png文件，且不超过500kb</span> -->
                 </el-upload>
               </el-form-item>
@@ -148,7 +329,10 @@
                     :label="item.name"
                     :name="item.name"
                   >
-                    <el-form :model="formLabelAdd.beautyDetailsRelationList[index]" class="stepBox">
+                    <el-form
+                      :model="formLabelAdd.beautyDetailsRelationList[index]"
+                      class="stepBox"
+                    >
                       <el-form-item label="教程步骤名">
                         <el-select
                           v-model="formLabelAdd.beautyDetailsRelationList[index].procedureName"
@@ -162,7 +346,10 @@
                           ></el-option>
                         </el-select>
                       </el-form-item>
-                      <transition-group tag="div" name="el-zoom-in-top">
+                      <transition-group
+                        tag="div"
+                        name="el-zoom-in-top"
+                      >
                         <div
                           v-for="(val,key) in formLabelAdd.beautyDetailsRelationList[index].childrenProcedureList"
                           v-if="formLabelAdd.beautyDetailsRelationList[index].childrenProcedureList.length>0"
@@ -171,7 +358,10 @@
                         >
                           <p>
                             小步骤序号：{{key+1}}
-                            <span class="deleteMiniStep" @click="deleteMiniStep(index,key)">
+                            <span
+                              class="deleteMiniStep"
+                              @click="deleteMiniStep(index,key)"
+                            >
                               <i class="el-icon-close"></i>
                             </span>
                           </p>
@@ -191,13 +381,15 @@
                               :on-success="uploadSuccess"
                               :on-remove="handleRemove"
                               :on-preview="handlePictureCardPreview"
+                              :file-list="addFileList"
                               :limit="1"
                               list-type="picture"
+                              :disabled="imgFlag"
                             >
                               <el-button
                                 size="small"
                                 type="primary"
-                                @click="uploadName("addMiniStep-"+index+"-"+key)"
+                                @click="uploadName('addMiniStep-'+index+'-'+key)"
                               >点击上传</el-button>
                               <!-- <span slot="tip" class="el-upload__tip" style="margin-left: 20px;">只能上传jpg/png文件，且不超过500kb</span> -->
                             </el-upload>
@@ -216,9 +408,16 @@
                 </el-tabs>
               </el-form-item>
             </el-form>
-            <span slot="footer" class="dialog-footer">
+            <span
+              slot="footer"
+              class="dialog-footer"
+            >
               <el-button @click="cancelAdd">取 消</el-button>
-              <el-button type="primary" plain @click="saveDraft">提交</el-button>
+              <el-button
+                type="primary"
+                plain
+                @click="saveDraft"
+              >提交</el-button>
               <!-- <el-button type="primary" plain @click="saveDraft">保存草稿</el-button>
               <el-button type="primary" @click="handleAdd">提交审核</el-button>-->
             </span>
@@ -226,25 +425,42 @@
         </div>
       </el-col>
       <el-col :span="8">
-        <el-form :inline="true" :model="searchForm" class="right-search">
+        <el-form
+          :inline="true"
+          :model="searchForm"
+          class="right-search"
+          @submit.native.prevent
+        >
           <el-form-item>
             <el-input
               v-model="searchForm.text"
               size="small"
               placeholder="请输入搜索内容"
-              @keyup.enter.native="onSubmitSearch"
+              @keyup.enter.native.prevent="onSubmitSearch"
             ></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" size="small" @click="onSubmitSearch" icon="el-icon-search">搜索</el-button>
+            <el-button
+              type="primary"
+              size="small"
+              @click="onSubmitSearch"
+              icon="el-icon-search"
+            >搜索</el-button>
           </el-form-item>
         </el-form>
       </el-col>
     </el-row>
     <el-row :gutter="5">
-      <el-col :span="2" class="treeBox">
+      <el-col
+        :span="2"
+        class="treeBox"
+      >
         <span class="treeTitle">教程栏目列表</span>
-        <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+        <el-tree
+          :data="treeData"
+          :props="defaultProps"
+          @node-click="handleNodeClick"
+        ></el-tree>
       </el-col>
       <el-col :span="22">
         <!-- <el-table :data="tableData" border style="width: 100%" class='table' @select='tableSelect' v-loading="loading" :row-class-name="tableRowClassName"> -->
@@ -254,11 +470,27 @@
           style="width: 100%"
           class="table"
           @select="tableSelect"
+          @filter-change="filterTag"
           v-loading="loading"
         >
-          <el-table-column type="selection" width="55" align="center"></el-table-column>
-          <el-table-column prop="id" label="id" width="50" align="center"></el-table-column>
-          <el-table-column prop="name" label="标题" align="center" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column
+            type="selection"
+            width="55"
+            align="center"
+          ></el-table-column>
+          <el-table-column
+            prop="id"
+            label="id"
+            width="50"
+            align="center"
+          ></el-table-column>
+          <el-table-column
+            prop="name"
+            label="标题"
+            align="center"
+            :show-overflow-tooltip="true"
+            width='300'
+          ></el-table-column>
           <el-table-column
             prop="labelName"
             label="标签"
@@ -282,10 +514,25 @@
             align="center"
             :formatter="getStatus"
             :filters="satusList"
-            :filter-method="filterStatus"
             filter-placement="bottom-end"
+          >
+            <template slot-scope="scope">
+              <el-tag
+                type="success"
+                v-if="scope.row.online==0"
+              >上线</el-tag>
+              <el-tag
+                type="danger"
+                v-else-if="scope.row.online==1"
+              >下线</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="pageView"
+            label="浏览量"
+            width="100"
+            align="center"
           ></el-table-column>
-          <el-table-column prop="pageView" label="浏览量" width="100" align="center"></el-table-column>
           <el-table-column
             prop="createTime"
             label="创建时间"
@@ -294,7 +541,12 @@
             :formatter="getTime"
             :show-overflow-tooltip="true"
           ></el-table-column>
-          <el-table-column label="操作" fixed="right" align="center" width="520">
+          <el-table-column
+            label="操作"
+            fixed="right"
+            align="center"
+            width="560"
+          >
             <template slot-scope="scope">
               <el-button
                 size="small"
@@ -302,8 +554,16 @@
                 @click="edit(scope.$index, scope.row)"
                 icon="el-icon-edit"
               >编辑</el-button>
-              <el-button size="small" type="primary" @click="checkH5(scope.$index, scope.row)">预览</el-button>
-              <el-button size="small" type="primary" @click="saveH5(scope.row)">生成H5</el-button>
+              <el-button
+                size="small"
+                type="primary"
+                @click="checkH5(scope.$index, scope.row)"
+              >预览</el-button>
+              <el-button
+                size="small"
+                type="primary"
+                @click="saveH5(scope.row)"
+              >更新时间</el-button>
               <el-button
                 size="small"
                 type="primary"
@@ -326,7 +586,11 @@
             </template>
           </el-table-column>
         </el-table>
-        <Pagination :totalNum="totalNum" @change_Page="changePage" @change_Size="changeSize"></Pagination>
+        <Pagination
+          :totalNum="totalNum"
+          @change_Page="changePage"
+          @change_Size="changeSize"
+        ></Pagination>
       </el-col>
     </el-row>
     <!-- 编辑表单 -->
@@ -334,15 +598,23 @@
       title="编辑"
       :visible.sync="editDialogVisible"
       width="50%"
-      :before-close="handleClose"
+      :close-on-click-modal='false'
       @close="closeEditDialog"
     >
-      <el-form :label-position="labelPosition" label-width="120px" :model="editFormData">
+      <el-form
+        :label-position="labelPosition"
+        label-width="120px"
+        :model="editFormData"
+      >
         <el-form-item label="名称">
           <el-input v-model="editFormData.name"></el-input>
         </el-form-item>
         <el-form-item label="搜索标签">
-          <el-input v-model="searchLabel" @input="getLabelList" clearable></el-input>
+          <el-input
+            v-model="searchLabel"
+            @input="getLabelList"
+            clearable
+          ></el-input>
           <el-table
             :data="labelTableData"
             @row-click="selectLabel"
@@ -352,16 +624,36 @@
             v-if="searchLabel"
             class="labelTable"
           >
-            <el-table-column prop="id" label="id" width="50" align="center"></el-table-column>
-            <el-table-column prop="name" label="中文标题" align="center"></el-table-column>
-            <el-table-column prop="enname" label="英文标题" align="center"></el-table-column>
-            <el-table-column prop="labelName" label="上级标签" align="center"></el-table-column>
+            <el-table-column
+              prop="id"
+              label="id"
+              width="50"
+              align="center"
+            ></el-table-column>
+            <el-table-column
+              prop="name"
+              label="中文标题"
+              align="center"
+            ></el-table-column>
+            <el-table-column
+              prop="enname"
+              label="英文标题"
+              align="center"
+            ></el-table-column>
+            <el-table-column
+              prop="labelName"
+              label="上级标签"
+              align="center"
+            ></el-table-column>
           </el-table>
           <div class="labelChoosed">
-            已选标签：
+            <div>已选标签：</div>
             <span v-for="(item,key) in choosedLabelList">
-              {{item.name?item.name:item.enname}}
-              <i class="el-icon-error" @click="deleteLabel(key)"></i>
+              {{key+1}}--{{item.name?item.name:item.enname}}
+              <i
+                class="el-icon-error"
+                @click="deleteLabel(key)"
+              ></i>
             </span>
           </div>
         </el-form-item>
@@ -371,11 +663,36 @@
         <el-form-item label="浏览量">
           <el-input v-model="editFormData.pageView"></el-input>
         </el-form-item>
+        <el-form-item label="来源新增">
+                <el-button
+        type="primary"
+        @click="AddBloggerVisible = true"
+        size="small"
+        v-has
+      >新增</el-button>
+              </el-form-item>
         <el-form-item label="来源">
-          <el-input v-model="editFormData.source"></el-input>
-        </el-form-item>
+                <el-select
+                  v-model="editFormData.source"
+                  filterable
+                  :filter-method='getBlogger'
+                  placeholder="请选择"
+                >
+                  <el-option
+                    v-for="item in bloggerList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.name"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
         <el-form-item label="搜索产品">
-          <el-input v-model="searchBeautiColor" @change="getBeautiColorList" clearable></el-input>
+          <el-input
+            v-model="searchBeautiColor"
+            @input="getBeautiColorList"
+            clearable
+          ></el-input>
           <el-table
             :data="beautiColorTableData"
             @row-click="selectBeautiColor"
@@ -385,23 +702,43 @@
             v-if="searchBeautiColor"
             class="labelTable"
           >
-            <el-table-column prop="id" label="id" width="50" align="center"></el-table-column>
-            <el-table-column prop="name" label="色号名" align="center"></el-table-column>
-            <el-table-column prop="productName" label="商品名" align="center"></el-table-column>
+            <el-table-column
+              prop="id"
+              label="id"
+              width="50"
+              align="center"
+            ></el-table-column>
+            <el-table-column
+              prop="name"
+              label="色号名"
+              align="center"
+            ></el-table-column>
+            <el-table-column
+              prop="productName"
+              label="商品名"
+              align="center"
+            ></el-table-column>
           </el-table>
           <div class="labelChoosed">
-            已选产品：
+            <div>已选产品：</div>
             <span
               v-for="(item,key) in choosedBeautiColorList"
               v-dragging="{ list: choosedBeautiColorList, item: item, group: 'name' }"
             >
-              {{item.name}}
-              <i class="el-icon-error" @click="deleteBeautiColor(key)"></i>
+              {{key+1}}--{{item.name}}
+              <i
+                class="el-icon-error"
+                @click="deleteBeautiColor(key)"
+              ></i>
             </span>
           </div>
         </el-form-item>
         <el-form-item label="选择美妆模型图">
-          <el-select v-model="editFormData.moduleId" placeholder="请选择美妆模型" style="width: 100%;">
+          <el-select
+            v-model="editFormData.moduleId"
+            placeholder="请选择美妆模型"
+            style="width: 100%;"
+          >
             <el-option
               v-for="item in moduleOptions"
               :key="item.id"
@@ -415,20 +752,38 @@
             action="/management/admin/kcupload!uploadVideo.action?type=makeupvideo_path&dir=media"
             :before-upload="beforeUploadVideo"
             :on-success="uploadSuccessVideo"
+            :on-progress="uploadVideoProcess"
             :on-remove="handleRemoveVideo"
             :file-list="editVideo"
             :data="videoData"
+            list-type="picture"
           >
-            <el-button size="small" type="primary" @click="videoHandle('edit')">点击上传</el-button>
+            <el-button
+              size="small"
+              type="primary"
+              @click="videoHandle('edit')"
+            >点击上传</el-button>
             <span
               slot="tip"
               class="el-upload__tip"
               style="margin-left: 20px;"
             >只能上传mp4或flv格式文件，为保证速度，请尽量压缩文件</span>
           </el-upload>
+          <!-- <img :src="editFormData.videoUrl.split('|')[1]" alt="" v-if='editFormData.videoUrl && videoFlag == false'>
+                <el-progress v-if='videoFlag == true' :percentage="videoUploadPercent" style="margin-top:30px;"></el-progress> -->
         </el-form-item>
+        <el-form-item label="视频方位">
+    <el-radio-group v-model="editFormData.orientation">
+      <el-radio :label="0" >横屏</el-radio>
+      <el-radio :label="1">竖屏</el-radio>
+    </el-radio-group>
+  </el-form-item>
         <el-form-item label="简介">
-          <el-input type="textarea" autosize v-model="editFormData.about"></el-input>
+          <el-input
+            type="textarea"
+            autosize
+            v-model="editFormData.about"
+          ></el-input>
         </el-form-item>
         <el-form-item label="图片">
           <el-upload
@@ -442,7 +797,11 @@
             :file-list="editFileList"
             list-type="picture"
           >
-            <el-button size="small" type="primary" @click="uploadName("editImg")">点击上传</el-button>
+            <el-button
+              size="small"
+              type="primary"
+              @click="uploadName('editImg')"
+            >点击上传</el-button>
             <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
           </el-upload>
         </el-form-item>
@@ -461,7 +820,10 @@
               :label="item.name"
               :name="item.name"
             >
-              <el-form :model="editFormData.beautyDetailsRelationList[index]" class="stepBox">
+              <el-form
+                :model="editFormData.beautyDetailsRelationList[index]"
+                class="stepBox"
+              >
                 <el-form-item label="教程步骤名">
                   <el-select
                     v-model="editFormData.beautyDetailsRelationList[index].procedureName"
@@ -475,7 +837,10 @@
                     ></el-option>
                   </el-select>
                 </el-form-item>
-                <transition-group tag="div" name="el-zoom-in-top">
+                <transition-group
+                  tag="div"
+                  name="el-zoom-in-top"
+                >
                   <div
                     v-for="(val,key) in editFormData.beautyDetailsRelationList[index].childrenProcedureList"
                     v-if="editFormData.beautyDetailsRelationList[index].childrenProcedureList.length>0"
@@ -484,7 +849,10 @@
                   >
                     <p>
                       小步骤序号：{{key+1}}
-                      <span class="deleteMiniStep" @click="editDeleteMiniStep(index,key)">
+                      <span
+                        class="deleteMiniStep"
+                        @click="editDeleteMiniStep(index,key)"
+                      >
                         <i class="el-icon-close"></i>
                       </span>
                     </p>
@@ -507,11 +875,12 @@
                         :limit="1"
                         list-type="picture"
                         :file-list="editStepfileList[index][key]"
+                        :disabled="imgFlag"
                       >
                         <el-button
                           size="small"
                           type="primary"
-                          @click="uploadName("editMiniStep-"+index+"-"+key)"
+                          @click="uploadName('editMiniStep-'+index+'-'+key)"
                         >点击上传</el-button>
                         <!-- <span slot="tip" class="el-upload__tip" style="margin-left: 20px;">只能上传jpg/png文件，且不超过500kb</span> -->
                       </el-upload>
@@ -530,73 +899,178 @@
           </el-tabs>
         </el-form-item>
       </el-form>
-      <span slot="footer" class="dialog-footer">
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
         <el-button @click="cancelEdit">取 消</el-button>
-        <el-button type="primary" @click="handleEdit">确 定</el-button>
+        <el-button
+          type="primary"
+          @click="handleEdit"
+        >确 定</el-button>
       </span>
     </el-dialog>
     <!-- 预览图片弹框 -->
     <el-dialog :visible.sync="imgDialogVisible">
-      <img width="100%" :src="dialogImageUrl" alt>
+      <img
+        width="100%"
+        :src="dialogImageUrl"
+        alt
+      >
     </el-dialog>
     <!-- 推送弹框 -->
-    <el-dialog title="推送信息" :visible.sync="pushDialogVisible" width="30%" append-to-body>
-      <el-form :label-position="labelPosition" label-width="120px" :model="pushForm">
+    <el-dialog
+      title="推送信息"
+      :visible.sync="pushDialogVisible"
+      width="30%"
+      append-to-body
+    >
+      <el-form
+        :label-position="labelPosition"
+        label-width="120px"
+        :model="pushForm"
+      >
         <el-form-item label="标题">
           <el-input v-model="pushForm.title"></el-input>
         </el-form-item>
         <el-form-item label="内容">
-          <el-input type="textarea" autosize v-model="pushForm.body"></el-input>
+          <el-input
+            type="textarea"
+            autosize
+            v-model="pushForm.body"
+          ></el-input>
         </el-form-item>
         <el-form-item label="设备类型">
-          <el-select v-model="pushForm.deviceType" placeholder="请选择设备类型">
-            <el-option label="全部" value="ALL"></el-option>
-            <el-option label="Android" value="ANDROID"></el-option>
-            <el-option label="IOS" value="IOS"></el-option>
+          <el-select
+            v-model="pushForm.deviceType"
+            placeholder="请选择设备类型"
+          >
+            <el-option
+              label="全部"
+              value="ALL"
+            ></el-option>
+            <el-option
+              label="Android"
+              value="ANDROID"
+            ></el-option>
+            <el-option
+              label="IOS"
+              value="IOS"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="环境">
-          <el-select v-model="pushForm.environment" placeholder="请选择推送环境">
-            <el-option label="生产环境" value="PRODUCT"></el-option>
-            <el-option label="开发环境" value="DEV"></el-option>
+          <el-select
+            v-model="pushForm.environment"
+            placeholder="请选择推送环境"
+          >
+            <el-option
+              label="生产环境"
+              value="PRODUCT"
+            ></el-option>
+            <el-option
+              label="开发环境"
+              value="DEV"
+            ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="点击通知后动作" v-if="pushForm.deviceType!="IOS"">
-          <el-select v-model="pushForm.openType" placeholder="请选择动作">
-            <el-option label="打开应用" value="APPLICATION"></el-option>
-            <el-option label="打开AndroidActivity" value="ACTIVITY"></el-option>
-            <el-option label="打开URL" value="URL"></el-option>
-            <el-option label="无跳转" value="NONE"></el-option>
+        <el-form-item
+          label="点击通知后动作"
+          v-if="pushForm.deviceType!='IOS'"
+        >
+          <el-select
+            v-model="pushForm.openType"
+            placeholder="请选择动作"
+          >
+            <el-option
+              label="打开应用"
+              value="APPLICATION"
+            ></el-option>
+            <el-option
+              label="打开AndroidActivity"
+              value="ACTIVITY"
+            ></el-option>
+            <el-option
+              label="打开URL"
+              value="URL"
+            ></el-option>
+            <el-option
+              label="无跳转"
+              value="NONE"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="消息类型">
-          <el-select v-model="pushForm.pushType" placeholder="请选择消息类型">
-            <el-option label="消息" value="MESSAGE"></el-option>
-            <el-option label="通知" value="NOTICE"></el-option>
+          <el-select
+            v-model="pushForm.pushType"
+            placeholder="请选择消息类型"
+          >
+            <el-option
+              label="消息"
+              value="MESSAGE"
+            ></el-option>
+            <el-option
+              label="通知"
+              value="NOTICE"
+            ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="消息转通知" v-if="pushForm.pushType==="MESSAGE"">
-          <el-select v-model="pushForm.remind" placeholder="请选择消息类型">
-            <el-option label="是" value="true"></el-option>
-            <el-option label="否" value="false"></el-option>
+        <el-form-item
+          label="消息转通知"
+          v-if="pushForm.pushType==='MESSAGE'"
+        >
+          <el-select
+            v-model="pushForm.remind"
+            placeholder="请选择消息类型"
+          >
+            <el-option
+              label="是"
+              value="true"
+            ></el-option>
+            <el-option
+              label="否"
+              value="false"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="推送目标">
-          <el-select v-model="pushForm.target" placeholder="请选择目标">
-            <el-option label="广播推送" value="ALL"></el-option>
-            <el-option label="按设备推送" value="ACCOUNT"></el-option>
+          <el-select
+            v-model="pushForm.target"
+            placeholder="请选择目标"
+          >
+            <el-option
+              label="广播推送"
+              value="ALL"
+            ></el-option>
+            <el-option
+              label="按设备推送"
+              value="ACCOUNT"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="推送值">
           <el-input v-model="pushForm.targetValue"></el-input>
         </el-form-item>
         <el-form-item label="是否定时推送">
-          <el-select v-model="pushForm.status" placeholder="请选择目标" @change="changeStatus">
-            <el-option label="是" value="true"></el-option>
-            <el-option label="否" value="false"></el-option>
+          <el-select
+            v-model="pushForm.status"
+            placeholder="请选择目标"
+            @input="changeStatus"
+          >
+            <el-option
+              label="是"
+              value="true"
+            ></el-option>
+            <el-option
+              label="否"
+              value="false"
+            ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="推送时间" v-if="pushForm.status=="true"">
+        <el-form-item
+          label="推送时间"
+          v-if="pushForm.status=='true'"
+        >
           <el-col :span="11">
             <el-date-picker
               type="date"
@@ -606,7 +1080,10 @@
               style="width: 100%;"
             ></el-date-picker>
           </el-col>
-          <el-col class="line" :span="2">-</el-col>
+          <el-col
+            class="line"
+            :span="2"
+          >-</el-col>
           <el-col :span="11">
             <el-time-picker
               type="fixed-time"
@@ -622,15 +1099,31 @@
         </el-form-item>
         <el-form-item>
           <el-button @click="cancelPush">取 消</el-button>
-          <el-button type="primary" @click="handlePush">确 定</el-button>
+          <el-button
+            type="primary"
+            @click="handlePush"
+          >确 定</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
     <!-- 新增评论弹框 -->
-    <el-dialog title="添加评论" :visible.sync="addCommentDialogVisible" width="50%" append-to-body>
-      <el-form :label-position="labelPosition" label-width="100px" :model="addCommentForm">
+    <el-dialog
+      title="添加评论"
+      :visible.sync="addCommentDialogVisible"
+      width="50%"
+      append-to-body
+    >
+      <el-form
+        :label-position="labelPosition"
+        label-width="100px"
+        :model="addCommentForm"
+      >
         <el-form-item label="回复用户">
-          <el-select v-model="addCommentForm.userId" placeholder="请选择用户" style="width: 100%;">
+          <el-select
+            v-model="addCommentForm.userId"
+            placeholder="请选择用户"
+            style="width: 100%;"
+          >
             <div class="productOptionHead">
               <span class="number">编号</span>
               <span>用户昵称</span>
@@ -654,7 +1147,11 @@
           </el-select>
         </el-form-item>
         <el-form-item label="评论内容">
-          <el-input type="textarea" autosize v-model="addCommentForm.content"></el-input>
+          <el-input
+            type="textarea"
+            autosize
+            v-model="addCommentForm.content"
+          ></el-input>
         </el-form-item>
         <el-form-item label="点赞数">
           <el-input v-model="addCommentForm.greatNumber"></el-input>
@@ -662,22 +1159,71 @@
 
         <el-form-item>
           <el-button @click="cancelAddComment">取 消</el-button>
-          <el-button type="primary" @click="handleAddComment">确 定</el-button>
+          <el-button
+            type="primary"
+            @click="handleAddComment"
+          >确 定</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
     <!-- 查看评论弹框 -->
-    <el-dialog title="评论管理" :visible.sync="checkCommentDialogVisible" width="80%">
-      <el-button type="primary" @click="addComment" size="small" style="margin-bottom: 20px;">新增评论</el-button>
-      <el-table :data="commentTableData" border style="width: 100%">
-        <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-        <el-table-column prop="id" label="编号" width="100" align="center"></el-table-column>
-        <el-table-column prop="content" label="评论内容" align="center"></el-table-column>
-        <el-table-column prop="time" label="评论时间" width="150" align="center"></el-table-column>
-        <el-table-column prop="userId" label="评论用户" width="100" align="center"></el-table-column>
-        <el-table-column prop="parentUserId" label="回复的用户" width="100" align="center"></el-table-column>
-        <el-table-column prop="greatNumber" label="点赞数" width="100" align="center"></el-table-column>
-        <el-table-column label="操作" width="200" align="center">
+    <el-dialog
+      title="评论管理"
+      :visible.sync="checkCommentDialogVisible"
+      width="80%"
+    >
+      <el-button
+        type="primary"
+        @click="addComment"
+        size="small"
+        style="margin-bottom: 20px;"
+      >新增评论</el-button>
+      <el-table
+        :data="commentTableData"
+        border
+        style="width: 100%"
+      >
+        <el-table-column
+          type="index"
+          label="序号"
+          width="50"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="id"
+          label="编号"
+          width="100"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="content"
+          label="评论内容"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="time"
+          label="评论时间"
+          width="150"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="nickName"
+          label="评论用户"
+          width="100"
+          align="center"
+        ></el-table-column>
+        <!-- <el-table-column prop="parentUserId" label="回复的用户" width="100" align="center"></el-table-column> -->
+        <el-table-column
+          prop="greatNumber"
+          label="点赞数"
+          width="100"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          label="操作"
+          width="350"
+          align="center"
+        >
           <template slot-scope="scope">
             <el-button
               @click.native.prevent="deleteComment(scope.$index, commentTableData)"
@@ -690,7 +1236,7 @@
               size="small"
               @click="checkAddComment(scope.$index, scope.row)"
               icon="el-icon-edit"
-            >添加回复</el-button>
+            >查看二级评论</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -700,10 +1246,104 @@
         @change_Size="changeCommentSize"
       ></Pagination>
     </el-dialog>
+    <!-- 查看二级评论 -->
+    <el-dialog
+      title="评论管理"
+      :visible.sync="checkComment2DialogVisible"
+      width="80%"
+    >
+      <el-button
+        type="primary"
+        @click="addComment"
+        size="small"
+        style="margin-bottom: 20px;"
+      >新增评论</el-button>
+      <el-table
+        :data="comment2TableData"
+        border
+        style="width: 100%"
+      >
+        <el-table-column
+          type="index"
+          label="序号"
+          width="50"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="id"
+          label="编号"
+          width="100"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="content"
+          label="评论内容"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="time"
+          label="评论时间"
+          width="150"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="nickName"
+          label="评论用户"
+          width="100"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="parentNickName"
+          label="回复的用户"
+          width="100"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="greatNumber"
+          label="点赞数"
+          width="100"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          label="操作"
+          width="200"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <el-button
+              @click.native.prevent="deleteComment(scope.$index, comment2TableData)"
+              size="small"
+              type="danger"
+              class="el-icon-delete"
+            >删除</el-button>
+            <el-button
+              type="primary"
+              size="small"
+              @click="checkAddComment2(scope.$index, scope.row)"
+              icon="el-icon-edit"
+            >添加回复</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <Pagination
+        :totalNum="commentTotalNum2"
+        @change_Page="changeCommentPage2"
+        @change_Size="changeCommentSize2"
+      ></Pagination>
+    </el-dialog>
     <!-- 预览H5页面弹框 -->
-    <el-dialog :visible.sync="H5PageDialogVisible" width="70%" top="20px" @close="colseViewPage">
+    <el-dialog
+      :visible.sync="H5PageDialogVisible"
+      width="70%"
+      top="20px"
+      @close="colseViewPage"
+    >
       <div class="content">
-        <img class="phoneBorder" src="../../images/viewPage.png" alt>
+        <img
+          class="phoneBorder"
+          src="../../images/viewPage.png"
+          alt
+        >
         <div class="pageContent">
           <div id="title">
             <p>{{viewPageData.name}}</p>
@@ -757,7 +1397,10 @@
                 <span>{{(key+1)>9?(key+1):'0'+(key+1)}}</span>
               </div>
               <p>{{childrenItem.procedureDes}}</p>
-              <img :src="itemImg" v-for="(itemImg, ind) in childrenItem.procedureImg">
+              <img
+                :src="itemImg"
+                v-for="(itemImg, ind) in childrenItem.procedureImg"
+              >
             </div>
             <div
               class="intro"
@@ -766,15 +1409,28 @@
               v-if="item.procedureName=='结语'"
             >
               <p>{{childrenItem.procedureDes}}</p>
-              <img :src="itemImg" v-for="(itemImg, ind) in childrenItem.procedureImg">
+              <img
+                :src="itemImg"
+                v-for="(itemImg, ind) in childrenItem.procedureImg"
+              >
             </div>
           </div>
         </div>
-        <img class="phoneBorder productBox" src="../../images/viewPage.png" alt>
+        <img
+          class="phoneBorder productBox"
+          src="../../images/viewPage.png"
+          alt
+        >
         <div class="productContent">
           <div class="productTitle">产品清单</div>
-          <div class="productItem" v-for="(item,index) in viewPageColorList">
-            <img :src="getImgUrl(item.image)" alt>
+          <div
+            class="productItem"
+            v-for="(item,index) in viewPageColorList"
+          >
+            <img
+              :src="getImgUrl(item.image)"
+              alt
+            >
             <p>{{item.name}} {{item.specification}}</p>
             <p>参考价格 ：￥{{item.price}}</p>
           </div>
@@ -782,10 +1438,21 @@
       </div>
     </el-dialog>
     <!-- 批量增加标签弹框 -->
-    <el-dialog title="批量增加标签" :visible.sync="batchAddLabelDialogVisible" width="50%">
-      <el-form :label-position="labelPosition" label-width="80px">
+    <el-dialog
+      title="批量增加标签"
+      :visible.sync="batchAddLabelDialogVisible"
+      width="50%"
+    >
+      <el-form
+        :label-position="labelPosition"
+        label-width="80px"
+      >
         <el-form-item label="搜索标签">
-          <el-input v-model="searchLabel" @input="getLabelList" clearable></el-input>
+          <el-input
+            v-model="searchLabel"
+            @input="getLabelList"
+            clearable
+          ></el-input>
           <el-table
             :data="labelTableData"
             @row-click="selectLabel"
@@ -795,23 +1462,49 @@
             v-if="searchLabel"
             class="labelTable"
           >
-            <el-table-column prop="id" label="id" width="50" align="center"></el-table-column>
-            <el-table-column prop="name" label="中文标题" align="center"></el-table-column>
-            <el-table-column prop="enname" label="英文标题" align="center"></el-table-column>
-            <el-table-column prop="labelName" label="上级标签" align="center"></el-table-column>
+            <el-table-column
+              prop="id"
+              label="id"
+              width="50"
+              align="center"
+            ></el-table-column>
+            <el-table-column
+              prop="name"
+              label="中文标题"
+              align="center"
+            ></el-table-column>
+            <el-table-column
+              prop="enname"
+              label="英文标题"
+              align="center"
+            ></el-table-column>
+            <el-table-column
+              prop="labelName"
+              label="上级标签"
+              align="center"
+            ></el-table-column>
           </el-table>
           <div class="labelChoosed">
-            已选标签：
+            <div>已选标签：</div>
             <span v-for="(item,key) in choosedLabelList">
-              {{item.name?item.name:item.enname}}
-              <i class="el-icon-error" @click="deleteLabel(key)"></i>
+              {{key+1}}--{{item.name?item.name:item.enname}}
+              <i
+                class="el-icon-error"
+                @click="deleteLabel(key)"
+              ></i>
             </span>
           </div>
         </el-form-item>
       </el-form>
-      <span slot="footer" class="dialog-footer">
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
         <el-button @click="cancelAddLabel">取消</el-button>
-        <el-button type="primary" @click="addLabel">确定</el-button>
+        <el-button
+          type="primary"
+          @click="addLabel"
+        >确定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -823,6 +1516,12 @@ import Clipboard from "clipboard";
 export default {
   data() {
     return {
+      //视频进度条标记
+      videoFlag: false,
+      imgFlag: false,
+      videoUploadPercent: 0,
+      imgData1: {},
+      fileList1: [],
       searchForm: {
         text: ""
       }, //搜索框
@@ -832,6 +1531,7 @@ export default {
       beautiColorTableData: [], //色号表格数据
       searchBeautiColor: "", //搜索色号输入框
       choosedBeautiColorList: [], //已选中色号列表
+      Isonline: "", // 筛选上下线
       stepList: [
         {
           id: 1,
@@ -953,10 +1653,13 @@ export default {
       rules: {},
       labelPosition: "left",
       AddVisible: false,
+      AddBloggerVisible: false,
+      formLabelAddBlogger: {},
       editDialogVisible: false,
       pushDialogVisible: false,
       addCommentDialogVisible: false,
       checkCommentDialogVisible: false,
+      checkComment2DialogVisible: false,
       H5PageDialogVisible: false,
       // H5PageDialogVisible: true,
       batchAddLabelDialogVisible: false,
@@ -965,9 +1668,12 @@ export default {
       productTotalNum: 10,
       userTotalNum: 10,
       commentTotalNum: 10,
+      commentTotalNum2: 10,
       stepTotalNum: 10,
       tableData: [],
+      bloggerList: [],
       commentTableData: [], //评论表格数据
+      comment2TableData: [], //评论表格数据
       page: 1,
       row: 10,
       colorRow: 10,
@@ -1008,6 +1714,7 @@ export default {
       commentDetailId: "",
       isSecondComment: false,
       commentId: "",
+      parentCommentId: "",
       teachId: "", //点击评论管理行id
       checkedRowId: "",
       configTips: "",
@@ -1036,23 +1743,23 @@ export default {
         {
           value: 1,
           text: "下线"
-        },
-        {
-          value: 2,
-          text: "草稿"
-        },
-        {
-          value: 3,
-          text: "待审核"
-        },
-        {
-          value: 4,
-          text: "已审核"
-        },
-        {
-          value: 5,
-          text: "审核驳回"
         }
+        // {
+        //   value: 2,
+        //   text: "草稿"
+        // },
+        // {
+        //   value: 3,
+        //   text: "待审核"
+        // },
+        // {
+        //   value: 4,
+        //   text: "已审核"
+        // },
+        // {
+        //   value: 5,
+        //   text: "审核驳回"
+        // }
       ], // 状态列表（用于筛选）
       videoPlace: ""
     };
@@ -1061,6 +1768,52 @@ export default {
     Pagination
   },
   methods: {
+    // 获取博主来源列表
+    getBlogger(val) {
+      this.$axios
+        .post(
+          "/management/admin/blogger!list.action",
+          this.$qs.stringify({
+            filter_LIKES_name: val,
+            page: 1,
+            rows: 50
+          })
+        )
+        .then(res => {
+          if (res.status == 200) {
+            console.log(res)
+            this.bloggerList = res.data.rows;
+          }
+        });
+    },
+    //新增博主
+    handleAddBlogger(){
+          this.$axios
+            .post(
+              `/management/admin/blogger!save.action`,
+              this.$qs.stringify({
+                name: this.formLabelAddBlogger.name,
+                slogan: this.formLabelAddBlogger.slogan,
+                headImg: this.formLabelAddBlogger.headImg
+              })
+            )
+            .then(res => {
+              this.AddBloggerVisible = false;
+              this.$message.success(`添加成功`);
+              this.formLabelAddBlogger={}
+              this.fileList1=[]
+            });
+    },
+    //博主头像
+    handleRemove1(file, fileList) {
+    },
+    beforeUpload1(file) {
+      this.imgData1.FileName = file.name;
+      this.imgData1.imgFile = file;
+    },
+    handleSuccess1(res) {
+      this.formLabelAddBlogger.headImg = res.url;
+    },
     // 去除文本中标签
     trimTag(str) {
       let testExp = /<.*?>/gi;
@@ -1201,11 +1954,44 @@ export default {
         })
         .catch(_ => {});
     },
+    // 新增打开回调
+    open() {
+      this.searchLabel = "";
+      this.searchBeautiColor = "";
+      this.addFileList = [];
+      this.formLabelAdd = {
+        name: "",
+        greatNumber: "",
+        pageView: "",
+        moduleId: "",
+        videoUrl: "",
+        star: "",
+        source: "",
+        about: "",
+        image: "",
+        beautyDetailsRelationList: [
+          {
+            procedureName: "",
+            procedureSort: 1,
+            childrenProcedureList: [
+              {
+                procedureDes: "",
+                beautyDetailsRelationId: 0,
+                procedureImg: [],
+                desSort: 1,
+                id: 1
+              }
+            ]
+          }
+        ]
+      };
+    },
     // 新增
     add() {
       this.searchLabel = "";
-      this.selectBeautiColor = "";
+      this.searchBeautiColor = "";
       this.AddVisible = true;
+      this.clearUploaded();
       // 获取色号产品数据
       this.getColorProductData(1, 10);
       //获取模型数据
@@ -1298,6 +2084,10 @@ export default {
     // 确认新增
     handleAdd() {
       // 格式化表单数据为参数所需类型
+      if (this.imgFlag) {
+        this.$message.error("请等待图片传输完成!");
+        return;
+      }
       var testObj = {};
       for (var key in this.formLabelAdd) {
         if (key != "lableId" && key != "productColor" && key != "purposeId") {
@@ -1360,6 +2150,7 @@ export default {
             ]
           };
           this.addFileList = [];
+          this.searchBeautiColor = "";
         });
     },
     // 取消新增
@@ -1500,12 +2291,12 @@ export default {
     },
     saveH5(row) {
       this.$axios
-        .get(`/management/admin/beauty-details!saveHtml.action?id=${row.id}`)
+        .get(`/management/admin/beauty-details!updateTime.action?id=${row.id}`)
         .then(res => {
           if (res.status == 200) {
-            this.$message.success("已生成H5!");
+            this.$message.success("已更新");
           } else {
-            this.$message.error("生成失败!!!");
+            this.$message.error("更新失败!!!");
           }
         });
     },
@@ -1588,6 +2379,10 @@ export default {
     // 上传操作
     // 判断上传位置
     uploadName(val) {
+      if (this.imgFlag) {
+        this.$message.error("请等待图片传输完成!");
+        return;
+      }
       console.log(val);
       this.imgPlace = val;
     },
@@ -1596,6 +2391,7 @@ export default {
       this.imgDialogVisible = true;
     },
     beforeUpload(file) {
+      this.imgFlag = true;
       this.imgData.FileName = file.name;
       this.imgData.imgFile = file;
     },
@@ -1604,36 +2400,58 @@ export default {
     },
     uploadSuccess(res, file, fileList) {
       this.tempImgUrl = res.url;
-      console.log(this.editFormData.beautyDetailsRelationList);
+
       // 判断图片保存位置
       if (this.imgPlace.indexOf("addImg") > -1) {
         this.formLabelAdd.image = res.url;
+        this.imgFlag = false;
       } else if (this.imgPlace.indexOf("addMiniStep") > -1) {
         this.formLabelAdd.beautyDetailsRelationList[
           this.imgPlace.split("-")[1]
         ].childrenProcedureList[this.imgPlace.split("-")[2]].procedureImg = [
           res.url
         ];
+        console.log(
+          this.formLabelAdd.beautyDetailsRelationList[
+            this.imgPlace.split("-")[1]
+          ].childrenProcedureList[this.imgPlace.split("-")[2]].procedureImg
+        );
+        this.imgFlag = false;
       } else if (this.imgPlace.indexOf("editImg") > -1) {
-        this.editFormData.image = [res.url];
+        this.editFormData.image = res.url;
+        this.imgFlag = false;
       } else if (this.imgPlace.indexOf("editMiniStep") > -1) {
         this.editFormData.beautyDetailsRelationList[
           this.imgPlace.split("-")[1]
         ].childrenProcedureList[this.imgPlace.split("-")[2]].procedureImg = [
           res.url
         ];
+        console.log(
+          this.editFormData.beautyDetailsRelationList[
+            this.imgPlace.split("-")[1]
+          ].childrenProcedureList[this.imgPlace.split("-")[2]].procedureImg
+        );
+        this.imgFlag = false;
       }
       // 清空上传图片参数
       this.imgData = {
         FileName: "",
         imgFile: null
       };
+
+      // console.log(this.editFormData.beautyDetailsRelationList[0].childrenProcedureList[0].procedureImg);
     },
     // 视频上传
     videoHandle(str) {
       this.videoPlace = str;
     },
+    uploadVideoProcess(event, file, fileList) {
+      this.videoFlag = true;
+      console.log(file.percentage);
+      this.videoUploadPercent = parseInt(file.percentage.toFixed(0));
+    },
     beforeUploadVideo(file) {
+      this.$message.warning("视频上传中......");
       this.videoData.imgFileFileName = file.name;
       this.videoData.imgFile = file;
       console.log(file);
@@ -1644,6 +2462,9 @@ export default {
       this.editFormData.videoUrl = "";
     },
     uploadSuccessVideo(res, file, fileList) {
+      this.videoFlag = false;
+      this.$message.success("视频上传成功");
+      this.videoUploadPercent = 100;
       console.log(fileList);
       this.videoData.imgFileFileName = "";
       this.videoData.imgFile = null;
@@ -1659,10 +2480,13 @@ export default {
     edit(index, row) {
       console.log(row);
       this.stepEditList = [];
+      this.stepList = [];
+      this.editFileList = [];
       this.editStepfileList = [];
       this.editVideo = [];
       this.searchLabel = "";
-      this.selectBeautiColor = "";
+      this.searchBeautiColor = "";
+      this.choosedBeautiColorList = [];
       // 获取输入框数据
       var that = this;
       that.editDialogVisible = true;
@@ -1675,6 +2499,7 @@ export default {
       tempObj.moduleId = row.moduleId;
       tempObj.videoUrl = row.videoUrl;
       tempObj.about = row.about;
+      tempObj.orientation = row.orientation;
       (tempObj.source = row.source), (tempObj.image = row.image);
       tempObj.beautyDetailsRelationList = row.beautyDetailsRelationList;
       this.editFormData = tempObj;
@@ -1778,6 +2603,10 @@ export default {
     },
     // 提交编辑
     handleEdit() {
+      if (this.imgFlag) {
+        this.$message.error("请等待图片传输完成!");
+        return;
+      }
       console.log(this.editFormData);
       let tempObj = JSON.parse(JSON.stringify(this.editFormData));
       let stepStr = "";
@@ -1946,6 +2775,7 @@ export default {
     // 预览H5页面
     checkH5(index, row) {
       console.log(row);
+      this.viewPageColorList = [];
       this.H5PageDialogVisible = true;
       this.viewPageData = row;
       // 色号数据
@@ -2026,9 +2856,30 @@ export default {
     },
     // 回复评论（二级评论）
     checkAddComment(index, row) {
+      console.log(row);
+      this.commentId = row.commentId;
+      this.userId = row.userId;
       this.isSecondComment = true;
+      this.checkComment2DialogVisible = true;
       this.getUserData(this.userPage, this.userRow);
-      this.commentId = row.id;
+      this.getCommentData2(1, 10);
+
+      // this.addCommentDialogVisible = true;
+    },
+    checkAddComment2(index, row) {
+      // this.isSecondComment = true;
+      console.log(row);
+      this.checkComment2DialogVisible = true;
+      this.getUserData(this.userPage, this.userRow);
+      // this.$axios.get(`/management/admin/new-comment!getCommentListByCommentId.action?id=${row.commentId}&beautyId=${row.userId}&type=1`).then(res=>{
+      //   if(res.status==200){
+      //     console.log(res)
+      //     this.comment2TableData = res.data.rows
+
+      //   }
+      // })
+      // this.commentId = row.commentId;
+      this.parentCommentId = row.commentId;
       this.addCommentDialogVisible = true;
     },
     // 提交新增评论
@@ -2039,17 +2890,15 @@ export default {
         this.addCommentDialogVisible = false;
         this.$axios
           .post(
-            `/management/admin/comment!save.action?detailsId=${
+            `/management/admin/new-comment!save.action?beautyId=${
               this.teachId
-            }&id=${this.commentId}&type=1`,
+            }&id=${this.commentId}&type=1&parentId=${
+              this.parentCommentId ? this.parentCommentId : this.commentId
+            }`,
             this.$qs.stringify(this.addCommentForm)
           )
           .then(res => {
-            this.getCommentData(
-              this.commentPage,
-              this.commentRow,
-              this.teachId
-            );
+            this.getCommentData2(1, 10);
             // this.teachId = '';
             this.isSecondComment = false;
             this.commentId = "";
@@ -2061,18 +2910,14 @@ export default {
         this.addCommentDialogVisible = false;
         this.$axios
           .post(
-            `/management/admin/comment!save.action?detailsId=${
+            `/management/admin/new-comment!save.action?beautyId=${
               this.teachId
             }&type=1`,
             this.$qs.stringify(tempObj)
           )
           .then(res => {
             this.$message.success("添加成功！");
-            this.getCommentData(
-              this.commentPage,
-              this.commentRow,
-              this.teachId
-            );
+            this.getCommentData(1, 10, this.teachId);
             this.addCommentForm = {};
           })
           .catch(e => {
@@ -2081,20 +2926,24 @@ export default {
       }
     },
     deleteComment(index, rows) {
+      console.log(rows, "");
       this.$confirm("确认删除？").then(res => {
         this.$axios
           .get(
-            `/management/admin/comment!delete.action?id=${
-              rows[index].id
-            }&detailsId=${rows[index].detailsId}&type=1`
+            `/management/admin/new-comment!delete.action?id=${
+              rows[index].commentId
+            }&commentRelationId=${rows[index].commentRelationId}`
           )
           .then(res => {
             this.$message.success("删除成功");
             this.getCommentData(
               this.commentPage,
               this.commentRow,
-              rows[index].detailsId
+              this.teachId
             );
+            if (this.isSecondComment) {
+              this.getCommentData2(1, 10);
+            }
           })
           .catch(_ => {
             this.$message.error("出了点问题-.-！");
@@ -2108,7 +2957,8 @@ export default {
         `/management/admin/beauty-details!list.action`,
         val,
         this.row,
-        this.tempId
+        this.tempId,
+        this.searchForm.text
       );
     },
     changeSize(val) {
@@ -2117,7 +2967,8 @@ export default {
         `/management/admin/beauty-details!list.action`,
         this.page,
         val,
-        this.tempId
+        this.tempId,
+        this.searchForm.text
       );
     },
     // 产品色号分页
@@ -2155,6 +3006,14 @@ export default {
     changeCommentSize(val) {
       this.commentRow = val;
       this.getCommentData(this.commentPage, val, this.teachId);
+    },
+    changeCommentPage2(val) {
+      this.commentPage = val;
+      this.getCommentData2(val, this.commentRow, this.teachId);
+    },
+    changeCommentSize2(val) {
+      this.commentRow = val;
+      this.getCommentData2(this.commentPage, val, this.teachId);
     },
     // 步骤分页
     changeStepPage(val) {
@@ -2205,6 +3064,10 @@ export default {
     filterStatus(value, row) {
       return row.online === value;
     },
+    filterTag(value) {
+      this.Isonline = Object.values(value)[0][0];
+      this.getTableData("/management/admin/beauty-details!list.action", 1, 10);
+    },
     // 筛选创建用户
     filterUser(value, row) {
       return row.creatUser === value;
@@ -2218,7 +3081,8 @@ export default {
             page: page,
             rows: row,
             labelId: id ? id : "",
-            q: q ? q : ""
+            q: q ? q : "",
+            online: this.Isonline
           }
         })
         .then(res => {
@@ -2254,7 +3118,7 @@ export default {
     // 用户数据
     getUserData(page, row) {
       this.$axios
-        .get("/management/admin/beauty-user!comboGridlist.action", {
+        .get("/management/admin/beauty-user!getUserList.action", {
           params: {
             page: page,
             rows: row
@@ -2268,12 +3132,15 @@ export default {
     // 评论数据
     getCommentData(page, row, id) {
       this.$axios
-        .get(`/management/admin/comment!list.action?detailsId=${id}&type=1`, {
-          params: {
-            page: page,
-            rows: row
+        .get(
+          `/management/admin/new-comment!list.action?beautyId=${id}&type=1`,
+          {
+            params: {
+              page: page,
+              rows: row
+            }
           }
-        })
+        )
         .then(res => {
           if (res.data.total > 0) {
             this.commentTotalNum = res.data.total;
@@ -2281,6 +3148,28 @@ export default {
           } else {
             this.commentTotalNum = 0;
             this.commentTableData = [];
+          }
+        });
+    },
+    getCommentData2(page, row, id) {
+      this.$axios
+        .get(
+          `/management/admin/new-comment!getCommentListByCommentId.action?id=${
+            this.commentId
+          }&beautyId=${this.userId}&type=1`,
+          {
+            params: {
+              page: page,
+              rows: row
+            }
+          }
+        )
+        .then(res => {
+          if (res.status == 200) {
+            console.log(res);
+            this.comment2TableData = res.data.rows;
+            this.commentTotalNum2 = res.data.total;
+            // this.parentCommentId = res.data.rows.parentCommentId;
           }
         });
     },
@@ -2326,8 +3215,16 @@ export default {
     },
     // 点击单选
     selectLabel(row) {
-      console.log(row);
-      this.choosedLabelList.push(row);
+      if (
+        this.choosedLabelList.some(item => {
+          return item.id == row.id;
+        })
+      ) {
+        this.$message.warning("请勿重复选中");
+      } else {
+        this.choosedLabelList.push(row);
+        // this.searchLabel = "";
+      }
     },
     // 色号操作
 
@@ -2352,13 +3249,30 @@ export default {
     },
     // 点击单选
     selectBeautiColor(row) {
-      this.choosedBeautiColorList.push(row);
+      if (
+        this.choosedBeautiColorList.some(item => {
+          return item.id == row.id;
+        })
+      ) {
+        this.$message.warning("请勿重复选中");
+      } else {
+        this.choosedBeautiColorList.push(row);
+        // this.searchBeautiColor = "";
+      }
     },
 
     // 步骤操作
     removeTab(targetName) {
       let tabs = this.stepList;
       let activeName = this.teachStepValue;
+      let tempIndex = 0;
+      tabs.forEach((item, index) => {
+        if (item.name == targetName) {
+          tempIndex = index;
+        }
+      });
+      console.log(tempIndex);
+      this.formLabelAdd.beautyDetailsRelationList.splice(tempIndex, 1);
       if (activeName === targetName) {
         tabs.forEach((tab, index) => {
           if (tab.name === targetName) {
@@ -2371,6 +3285,7 @@ export default {
       }
       this.teachStepValue = activeName;
       this.stepList = tabs.filter(tab => tab.name !== targetName);
+      console.log(this.stepList);
     },
     // 删除编辑大步骤
     removeEditTab(targetName) {
@@ -2384,6 +3299,7 @@ export default {
       });
       console.log(tempIndex);
       this.editFormData.beautyDetailsRelationList.splice(tempIndex, 1);
+      console.log(this.editFormData);
       console.log(this.editFormData.beautyDetailsRelationList);
       if (activeName === targetName) {
         tabs.forEach((tab, index) => {
@@ -2426,7 +3342,9 @@ export default {
         id: this.stepEditList.length + 1,
         name: "步骤" + newTabName
       });
-      // this.teachStepValue = this.stepEditList[this.stepEditList.length - 1].name;
+      this.teachStepValue = this.stepEditList[
+        this.stepEditList.length - 1
+      ].name;
       this.editFormData.beautyDetailsRelationList.push({
         procedureName: "",
         procedureSort: this.editFormData.beautyDetailsRelationList.length + 1,
@@ -2460,6 +3378,14 @@ export default {
     },
     editAddMiniStep(index) {
       console.log(index);
+      if (
+        this.editFormData.beautyDetailsRelationList[index].childrenProcedureList
+          .length == 1
+      ) {
+        this.editFormData.beautyDetailsRelationList[
+          index
+        ].childrenProcedureList[0].desSort = 1;
+      }
       this.editFormData.beautyDetailsRelationList[
         index
       ].childrenProcedureList.push({
@@ -2483,6 +3409,12 @@ export default {
       this.editFormData.beautyDetailsRelationList[
         index1
       ].childrenProcedureList.splice(index2, 1);
+    },
+    // 清除视频上传文件
+    clearUploaded() {
+      if (this.$refs.upload) {
+        this.$refs.upload.clearFiles();
+      }
     }
   },
   mounted() {
@@ -2630,16 +3562,29 @@ export default {
 /* 标签选择器 */
 .labelChoosed span {
   display: inline-block;
+  width: 45%;
+  font-size: 12px;
   padding: 5px 10px;
   border-radius: 5px;
-  margin-top: 15px;
+  margin-top: 10px;
   margin-right: 10px;
   cursor: pointer;
   transition: all 0.5s;
   line-height: 20px;
   border: 1px solid #ccc;
+  position: relative;
+  max-height: 25px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-
+.labelChoosed .el-icon-error {
+  position: absolute;
+  right: 2%;
+  top: 50%;
+  transform: translateY(-50%);
+  line-height: 20px;
+}
 .labelChoosed span:hover {
   background: #eeeeee;
 }
@@ -3196,5 +4141,9 @@ object {
 
 .el-tabs__new-tab {
   margin-right: 15px;
+}
+/* 步骤padding */
+.el-tabs__nav-wrap.is-scrollable {
+  padding: 0 30px !important;
 }
 </style>

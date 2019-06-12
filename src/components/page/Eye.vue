@@ -38,15 +38,30 @@
       </el-dialog>
       <el-dialog title="新增" :visible.sync="AddVisible" width="80%" @opened="addOPen">
         <el-form :model="formAdd">
-          <el-form-item label="标签" label-width="120px">
-            <el-select v-model="formAdd.labels" placeholder="请选择标签">
-              <el-option
-                :label="item.name"
-                :value="item.id.toString()"
-                v-for="item in labelList"
-                :key="item.id"
-              ></el-option>
-            </el-select>
+          <el-form-item label="搜索标签" label-width="120px">
+            <el-input v-model="searchlabels" @input="getLabelsList" clearable></el-input>
+            <el-table
+              :data="beautiLabelsList"
+              @row-click="selectLabelsList"
+              border
+              style="width: 100%"
+              v-if="searchlabels"
+              class="labelTable"
+            >
+              <el-table-column prop="id" label="id" width="60" align="center"></el-table-column>
+              <el-table-column prop="name" label="标签" align="center"></el-table-column>
+              <el-table-column prop="labelName" label="上级目录" align="center"></el-table-column>
+            </el-table>
+            <div class="labelChoosed">
+              <div>已选标签：</div>
+              <span v-for="(item,key) in choosedLabelsList">
+                {{key+1}}--{{item.name?item.name:item.enname}}
+                <i
+                  class="el-icon-error"
+                  @click="deleteLabels(key)"
+                ></i>
+              </span>
+            </div>
           </el-form-item>
           <el-form-item label="眼部描述" label-width="120px">
             <textarea id="eyeDescAdd" rows="10" cols="80"></textarea>
@@ -63,8 +78,24 @@
               :on-remove="handleRemove1"
               :on-success="handleSuccess1"
               :file-list="fileList1"
-               :limit="1"
+              :limit="1"
               :before-upload="beforeUpload1"
+              list-type="picture"
+            >
+              <el-button size="small" type="primary">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="分享图片" label-width="120px">
+            <el-upload
+              class="upload-demo"
+              action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+              :data="shareImg"
+              :on-preview="handlePreview"
+              :on-remove="shareRemove"
+              :on-success="shareSuccess"
+              :file-list="shareList"
+              :limit="1"
+              :before-upload="shareUpload"
               list-type="picture"
             >
               <el-button size="small" type="primary">点击上传</el-button>
@@ -89,13 +120,16 @@
               <el-table-column prop="productName" label="商品名" align="center"></el-table-column>
             </el-table>
             <div class="labelChoosed">
-              已选产品：
+              <div>已选产品：</div>
               <span
                 v-for="(item,key) in choosedBeautiColorList"
                 v-dragging="{ list: choosedBeautiColorList, item: item, group: 'name' }"
               >
-                {{item.name}}
-                <i class="el-icon-error" @click="deleteBeautiColor(key)"></i>
+                {{key+1}}--{{item.name?item.name:item.enname}}
+                <i
+                  class="el-icon-error"
+                  @click="deleteBeautiColor(key)"
+                ></i>
               </span>
             </div>
           </el-form-item>
@@ -106,13 +140,13 @@
             <el-upload
               class="upload-demo"
               action="/management/admin/kcupload!uploadImage.action?type=goods_path"
-              :data="imgData2"
+              :data="shareImg"
               :on-preview="handlePreview"
-              :on-remove="handleRemove2"
-              :on-success="handleSuccess2"
-              :file-list="fileList2"
-               :limit="1"
-              :before-upload="beforeUpload2"
+              :on-remove="shareRemove"
+              :on-success="shareSuccess"
+              :file-list="shareList"
+              :limit="1"
+              :before-upload="shareUpload"
               list-type="picture"
             >
               <el-button size="small" type="primary">点击上传</el-button>
@@ -137,13 +171,16 @@
               <el-table-column prop="productName" label="商品名" align="center"></el-table-column>
             </el-table>
             <div class="labelChoosed">
-              已选产品：
+              <div>已选产品：</div>
               <span
                 v-for="(item,key) in choosedBeautiColorList2"
                 v-dragging="{ list: choosedBeautiColorList2, item: item, group: 'name' }"
               >
-                {{item.name}}
-                <i class="el-icon-error" @click="deleteBeautiColor2(key)"></i>
+                {{key+1}}--{{item.name?item.name:item.enname}}
+                <i
+                  class="el-icon-error"
+                  @click="deleteBeautiColor2(key)"
+                ></i>
               </span>
             </div>
           </el-form-item>
@@ -159,7 +196,7 @@
               :on-remove="handleRemove3"
               :on-success="handleSuccess3"
               :file-list="fileList3"
-               :limit="1"
+              :limit="1"
               :before-upload="beforeUpload3"
               list-type="picture"
             >
@@ -185,13 +222,16 @@
               <el-table-column prop="productName" label="商品名" align="center"></el-table-column>
             </el-table>
             <div class="labelChoosed">
-              已选产品：
+              <div>已选产品：</div>
               <span
                 v-for="(item,key) in choosedBeautiColorList3"
                 v-dragging="{ list: choosedBeautiColorList3, item: item, group: 'name' }"
               >
-                {{item.name}}
-                <i class="el-icon-error" @click="deleteBeautiColor3(key)"></i>
+                {{key+1}}--{{item.name?item.name:item.enname}}
+                <i
+                  class="el-icon-error"
+                  @click="deleteBeautiColor3(key)"
+                ></i>
               </span>
             </div>
           </el-form-item>
@@ -206,7 +246,7 @@
     <el-table :data="labelCountList" border align="center">
       <el-table-column prop="id" label="id" align="center"></el-table-column>
       <el-table-column prop="labelName" label="标签名称" align="center"></el-table-column>
-      <el-table-column prop="labelName" label="创建人" align="center"></el-table-column>
+      <!-- <el-table-column prop="labelName" label="创建人" align="center"></el-table-column> -->
 
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
@@ -223,15 +263,30 @@
     </el-table>
     <el-dialog title="编辑" :visible.sync="TableVisible" width="80%" :close-on-click-modal="false">
       <el-form :model="formEdit">
-        <el-form-item label="标签" label-width="120px">
-          <el-select v-model="formEdit.labels" placeholder="请选择标签">
-            <el-option
-              :label="item.name"
-              :value="item.id.toString()"
-              v-for="item in labelList"
-              :key="item.id"
-            ></el-option>
-          </el-select>
+        <el-form-item label="搜索标签" label-width="120px">
+          <el-input v-model="searchlabels" @input="getLabelsList" clearable></el-input>
+          <el-table
+            :data="beautiLabelsList"
+            @row-click="selectLabelsList"
+            border
+            style="width: 100%"
+            v-if="searchlabels"
+            class="labelTable"
+          >
+            <el-table-column prop="id" label="id" width="60" align="center"></el-table-column>
+            <el-table-column prop="name" label="标签" align="center"></el-table-column>
+            <el-table-column prop="labelName" label="上级目录" align="center"></el-table-column>
+          </el-table>
+          <div class="labelChoosed">
+            <div>已选标签：</div>
+            <span v-for="(item,key) in choosedLabelsList">
+              {{key+1}}--{{item.name?item.name:item.enname}}
+              <i
+                class="el-icon-error"
+                @click="deleteLabels(key)"
+              ></i>
+            </span>
+          </div>
         </el-form-item>
         <el-form-item label="眼部描述" label-width="120px">
           <textarea id="eyeDesc" rows="10" cols="80"></textarea>
@@ -248,8 +303,24 @@
             :on-remove="handleRemove1"
             :on-success="handleSuccess1"
             :file-list="fileList1"
-             :limit="1"
+            :limit="1"
             :before-upload="beforeUpload1"
+            list-type="picture"
+          >
+            <el-button size="small" type="primary">点击上传</el-button>
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="分享图片" label-width="120px">
+          <el-upload
+            class="upload-demo"
+            action="/management/admin/kcupload!uploadImage.action?type=goods_path"
+            :data="shareImg"
+            :on-preview="handlePreview"
+            :on-remove="shareRemove"
+            :on-success="shareSuccess"
+            :file-list="shareList"
+            :limit="1"
+            :before-upload="shareUpload"
             list-type="picture"
           >
             <el-button size="small" type="primary">点击上传</el-button>
@@ -274,13 +345,16 @@
             <el-table-column prop="productName" label="商品名" align="center"></el-table-column>
           </el-table>
           <div class="labelChoosed">
-            已选产品：
+            <div>已选产品：</div>
             <span
               v-for="(item,key) in choosedBeautiColorList"
               v-dragging="{ list: choosedBeautiColorList, item: item, group: 'name' }"
             >
-              {{item.name}}
-              <i class="el-icon-error" @click="deleteBeautiColor(key)"></i>
+              {{key+1}}--{{item.name?item.name:item.enname}}
+              <i
+                class="el-icon-error"
+                @click="deleteBeautiColor(key)"
+              ></i>
             </span>
           </div>
         </el-form-item>
@@ -296,7 +370,7 @@
             :on-remove="handleRemove2"
             :on-success="handleSuccess2"
             :file-list="fileList2"
-             :limit="1"
+            :limit="1"
             :before-upload="beforeUpload2"
             list-type="picture"
           >
@@ -322,13 +396,16 @@
             <el-table-column prop="productName" label="商品名" align="center"></el-table-column>
           </el-table>
           <div class="labelChoosed">
-            已选产品：
+            <div>已选产品：</div>
             <span
               v-for="(item,key) in choosedBeautiColorList2"
               v-dragging="{ list: choosedBeautiColorList2, item: item, group: 'name' }"
             >
-              {{item.name}}
-              <i class="el-icon-error" @click="deleteBeautiColor2(key)"></i>
+              {{key+1}}--{{item.name?item.name:item.enname}}
+              <i
+                class="el-icon-error"
+                @click="deleteBeautiColor2(key)"
+              ></i>
             </span>
           </div>
         </el-form-item>
@@ -344,7 +421,7 @@
             :on-remove="handleRemove3"
             :on-success="handleSuccess3"
             :file-list="fileList3"
-             :limit="1"
+            :limit="1"
             :before-upload="beforeUpload3"
             list-type="picture"
           >
@@ -370,13 +447,16 @@
             <el-table-column prop="productName" label="商品名" align="center"></el-table-column>
           </el-table>
           <div class="labelChoosed">
-            已选产品：
+            <div>已选产品：</div>
             <span
               v-for="(item,key) in choosedBeautiColorList3"
               v-dragging="{ list: choosedBeautiColorList3, item: item, group: 'name' }"
             >
-              {{item.name}}
-              <i class="el-icon-error" @click="deleteBeautiColor3(key)"></i>
+              {{key+1}}--{{item.name?item.name:item.enname}}
+              <i
+                class="el-icon-error"
+                @click="deleteBeautiColor3(key)"
+              ></i>
             </span>
           </div>
         </el-form-item>
@@ -410,9 +490,11 @@ export default {
       fileList1: [],
       fileList2: [],
       fileList3: [],
+      shareList: [],
       imgData1: {},
       imgData2: {},
       imgData3: {},
+      shareImg: {},
       TableVisible: false,
       AddVisible: false,
       imgVisible: false,
@@ -433,9 +515,7 @@ export default {
       totalNum2: 1,
       formEdit: {},
       formAdd: {
-        beautyDetailsId1: 1,
-        beautyDetailsId2: 2,
-        beautyDetailsId3: 3
+        status: 1
       },
       viewPageColorList: [], //产品预览列表
       viewPageColorList2: [], //产品预览列表
@@ -457,7 +537,10 @@ export default {
       choosedLabelList3: [], //已选中标签列表
       beautiColorTableData3: [], //色号表格数据
       searchBeautiColor3: "", //搜索色号输入框
-      choosedBeautiColorList3: [] //已选中色号列表
+      choosedBeautiColorList3: [], //已选中色号列表
+      searchlabels: "", //标签
+      beautiLabelsList: [], //搜索标签列表
+      choosedLabelsList: [] //选中标签
     };
   },
   mounted() {
@@ -862,16 +945,24 @@ export default {
         this.getCkeditor2();
         this.editorAdd = true;
       }
-      this.formAdd = {};
+      this.formAdd = { featureStatus: 1 };
       this.fileList1 = [];
       this.fileList2 = [];
       this.fileList3 = [];
+      this.shareList = [];
+      this.labels = [];
       this.searchBeautiColor = "";
       this.searchBeautiColor2 = "";
       this.searchBeautiColor3 = "";
+      this.searchlabels = "";
       this.choosedBeautiColorList = [];
       this.choosedBeautiColorList2 = [];
       this.choosedBeautiColorList3 = [];
+      this.choosedLabelsList = [];
+      this.formAdd.eyesDescribe = CKEDITOR.instances.eyeDescAdd.setData();
+      this.formAdd.eyeMakeup = CKEDITOR.instances.eyeMakeAdd.setData();
+      this.formAdd.eyeMakeup2 = CKEDITOR.instances.eyeMakeAdd2.setData();
+      this.formAdd.eyeMakeup3 = CKEDITOR.instances.eyeMakeAdd3.setData();
     },
     //新增
     handleAdd() {
@@ -887,16 +978,31 @@ export default {
       for (let i = 0; i < this.choosedBeautiColorList3.length; i++) {
         colorId3 += `&productColor3=` + this.choosedBeautiColorList3[i].id;
       }
-
+      var labels = "";
+      for (let i = 0; i < this.choosedLabelsList.length; i++) {
+        labels += `&labelId=` + this.choosedLabelsList[i].id;
+      }
       this.formAdd.eyesDescribe = CKEDITOR.instances.eyeDescAdd.getData();
       this.formAdd.eyeMakeup = CKEDITOR.instances.eyeMakeAdd.getData();
       this.formAdd.eyeMakeup2 = CKEDITOR.instances.eyeMakeAdd2.getData();
       this.formAdd.eyeMakeup3 = CKEDITOR.instances.eyeMakeAdd3.getData();
-      console.log(this.formAdd);
+      // if(this.formAdd.labels.length>1){
+      //   this.formAdd.labels = this.formAdd.labels.join(",")
+      // }else if(this.formAdd.labels.length=1){
+      //   this.formAdd.labels = this.formAdd.labels[0]
+      // }else{
+      //   this.formAdd.labels = ''
+      // }
+      // this.formAdd.labels=`[${this.formAdd.labels.toString()}]`
+      console.log(labels);
       this.$axios
         .post(
           `/management/admin/eyes!save.action`,
-          this.$qs.stringify(this.formAdd) + colorId + colorId2 + colorId3
+          this.$qs.stringify(this.formAdd) +
+            colorId +
+            colorId2 +
+            colorId3 +
+            labels
         )
         .then(res => {
           if (res.status == 200) {
@@ -907,19 +1013,26 @@ export default {
               this.fileList2 = [];
               this.fileList3 = [];
               this.formAdd = {};
-              this.getlabelCountList();
+              this.getlabelCountList(this.page1, this.row1);
             }
           }
         });
     },
     //编辑
     handleEdit(row) {
+      this.formEdit = {};
+      this.fileList1 = [];
+      this.fileList2 = [];
+      this.fileList3 = [];
+      this.shareList = [];
       this.searchBeautiColor = "";
       this.searchBeautiColor2 = "";
       this.searchBeautiColor3 = "";
       this.choosedBeautiColorList = [];
       this.choosedBeautiColorList2 = [];
       this.choosedBeautiColorList3 = [];
+      this.searchlabels = "";
+      this.choosedLabelsList = [];
       console.log(row);
       this.TableVisible = true;
       this.idx = row.id;
@@ -944,6 +1057,33 @@ export default {
                   { url: this.formEdit.eyesImg3, name: "图片3" }
                 ])
               : (this.fileList3 = []);
+            this.formEdit.eyeShareImage
+              ? (this.shareList = [
+                  { url: this.formEdit.eyeShareImage, name: "分享图片" }
+                ])
+              : (this.shareList = []);
+            if (this.formEdit.labels.indexOf(",") > -1) {
+              this.formEdit.labels = this.formEdit.labels.split(",");
+            } else {
+              this.formEdit.labels = [this.formEdit.labels];
+            }
+          }
+        });
+      //获取选中标签
+      this.$axios
+        .post(
+          "/management/admin/label!featuresList.action",
+          this.$qs.stringify({
+            labelIds: row.labels,
+            page: 1,
+            rows: 50
+          })
+        )
+        .then(res => {
+          console.log(res)
+          if (res.status == 200) {
+            this.choosedLabelsList = res.data.rows;
+            console.log(this.choosedLabelsList)
           }
         });
       // 获取选中色号内容
@@ -951,7 +1091,8 @@ export default {
         .post(
           `/management/admin/beauty-color-to-label!comboGridlist.action`,
           this.$qs.stringify({
-            labelId: row.labels,
+            labelId: row.id,
+            featureStatus: 1,
             type: 1
           })
         )
@@ -964,7 +1105,8 @@ export default {
         .post(
           `/management/admin/beauty-color-to-label!comboGridlist.action`,
           this.$qs.stringify({
-            labelId: row.labels,
+            labelId: row.id,
+            featureStatus: 1,
             type: 2
           })
         )
@@ -977,7 +1119,8 @@ export default {
         .post(
           `/management/admin/beauty-color-to-label!comboGridlist.action`,
           this.$qs.stringify({
-            labelId: row.labels,
+            labelId: row.id,
+            featureStatus: 1,
             type: 3
           })
         )
@@ -1016,23 +1159,35 @@ export default {
       for (let i = 0; i < this.choosedBeautiColorList3.length; i++) {
         colorId3 += `&productColor3=` + this.choosedBeautiColorList3[i].id;
       }
+      var labels = "";
+      for (let i = 0; i < this.choosedLabelsList.length; i++) {
+        labels += `&labelId=` + this.choosedLabelsList[i].id;
+      }
+      // if(this.formEdit.labels.length>1){
+      //   this.formEdit.labels = this.formEdit.labels.join(",")
+      // }else if(this.formEdit.labels.length=1){
+      //   this.formEdit.labels = this.formEdit.labels[0]
+      // }else{
+      //   this.formEdit.labels = ''
+      // }
       let params =
         this.$qs.stringify({
           beautyDetailsId1: this.formEdit.beautyDetailsId1,
           beautyDetailsId2: this.formEdit.beautyDetailsId2,
           beautyDetailsId3: this.formEdit.beautyDetailsId3,
-          labelId: this.formEdit.labels,
           eyesDescribe: this.formEdit.eyesDescribe,
           eyesImg: this.formEdit.eyesImg,
           eyeMakeup: this.formEdit.eyeMakeup,
           eyesImg2: this.formEdit.eyesImg2,
           eyeMakeup2: this.formEdit.eyeMakeup2,
           eyesImg3: this.formEdit.eyesImg3,
-          eyeMakeup3: this.formEdit.eyeMakeup3
+          eyeMakeup3: this.formEdit.eyeMakeup3,
+          eyeShareImage: this.formEdit.eyeShareImage
         }) +
         colorId +
         colorId2 +
-        colorId3;
+        colorId3 +
+        labels;
 
       this.$axios
         .post(`/management/admin/eyes!save.action?id=${this.idx}`, params)
@@ -1041,11 +1196,18 @@ export default {
             if (res.status == 200) {
               this.TableVisible = false;
               this.$message.success(`修改成功`);
+              this.formEdit = {};
               this.fileList1 = [];
               this.fileList2 = [];
               this.fileList3 = [];
-              this.formEdit = {};
-              this.getlabelCountList();
+              this.shareList = [];
+              this.searchBeautiColor = "";
+              this.searchBeautiColor2 = "";
+              this.searchBeautiColor3 = "";
+              this.choosedBeautiColorList = [];
+              this.choosedBeautiColorList2 = [];
+              this.choosedBeautiColorList3 = [];
+              this.getlabelCountList(this.page1, this.row1);
             }
           }
         });
@@ -1056,6 +1218,7 @@ export default {
       this.fileList1 = [];
       this.fileList2 = [];
       this.fileList3 = [];
+      this.shareList = [];
       this.searchBeautiColor = "";
       this.searchBeautiColor2 = "";
       this.searchBeautiColor3 = "";
@@ -1076,7 +1239,7 @@ export default {
           .then(res => {
             if (res.status == 200) {
               this.$message.success("删除成功");
-              this.getlabelCountList();
+             this.getlabelCountList(this.page1, this.row1);
             }
           });
       });
@@ -1089,7 +1252,8 @@ export default {
       this.$axios
         .post(
           `/management/admin/beauty-color-to-label!comboGridlist.action`,
-          this.$qs.stringify({ labelId: row.labels, type: 1 })
+          this.$qs.stringify({ labelId: row.id,
+            featureStatus: 1, type: 1 })
         )
         .then(res1 => {
           if (Object.keys(res1.data).length != 0) {
@@ -1099,7 +1263,8 @@ export default {
       this.$axios
         .post(
           `/management/admin/beauty-color-to-label!comboGridlist.action`,
-          this.$qs.stringify({ labelId: row.labels, type: 2 })
+          this.$qs.stringify({ labelId: row.id,
+            featureStatus: 1, type: 2 })
         )
         .then(res2 => {
           if (Object.keys(res2.data).length != 0) {
@@ -1109,7 +1274,8 @@ export default {
       this.$axios
         .post(
           `/management/admin/beauty-color-to-label!comboGridlist.action`,
-          this.$qs.stringify({ labelId: row.labels, type: 3 })
+          this.$qs.stringify({ labelId: row.id, 
+            featureStatus: 1,type: 3 })
         )
         .then(res3 => {
           if (Object.keys(res3.data).length != 0) {
@@ -1141,7 +1307,16 @@ export default {
     },
     // 点击单选
     selectBeautiColor(row) {
-      this.choosedBeautiColorList.push(row);
+       if (
+        this.choosedBeautiColorList.some(item => {
+          return item.id == row.id;
+        })
+      ) {
+        this.$message.warning("请勿重复选中");
+      } else {
+        this.choosedBeautiColorList.push(row);
+        // this.searchBeautiColor = "";
+      }
     },
     getBeautiColorList2(val) {
       this.$axios
@@ -1164,7 +1339,16 @@ export default {
     },
     // 点击单选
     selectBeautiColor2(row) {
-      this.choosedBeautiColorList2.push(row);
+       if (
+        this.choosedBeautiColorList2.some(item => {
+          return item.id == row.id;
+        })
+      ) {
+        this.$message.warning("请勿重复选中");
+      } else {
+        this.choosedBeautiColorList2.push(row);
+        // this.searchBeautiColor = "";
+      }
     },
     getBeautiColorList3(val) {
       this.$axios
@@ -1187,12 +1371,55 @@ export default {
     },
     // 点击单选
     selectBeautiColor3(row) {
-      this.choosedBeautiColorList3.push(row);
+       if (
+        this.choosedBeautiColorList3.some(item => {
+          return item.id == row.id;
+        })
+      ) {
+        this.$message.warning("请勿重复选中");
+      } else {
+        this.choosedBeautiColorList3.push(row);
+        // this.searchBeautiColor = "";
+      }
+    },
+    // 标签操作
+    getLabelsList(val) {
+      this.$axios
+        .post(
+          "/management/admin/label!featuresList.action",
+          this.$qs.stringify({
+            page: 1,
+            rows: 50,
+            q: val
+          })
+        )
+        .then(res => {
+          this.beautiLabelsList = res.data.rows;
+          this.loading = false;
+        });
+    },
+    //点击单选
+    selectLabelsList(row) {
+       if (
+        this.choosedLabelsList.some(item => {
+          return item.id == row.id;
+        })
+      ) {
+        this.$message.warning("请勿重复选中");
+      } else {
+        this.choosedLabelsList.push(row);
+        // this.searchLabel = "";
+      }
+    },
+    // 删除
+    deleteLabels(val) {
+      this.choosedLabelsList.splice(val, 1);
     },
     //图片上传
     handleRemove1(file, fileList) {},
     handleRemove2(file, fileList) {},
     handleRemove3(file, fileList) {},
+
     handlePreview(file) {
       this.img = file.url;
       this.imgVisible = true;
@@ -1217,6 +1444,7 @@ export default {
       this.imgData3.FileName = File.name;
       this.imgData3.imgFile = file;
     },
+
     handleSuccess1(res) {
       console.log(res);
       this.formEdit.eyesImg = res.url;
@@ -1234,6 +1462,17 @@ export default {
       this.formEdit.eyesImg3 = res.url;
       if (this.AddVisible) {
         this.formAdd.eyesImg3 = res.url;
+      }
+    },
+    shareRemove(file, fileList) {},
+    shareUpload(file) {
+      this.shareImg.FileName = File.name;
+      this.shareImg.imgFile = file;
+    },
+    shareSuccess(res) {
+      this.formEdit.eyeShareImage = res.url;
+      if (this.AddVisible) {
+        this.formAdd.eyeShareImage = res.url;
       }
     },
     //分页
@@ -1283,16 +1522,29 @@ export default {
 }
 .labelChoosed span {
   display: inline-block;
+  width: 45%;
+  font-size: 12px;
   padding: 5px 10px;
   border-radius: 5px;
-  margin-top: 15px;
+  margin-top: 10px;
   margin-right: 10px;
   cursor: pointer;
   transition: all 0.5s;
   line-height: 20px;
   border: 1px solid #ccc;
+  position: relative;
+  max-height: 25px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-
+.labelChoosed .el-icon-error {
+  position: absolute;
+  right: 2%;
+  top: 50%;
+  transform: translateY(-50%);
+  line-height: 20px;
+}
 .labelChoosed span:hover {
   background: #eeeeee;
 }

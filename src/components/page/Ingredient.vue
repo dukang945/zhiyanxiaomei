@@ -2,7 +2,7 @@
 	<div>
 		<div class="handle-box">
 			<el-button type="primary" @click="AddVisible = true" size="small" v-has>新增</el-button>
-			<el-input v-model="ingredient_Search" placeholder="请输入搜索类容" style="width: 30%" size="small" @keyup.enter.native="ingredientSearch">
+			<el-input v-model="ingredient_Search" placeholder="请输入搜索类容" style="width: 30%" size="small" @keyup.enter.native.prevent="ingredientSearch">
 				<el-button slot="append" icon="el-icon-search" @click="ingredientSearch"></el-button>
 			</el-input>
 			<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">

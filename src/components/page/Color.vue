@@ -8,14 +8,16 @@
       <el-dialog title="新增" :visible.sync="AddVisible" :close-on-click-modal='false'>
         <el-form :label-position="labelPosition" label-width="110px" :model="formLabelAdd">
          
-          <el-form-item label="产品">
+          <el-form-item label="产品" >
             <el-select
               v-model="formLabelAdd.productId"
               filterable
+              clearable
               remote
               reserve-keyword
               placeholder="请选择产品"
               :remote-method="proSearch"
+              reserve-keyword
             >
               <el-option
                 v-for="(item) in options"
@@ -25,9 +27,9 @@
               ></el-option>
             </el-select>
           </el-form-item>
-           <el-form-item label="产品及色号名称">
+           <!-- <el-form-item label="产品及色号名称">
             <el-input v-model="formLabelAdd.productName"></el-input>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="色号名称">
             <el-input v-model="formLabelAdd.colorName"></el-input>
           </el-form-item>
@@ -41,6 +43,7 @@
               :on-success="handleSuccess1"
               :file-list="fileList1"
               :before-upload="beforeUpload1"
+              :limit="1"
               list-type="picture"
             >
               <el-button size="small" type="primary">点击上传</el-button>
@@ -53,13 +56,13 @@
         </span>
       </el-dialog>
     </div>
-    <el-table :data="colorList" border style="width: 100%">
+    <el-table :data="colorList" border style="width: 100%" @filter-change="filterTag">
       <el-table-column label="编号" width="120" align="center">
         <template slot-scope="scope" align="center">{{ scope.row.id }}</template>
       </el-table-column>
       <el-table-column prop="name" label="产品名称" align="center"></el-table-column>
       <el-table-column prop="colorName" label="色号名称" align="center"></el-table-column>
-      <el-table-column prop="status" label="状态" align="center">
+      <el-table-column prop="status" label="状态" align="center" :filters="[{ text: '上线', value: '0' }, { text: '下线', value: '1' }]">
         <template slot-scope="scope">
           <el-tag type="success" v-if="scope.row.online==0">上线</el-tag>
           <el-tag type="danger" v-else-if="scope.row.online==1">下线</el-tag>
@@ -88,6 +91,7 @@
                 <el-select
               v-model="formLabelAlign.productId"
               filterable
+              clearable
               remote
               reserve-keyword
               placeholder="请选择产品"
@@ -101,9 +105,9 @@
               ></el-option>
             </el-select>
               </el-form-item>
-              <el-form-item label="产品及色号名称">
+              <!-- <el-form-item label="产品及色号名称">
                 <el-input v-model="formLabelAlign.productName"></el-input>
-              </el-form-item>
+              </el-form-item> -->
               <el-form-item label="色号名称">
                 <el-input v-model="formLabelAlign.colorName"></el-input>
               </el-form-item>
@@ -150,6 +154,7 @@ export default {
       imgData: {},
       imgData1: {},
       loading:true,
+      Isonline:'',
       page1: 1,
       page2: 1,
       page3: 1,
@@ -180,7 +185,9 @@ export default {
     Pagination
   },
   mounted() {
-    this.getColorList(1, 10);
+    if(this.colorList.length==0){
+      this.getColorList(1, 10);
+    }
     this.getGridList(1, 10);
   },
   methods: {
@@ -190,7 +197,8 @@ export default {
         .get("/management/admin/beauty-color!list.action", {
           params: {
             page: page1,
-            rows: row1
+            rows: row1,
+            online: this.Isonline,
           }
         })
         .then(res => {
@@ -213,19 +221,29 @@ export default {
           if (res.status == 200) {
             console.log(res);
             this.options = res.data.rows;
+           
             this.totalNum2 = this.totalNum3 = res.data.total;
           }
         });
     },
     //新增
     handleAdd() {
+      let product =  this.options.filter(item=>{
+              if(this.formLabelAdd.productId){
+                if(item.id == this.formLabelAdd.productId){
+                  return item.name
+                }
+              }
+            })
+            console.log(product[0].name)
+            let productName = product[0].name + " " + (this.formLabelAdd.colorName?this.formLabelAdd.colorName:'')
       this.options=[]
       this.$axios
         .post(
           "/management/admin/beauty-color!save.action",
           this.$qs.stringify({
             productId: this.formLabelAdd.productId,
-            productName: this.formLabelAdd.productName,
+            productName: productName,
             colorName: this.formLabelAdd.colorName,
             image: this.formLabelAdd.image
           })
@@ -276,6 +294,7 @@ export default {
                   console.log(res);
                   this.formLabelAlign.name = res.data.name;
                   this.options = [{name:res.data.name,id:res.data.productId}]
+                  this.formLabelAlign.productId =res.data.productId
                   this.dialogVisible = true;
                 }
               });
@@ -284,6 +303,13 @@ export default {
     },
     //保存编辑
     saveEdit(formName) {
+      var productName =  this.options.filter(item=>{
+              if(this.formLabelAlign.productId){
+                if(item.id == this.formLabelAlign.productId){
+                  return item.name
+                }
+              }
+            })
       console.log(this.formLabelAlign, this.fileList);
       // return
       this.$axios
@@ -291,7 +317,7 @@ export default {
           `/management/admin/beauty-color!save.action?id=${this.idx}`,
           this.$qs.stringify({
             productId: this.formLabelAlign.productId,
-            productName: this.formLabelAlign.productName,
+            productName:  productName[0].name + " " + (this.formLabelAlign.colorName?this.formLabelAlign.colorName:''),
             colorName: this.formLabelAlign.colorName,
             image: this.formLabelAlign.image
           })
@@ -308,6 +334,7 @@ export default {
     },
     //删除
     deleteRow(index, rows) {
+      console.log(rows)
       this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -315,7 +342,7 @@ export default {
       }).then(() => {
         this.$axios
           .get(
-            `management/admin/beauty-color!delete.action?id=${rows[index].id}`
+            `/management/admin/beauty-color!delete.action?id=${rows[index].id}`
           )
           .then(res => {
             if (res.status == 200) {
@@ -324,6 +351,11 @@ export default {
             }
           });
       });
+    },
+    //选中产品失去焦点事件
+    blur(){
+      return false
+      console.log(1111)
     },
      // 上下线
     online(rows) {
@@ -358,23 +390,41 @@ export default {
           });
         });
     },
+    //筛选
+    filterTag(value){
+      this.Isonline = Object.values(value)[0][0]
+      this.getColorList(this.page1,this.row1)
+    },
     //搜索
     colorSearch(page1, row1) {
+      var color_Search = ''
+      if(this.color_Search.indexOf(' ')>-1){
+          var makeupList= this.color_Search.split(' ')
+          
+          for (let index = 0; index < makeupList.length; index++) {
+           color_Search +='&keyword='+ makeupList[index];
+            
+          }
+				 }else{
+           color_Search = '&keyword=' + this.color_Search
+         }
       this.$axios
         .post(
           "/management/admin/beauty-color!list.action",
           this.$qs.stringify({
-            filter_LIKES_productName: this.color_Search,
+            // filter_LIKES_productName: this.color_Search,
             page: page1,
             rows: row1
-          })
+          }) + color_Search
         )
         .then(res => {
           if (res.status == 200) {
             this.colorList = res.data.rows;
             this.totalNum1 = res.data.total;
+            this.page1 = 1
           }
         });
+        
     },
     //产品搜索
     proSearch(q){
@@ -476,4 +526,7 @@ export default {
 </script>
 
 <style scoped>
+.el-select{
+  width: 60%
+}
 </style>

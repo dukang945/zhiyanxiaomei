@@ -2,6 +2,9 @@
 	<div class="memberContent">
 		<div class="handle-box">
 			<el-button type="primary" @click="AddVisible = true" size='small'>新增</el-button>
+			<el-input v-model="member_Search" placeholder="请输入搜索类容" style="width: 30%" size="small" @keyup.enter.native.prevent="memberSearch">
+        <el-button slot="append" icon="el-icon-search" @click="memberSearch"></el-button>
+      </el-input>
 			<el-dialog title="新增" :visible.sync="AddVisible" width="30%" :before-close="handleClose">
 				<el-form :label-position="labelPosition" :rules="rules" ref="formLabelAdd" label-width="100px" :model="formLabelAdd">
 					<el-form-item label="手机号" prop='phone'>
@@ -46,6 +49,8 @@
 			<el-table-column label="操作" width="200" align='center'>
 				<template slot-scope="scope">
 					<el-button type="primary" size='small' @click="handleEdit(scope.$index, scope.row)">重置密码</el-button>
+					<el-button type="warning" size='small' @click="handleOnline(scope.$index, scope.row)" v-if="scope.row.commentStatus==1">禁言</el-button>
+					<el-button type="primary" size='small' @click="handleOnline(scope.$index, scope.row)" v-else>解禁</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -86,7 +91,8 @@
 					FileName: '',
 					imgFile: null
 				},
-				tempImgUrl: ''
+				tempImgUrl: '',
+				member_Search:''
 			}
 		},
 		components: {
@@ -191,23 +197,62 @@
 					return '自成一派'
 				}
 			},
+			//禁言
+			handleOnline(index,rows){
+				this.$confirm(`是否${rows.commentStatus == 1 ? "禁言" : "解禁"}该用户`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$axios
+            .get(
+              `/management/admin/new-comment-user!online.action?userId=${rows.id}&online=${rows.commentStatus == 0 ? 1 : 0}`
+            //   this.$qs.stringify({
+            //     userId: rows.id,
+            //     online: rows.commentStatus == 0 ? 1 : 0
+            //   })
+            )
+            .then(res => {
+              if (res.status == 200) {
+                this.$message({
+                  type: "success",
+                  message: `${rows.commentStatus == 1 ? "禁言" : "解禁"}成功!`
+                });
+                this.getData(this.page, this.row);
+              }
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消"
+          });
+        });
+			},
+			//搜索
+			memberSearch(){
+				this.getData(this.page,this.row)
+			},
 			// 请求数据
 			getData(page, row) {
 				var url = '/management/admin/beauty-user!list.action'
-				this.$axios.get(url, {
-					params: {
+				this.$axios.post(url,
+					this.$qs.stringify( {
 						page: page,
-						rows: row
-					}
-				}).then(res => {
-					console.log(res.data)
+						rows: row,
+						filter_LIKES_nickName_OR_boundPhone_OR_phone
+:this.member_Search
+					})
+				).then(res => {
+					console.log(this.member_Search)
 					this.totalNum = res.data.total
 					this.tableData = res.data.rows
 				})
 			}
 		},
 		mounted() {
-			this.getData(1, 10)
+			this.getData(this.page, this.row)
 		}
 
 	}
